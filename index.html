@@ -1,19 +1,12 @@
 <!--
-  pavanp.me v4 — single-file, hash-routed portfolio.
-  Pages: #/ #/work #/services #/features #/process #/seo #/game #/insights #/about #/contact #/explore
-  Untested draft. Search "EDIT" for placeholders (email, concept projects, about text).
-
-  ============ FILES TO UPLOAD NEXT TO index.html (exact names) ============
-  favicon.svg            <- save the SVG below as this file (or upload your own with the same name)
-  favicon.ico            <- 32x32 fallback
-  apple-touch-icon.png   <- 180x180
-  og-image.png           <- 1200x630 social preview
-  robots.txt             <- User-agent: *  /  Allow: /  /  Sitemap: https://pavanp.me/sitemap.xml
-  sitemap.xml            <- <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://pavanp.me/</loc></url></urlset>
-
-  ---- favicon.svg ----
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff3d2e"/><stop offset="1" stop-color="#ffb020"/></linearGradient><radialGradient id="r" cx=".3" cy=".2" r="1"><stop offset="0" stop-color="#2a0d0a"/><stop offset="1" stop-color="#050507"/></radialGradient></defs><rect width="64" height="64" rx="16" fill="url(#r)"/><circle cx="32" cy="32" r="25" fill="none" stroke="url(#g)" stroke-opacity=".35" stroke-width="1.5"/><path d="M22 48V17h14.5a9.5 9.5 0 010 19H22" fill="none" stroke="url(#g)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="47" cy="47" r="3.6" fill="#ffb020"/></svg>
-  Note: all pages live under one URL, so search engines index this as one page. For separate indexable URLs, split each .page into its own HTML file.
+  pavanp.me v5 — single-file, hash-routed portfolio.
+  Pages: #/ #/work #/services #/features #/process #/seo #/game #/lab #/plan #/insights #/about #/contact #/explore
+  Search "EDIT" for placeholders (email, concept projects, about text).
+  Upload next to index.html: favicon.svg, favicon.ico, apple-touch-icon.png, og-image.png, robots.txt, sitemap.xml
+  robots.txt  ->  User-agent: *  /  Allow: /  /  Sitemap: https://pavanp.me/sitemap.xml
+  sitemap.xml ->  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://pavanp.me/</loc></url></urlset>
+  favicon.svg ->  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff3d2e"/><stop offset="1" stop-color="#ffb020"/></linearGradient><radialGradient id="r" cx=".3" cy=".2" r="1"><stop offset="0" stop-color="#2a0d0a"/><stop offset="1" stop-color="#050507"/></radialGradient></defs><rect width="64" height="64" rx="16" fill="url(#r)"/><circle cx="32" cy="32" r="25" fill="none" stroke="url(#g)" stroke-opacity=".35" stroke-width="1.5"/><path d="M22 48V17h14.5a9.5 9.5 0 010 19H22" fill="none" stroke="url(#g)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="47" cy="47" r="3.6" fill="#ffb020"/></svg>
+  All pages share one URL, so search engines index this as a single page. For separate indexable URLs, split each .page into its own HTML file.
 -->
 <!DOCTYPE html>
 <html lang="en-AU">
@@ -39,10 +32,12 @@
 {"@type":"WebSite","@id":"https://pavanp.me/#website","url":"https://pavanp.me/","name":"Pavan Patel","inLanguage":"en-AU","publisher":{"@id":"https://pavanp.me/#person"}},
 {"@type":"ProfessionalService","name":"Pavan Patel Web Design","url":"https://pavanp.me/","areaServed":"Sydney, Australia","provider":{"@id":"https://pavanp.me/#person"},"hasOfferCatalog":{"@type":"OfferCatalog","name":"Services","itemListElement":[{"@type":"Offer","itemOffered":{"@type":"Service","name":"Website design"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Custom web development"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"SEO"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Performance optimisation"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"3D and interactive experiences"}}]}}]}
 </script>
+<!-- FAILSAFE: if anything below ever fails, the page still opens after 8s -->
+<script>document.documentElement.className='js';(function(){var t=setTimeout(function(){document.documentElement.className='';var p=document.getElementById('pre');if(p)p.className='gone';if(document.body)document.body.classList.remove('lock')},8000);window.__ppOk=function(){clearTimeout(t)}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#030304;--fg:#f2efe9;--mut:#8b8782;--a:#ff3d2e;--b:#ffb020;--line:rgba(255,255,255,.1);--veil:rgba(3,3,4,.78);--m:clamp(20px,5vw,72px);
+:root{--bg:#030304;--fg:#f2efe9;--mut:#8b8782;--a:#ff3d2e;--b:#ffb020;--line:rgba(255,255,255,.1);--veil:rgba(3,3,4,.8);--m:clamp(20px,5vw,72px);
 --t-1:clamp(.68rem,.66rem + .1vw,.78rem);--t0:clamp(1rem,.95rem + .25vw,1.15rem);--t1:clamp(1.3rem,1.1rem + .9vw,1.9rem);--t2:clamp(1.9rem,1.4rem + 2.2vw,3.4rem);--t3:clamp(2.6rem,1.6rem + 4.6vw,6.6rem);--t4:clamp(3.4rem,1.8rem + 7.6vw,10.5rem);--t5:clamp(4.4rem,1rem + 18vw,24rem);--ease:cubic-bezier(.2,.9,.2,1)}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scrollbar-width:none}html::-webkit-scrollbar{display:none}
@@ -52,6 +47,7 @@ body.nogl{background:radial-gradient(ellipse at 50% 30%,#1a0b09,#030304 70%)}
 body.nogl #gl{display:none}body.nogl [data-needs-gl]{display:none!important}
 body.nogl #hero .stick::before{content:'';position:absolute;left:50%;top:50%;width:46vmin;height:46vmin;margin:-23vmin;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--b),var(--a) 45%,transparent 70%);filter:blur(30px);opacity:.6}
 ::selection{background:var(--a);color:#fff}a{color:inherit}button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--b);outline-offset:4px}
 .skip{position:fixed;left:12px;top:-70px;z-index:900;background:#fff;color:#000;padding:10px 16px;border-radius:6px;font:500 12px 'JetBrains Mono'}.skip:focus{top:12px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
@@ -73,20 +69,20 @@ canvas#gl{position:fixed;inset:0;width:100%;height:100%;z-index:0}
 #shutT{position:fixed;inset:0;z-index:451;display:grid;place-items:center;font:700 clamp(3rem,1rem + 12vw,15rem)/1 'Space Grotesk';letter-spacing:-.06em;text-transform:uppercase;pointer-events:none;opacity:0;transition:opacity .35s;background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
 #shut.in+#shutT{opacity:1;transition-delay:.45s}
 nav{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:22px calc(var(--m) + 90px) 22px var(--m);z-index:100;mix-blend-mode:difference}
-nav a,nav .clk{color:#fff;text-decoration:none;margin-left:24px;font:400 var(--t-1) 'JetBrains Mono';letter-spacing:.18em;text-transform:uppercase;opacity:.6;transition:opacity .3s}
+nav a,nav .clk{color:#fff;text-decoration:none;margin-left:22px;font:400 var(--t-1) 'JetBrains Mono';letter-spacing:.16em;text-transform:uppercase;opacity:.6;transition:opacity .3s}
 nav a:hover,nav a[aria-current]{opacity:1}nav a[aria-current]::before{content:'/ '}
 nav .logo{margin:0;font:700 22px 'Space Grotesk';letter-spacing:-.03em;text-transform:none;opacity:1}nav .logo::before{content:''!important}
 nav .links{display:flex;align-items:center;transition:opacity .8s}
 #menuBtn{position:fixed;top:14px;right:var(--m);z-index:520;padding:10px 0 10px 18px;font:500 11px 'JetBrains Mono';letter-spacing:.2em;text-transform:uppercase;mix-blend-mode:difference;color:#fff}
-#menu{position:fixed;inset:0;z-index:510;background:#050507;clip-path:circle(0% at calc(100% - 50px) 36px);transition:clip-path .9s cubic-bezier(.76,0,.24,1);display:flex;flex-direction:column;justify-content:center;padding:0 var(--m)}
-#menu.open{clip-path:circle(150% at calc(100% - 50px) 36px)}
+#menu{position:fixed;inset:0;z-index:510;background:#050507;clip-path:circle(0% at calc(100% - 50px) 36px);transition:clip-path .9s cubic-bezier(.76,0,.24,1);display:flex;flex-direction:column;justify-content:center;padding:0 var(--m);visibility:hidden}
+#menu.open{clip-path:circle(150% at calc(100% - 50px) 36px);visibility:visible}
 #menu .mg{display:grid;grid-template-columns:repeat(2,1fr);gap:0 var(--m)}
-#menu a{display:flex;align-items:baseline;gap:16px;padding:1.3vh 0;border-bottom:1px solid var(--line);font:700 var(--t2)/1.1 'Space Grotesk';letter-spacing:-.05em;text-decoration:none;opacity:0;transform:translateY(30px);transition:transform .7s var(--ease),opacity .7s var(--ease),color .3s,padding .3s}
+#menu a{display:flex;align-items:baseline;gap:16px;padding:1.1vh 0;border-bottom:1px solid var(--line);font:700 var(--t2)/1.1 'Space Grotesk';letter-spacing:-.05em;text-decoration:none;opacity:0;transform:translateY(30px);transition:transform .7s var(--ease),opacity .7s var(--ease),color .3s,padding .3s}
 #menu a small{font:400 var(--t-1) 'JetBrains Mono';letter-spacing:.2em;color:var(--b)}
-#menu.open a{opacity:1;transform:none;transition-delay:calc(.25s + var(--i)*45ms),calc(.25s + var(--i)*45ms),0s,0s}#menu a:hover{color:var(--b);padding-left:12px}
+#menu.open a{opacity:1;transform:none;transition-delay:calc(.25s + var(--i)*40ms),calc(.25s + var(--i)*40ms),0s,0s}#menu a:hover{color:var(--b);padding-left:12px}
 .ui-bl{position:fixed;left:calc(var(--m)*.5);bottom:20px;z-index:100;display:flex;gap:14px;align-items:center;font:400 10px 'JetBrains Mono';letter-spacing:.2em;color:var(--mut);text-transform:uppercase;transition:opacity .6s}
 .ui-bl .th{display:flex;gap:9px}.ui-bl .th button{width:18px;height:18px;border-radius:50%;outline:1px solid rgba(255,255,255,.25);transition:.3s}.ui-bl .th button.on{outline-color:#fff;transform:scale(1.25)}
-#snd{font:400 10px 'JetBrains Mono';letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}#snd:hover,#snd[aria-pressed=true]{color:var(--b)}
+#snd,#kbtn{font:400 10px 'JetBrains Mono';letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}#snd:hover,#snd[aria-pressed=true],#kbtn:hover{color:var(--b)}
 #vol{width:70px;accent-color:var(--b);cursor:pointer}
 #hudr{position:fixed;right:calc(var(--m)*.5);bottom:20px;z-index:100;font:400 10px 'JetBrains Mono';letter-spacing:.2em;color:var(--mut);text-transform:uppercase;text-align:right;pointer-events:none}
 main{position:relative}.page{display:none}.page.on{display:block}
@@ -94,8 +90,9 @@ main{position:relative}.page{display:none}.page.on{display:block}
 h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600}
 .stick{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
 .w{display:inline-block;overflow:hidden;vertical-align:top;padding:0 .04em .14em}
-.ch{display:inline-block;transform:translateY(120%) rotate(10deg);opacity:0;transition:transform 1s var(--ease),opacity 1s}.in .ch{transform:none;opacity:1}
-.rv{opacity:0;transform:translateY(46px);filter:blur(10px);transition:all 1.1s var(--ease)}.rv.in{opacity:1;transform:none;filter:none}
+.js .ch{display:inline-block;transform:translateY(120%) rotate(10deg);opacity:0;transition:transform 1s var(--ease),opacity 1s}.js .in .ch{transform:none;opacity:1}
+.ch{display:inline-block}
+.js .rv{opacity:0;transform:translateY(46px);filter:blur(10px);transition:all 1.1s var(--ease)}.js .rv.in{opacity:1;transform:none;filter:none}
 .d1{transition-delay:.12s}.d2{transition-delay:.24s}.d3{transition-delay:.36s}
 .sec{position:relative;padding:14vh var(--m);isolation:isolate}
 .veil::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent,var(--veil) 14%,var(--veil) 86%,transparent);pointer-events:none}
@@ -107,7 +104,6 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600}
 .cta:hover{border-color:var(--b);box-shadow:0 10px 40px -10px var(--a)}.cta.solid{background:linear-gradient(90deg,var(--a),var(--b));border-color:transparent;color:#fff}
 .brk{position:relative}.brk::before,.brk::after{content:'';position:absolute;width:14px;height:14px;border:1px solid var(--b);pointer-events:none;z-index:2}
 .brk::before{top:-1px;left:-1px;border-right:0;border-bottom:0}.brk::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
-.haz{height:10px;background:repeating-linear-gradient(-45deg,var(--a) 0 10px,transparent 10px 20px);opacity:.45;margin:0 calc(var(--m)*-1)}
 .ph{min-height:84vh;display:flex;flex-direction:column;justify-content:flex-end;padding:calc(var(--m)*.9 + 110px) var(--m) 9vh;position:relative}
 .ph h1{font:700 clamp(3.4rem,1rem + 13vw,17rem)/.86 'Space Grotesk';letter-spacing:-.065em;margin:22px 0 28px;text-transform:uppercase}
 .ph .lede{font:400 var(--t1)/1.35 Inter;max-width:38ch;color:#d5d0c8}
@@ -115,7 +111,7 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600}
 .bw{position:absolute;left:0;right:0;top:50%;height:calc(var(--t5)*1.72);margin-top:calc(var(--t5)*-.86);pointer-events:none}
 .bw-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font:700 var(--t5)/.86 'Space Grotesk';letter-spacing:-.065em;will-change:transform;text-transform:uppercase}
 .bw-in.top{clip-path:inset(0 0 50% 0)}.bw-in.bot{clip-path:inset(50% 0 0 0)}.bw-in .l2{color:transparent;-webkit-text-stroke:2px var(--fg)}
-.hud{position:absolute;z-index:3}.hud.tl{top:calc(var(--m)*.9 + 62px);left:var(--m)}.hud.bl{bottom:var(--m);left:var(--m);max-width:36ch}.hud.br{bottom:var(--m);right:var(--m)}
+.hud{position:absolute;z-index:3}.hud.tl{top:calc(var(--m)*.9 + 62px);left:var(--m)}.hud.bl{bottom:var(--m);left:var(--m);max-width:38ch}.hud.br{bottom:var(--m);right:var(--m)}
 .role{margin-top:12px;font:500 var(--t1) 'Space Grotesk';letter-spacing:-.02em;display:flex;gap:10px;align-items:center}
 .caret{display:inline-block;width:3px;height:1em;background:var(--b);animation:bl 1s steps(2) infinite}@keyframes bl{50%{opacity:0}}
 .scl{display:flex;align-items:center;gap:14px}.scl i{display:block;width:1px;height:56px;background:linear-gradient(var(--b),transparent);animation:sc 2s ease-in-out infinite;transform-origin:top}
@@ -129,6 +125,7 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600}
 @keyframes mq{to{transform:translateX(-50%)}}
 .rows{border-top:1px solid var(--line);margin-top:6vh}
 .row{position:relative;display:grid;grid-template-columns:5ch 1fr minmax(0,34ch) 3ch;gap:var(--m);align-items:baseline;padding:4vh 0;border-bottom:1px solid var(--line);text-decoration:none}
+.row.r3{grid-template-columns:5ch 1fr minmax(0,36ch)}
 .row .rn{font:400 var(--t-1) 'JetBrains Mono';letter-spacing:.2em;color:var(--mut)}.row h3{font:600 var(--t3)/1 'Space Grotesk';letter-spacing:-.05em;transition:transform .7s var(--ease),color .4s}
 .row p{color:var(--mut)}.row .go{font-size:var(--t2);color:var(--a);transition:transform .5s var(--ease)}
 .row .rl{position:absolute;left:0;bottom:-1px;height:1px;width:100%;background:linear-gradient(90deg,var(--a),var(--b));transform:scaleX(0);transform-origin:left;transition:transform .9s var(--ease)}
@@ -137,9 +134,9 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600}
 .big-mq span{font:700 var(--t3)/1 'Space Grotesk';letter-spacing:-.05em;padding:0 .35em;text-transform:uppercase;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.35)}.big-mq span:nth-child(even){color:var(--fg);-webkit-text-stroke:0}
 .strip{display:grid;grid-template-columns:repeat(4,1fr);border-block:1px solid var(--line);background:rgba(3,3,4,.6)}
 .strip div{padding:6vh 2vw;border-right:1px solid var(--line)}.strip div:last-child{border:0}.strip b{display:block;font:700 var(--t4)/1 'Space Grotesk';letter-spacing:-.06em}
-.tz{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.tz a{position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:5vh 3vw;border:1px solid var(--line);text-decoration:none;min-height:360px;overflow:hidden;background:rgba(8,8,10,.7);backdrop-filter:blur(10px);transition:border-color .4s}
-.tz a::before{content:'';position:absolute;inset:0;background:radial-gradient(500px circle at var(--gx,50%) var(--gy,100%),color-mix(in srgb,var(--a) 28%,transparent),transparent 60%);opacity:0;transition:opacity .4s}.tz a:hover::before{opacity:1}.tz a:hover{border-color:var(--a)}
+.tz{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.tz a{position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:5vh 3vw;border:1px solid var(--line);text-decoration:none;min-height:340px;overflow:hidden;background:rgba(8,8,10,.7);backdrop-filter:blur(10px);transition:border-color .4s}
+.tz a::before{content:'';position:absolute;inset:0;background:radial-gradient(500px circle at var(--gx,50%) var(--gy,100%),rgba(255,61,46,.22),transparent 60%);opacity:0;transition:opacity .4s}.tz a:hover::before{opacity:1}.tz a:hover{border-color:var(--a)}
 .tz h3{position:relative;font:700 var(--t3)/.95 'Space Grotesk';letter-spacing:-.055em;margin:14px 0}.tz p{position:relative;color:#cdc8c0;max-width:40ch}
 .pr{display:grid;grid-template-columns:5ch 1fr;gap:var(--m);padding:3.4vh 0;border-bottom:1px solid var(--line)}.pr:first-of-type{border-top:1px solid var(--line)}
 .pr b{font:400 var(--t-1) 'JetBrains Mono';letter-spacing:.2em;color:var(--b);font-weight:400}.pr h3{font:600 var(--t2)/1.05 'Space Grotesk';letter-spacing:-.04em;margin-bottom:8px}.pr p{color:#cdc8c0;max-width:54ch}
@@ -172,28 +169,53 @@ body[data-rk=process] .rail{display:flex}.rail i{width:2px;height:16px;backgroun
 .cw .v{font:700 var(--t4)/1 'Space Grotesk';letter-spacing:-.06em}.cw .v small{font-size:.35em;letter-spacing:0;color:var(--mut)}
 .cw .bar{position:relative;height:6px;display:flex;margin:26px 0 12px;border-radius:99px}.cw .bar i{height:100%}
 .cw .bar i:nth-child(1){flex:5;background:#2fd37a;border-radius:99px 0 0 99px}.cw .bar i:nth-child(2){flex:3;background:#ffb020}.cw .bar i:nth-child(3){flex:2;background:#ff3d2e;border-radius:0 99px 99px 0}
-.cw .mk{position:absolute;top:-6px;left:0;width:2px;height:18px;background:#fff;box-shadow:0 0 10px #fff;transition:left 2s var(--ease) .4s}.cw.in .mk{left:var(--at)}.cw p{color:var(--mut);font-size:.9rem}
+.cw .mk{position:absolute;top:-6px;left:0;width:2px;height:18px;background:#fff;box-shadow:0 0 10px #fff;transition:left 2s var(--ease) .4s}.cw.in .mk,html:not(.js) .cw .mk{left:var(--at)}.cw p{color:var(--mut);font-size:.9rem}
 .score{display:flex;align-items:center;gap:32px;margin-bottom:6vh;flex-wrap:wrap}.ring{width:min(170px,40vw);aspect-ratio:1}
 .ring circle{fill:none;stroke-width:8}.ring .bg{stroke:rgba(255,255,255,.1)}.ring .fg{stroke:url(#rg);stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset 1s var(--ease)}
 .ring text{fill:var(--fg);font:700 30px 'Space Grotesk';text-anchor:middle;dominant-baseline:central}
-#scoreT{font:500 var(--t1)/1.3 'Space Grotesk';max-width:22ch;letter-spacing:-.02em}
+.scoreT{font:500 var(--t1)/1.3 'Space Grotesk';max-width:22ch;letter-spacing:-.02em}
 .chk{display:grid;grid-template-columns:1fr 1fr;gap:0 var(--m)}.chk label{display:flex;gap:16px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);cursor:pointer;color:#bdb8b0;transition:color .3s}
 .chk input{appearance:none;-webkit-appearance:none;width:22px;height:22px;border:1px solid rgba(255,255,255,.4);border-radius:4px;display:grid;place-items:center;flex:none;transition:.3s;cursor:pointer}
 .chk input:checked{background:linear-gradient(135deg,var(--a),var(--b));border-color:transparent}.chk input:checked::after{content:'✓';color:#fff;font-size:14px}.chk label:has(input:checked){color:var(--fg)}
 .tk{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}.tk span{padding:9px 18px;border:1px solid var(--line);border-radius:99px;font:400 var(--t-1) 'JetBrains Mono';letter-spacing:.12em;text-transform:uppercase;transition:.3s}.tk span:hover{border-color:var(--b);color:var(--b)}
-/* features */
+.gl2{display:grid;grid-template-columns:1fr 1fr;gap:0 var(--m)}.gl2 li{display:block}.gl2 li b{color:var(--fg);font-weight:500;display:block}.gl2 li span{color:var(--mut);font-size:.92rem}.gl2 li::before{display:none}
 .fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;perspective:1200px}
-.fc{position:relative;padding:28px;min-height:330px;border:1px solid var(--line);background:rgba(8,8,10,.72);backdrop-filter:blur(10px);display:flex;flex-direction:column;gap:10px;transform-style:preserve-3d;transition:transform .25s,border-color .3s,background .5s,color .5s;overflow:hidden;--gx:50%;--gy:50%}
+.fc{position:relative;padding:28px;min-height:320px;border:1px solid var(--line);background:rgba(8,8,10,.74);backdrop-filter:blur(10px);display:flex;flex-direction:column;gap:10px;transform-style:preserve-3d;transition:transform .25s,border-color .3s,background .5s,color .5s;overflow:hidden;--gx:50%;--gy:50%}
 .fc .gl{position:absolute;inset:0;pointer-events:none;background:radial-gradient(360px circle at var(--gx) var(--gy),rgba(255,255,255,.09),transparent 60%);opacity:0;transition:opacity .3s}.fc:hover .gl{opacity:1}.fc:hover{border-color:var(--a)}
 .fc .no{font:400 var(--t-1) 'JetBrains Mono';letter-spacing:.3em;color:var(--b)}.fc h3{font:700 var(--t2)/1 'Space Grotesk';letter-spacing:-.05em}.fc p{color:#bdb8b0;font-size:.95rem}
 .fc.lt{background:#ece8e0;color:#0a0a0b}.fc.lt p{color:#444}.fc.lt h3{color:#0a0a0b}
-.demo{margin-top:auto;border-top:1px dashed var(--line);padding-top:16px;min-height:76px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.demo{margin-top:auto;border-top:1px dashed var(--line);padding-top:16px;min-height:70px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .demo .cta{padding:11px 20px}.sw{width:24px;height:24px;border-radius:50%;outline:1px solid rgba(255,255,255,.3);outline-offset:3px}
 .demo .big{font:700 var(--t2) 'Space Grotesk';letter-spacing:-.04em;cursor:default}
-.rpad{position:relative;width:100%;height:76px;border:1px dashed var(--line);overflow:hidden;display:grid;place-items:center;font:400 10px 'JetBrains Mono';letter-spacing:.2em;color:var(--mut);text-transform:uppercase}
+.rpad{position:relative;width:100%;height:70px;border:1px dashed var(--line);overflow:hidden;display:grid;place-items:center;font:400 10px 'JetBrains Mono';letter-spacing:.2em;color:var(--mut);text-transform:uppercase}
 .rp{position:absolute;width:10px;height:10px;margin:-5px;border-radius:50%;border:1px solid var(--b);animation:rpx .9s ease-out forwards;pointer-events:none}@keyframes rpx{to{transform:scale(14);opacity:0}}
 .rd{font:400 11px 'JetBrains Mono';letter-spacing:.14em;color:var(--b);text-transform:uppercase}
-/* about / contact */
+/* lab + plan */
+.lab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}.tool.full{grid-column:1/-1}
+.tool{padding:30px;border:1px solid var(--line);background:rgba(8,8,10,.78);backdrop-filter:blur(10px);display:flex;flex-direction:column;gap:14px}
+.tool h3{font:700 var(--t2)/1 'Space Grotesk';letter-spacing:-.05em}.tool p.s{color:var(--mut);font-size:.9rem}
+.tool label.l{font:400 10px 'JetBrains Mono';letter-spacing:.22em;text-transform:uppercase;color:var(--mut);display:flex;justify-content:space-between;margin-bottom:4px}
+.fi{width:100%;background:transparent;border:1px solid var(--line);padding:11px 14px;color:var(--fg);outline:0;border-radius:0;font:400 .95rem Inter}.fi:focus{border-color:var(--b)}
+select.fi option{background:#0b0b0e}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.serp{background:#fff;color:#202124;padding:18px 20px;border-radius:10px;font-family:Arial,sans-serif}.serp .u{font-size:12px;color:#202124;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.serp .t{font-size:20px;line-height:1.3;color:#1a0dab;margin:4px 0}.serp .d{font-size:14px;line-height:1.58;color:#4d5156}
+.cnt{font:400 11px 'JetBrains Mono';letter-spacing:.1em}.cnt.ok{color:#2fd37a}.cnt.warn{color:var(--b)}.cnt.bad{color:var(--a)}
+.cprev{padding:22px;border-radius:8px;font:600 1.5rem 'Space Grotesk'}
+.cres{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.cres span{padding:10px;border:1px solid var(--line);font:400 10px 'JetBrains Mono';letter-spacing:.1em;text-align:center}.cres .p{border-color:#2fd37a;color:#2fd37a}.cres .f{border-color:var(--a);color:var(--a)}
+.cbig{font:700 var(--t3)/1 'Space Grotesk';letter-spacing:-.05em}
+.tscale div{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:6px 0;border-bottom:1px solid var(--line);font-family:'Space Grotesk';font-weight:600;letter-spacing:-.03em;overflow:hidden}
+.tscale small{font:400 10px 'JetBrains Mono';color:var(--mut);flex:none;letter-spacing:.1em}
+pre.code{background:rgba(255,255,255,.04);border:1px solid var(--line);padding:14px;font:400 11px/1.7 'JetBrains Mono';color:#cdc8c0;overflow:auto;max-height:180px}
+.pal{display:grid;grid-template-columns:repeat(5,1fr);height:120px}.pal button{display:flex;align-items:flex-end;justify-content:center;padding:8px;font:500 10px 'JetBrains Mono';letter-spacing:.1em;transition:transform .3s var(--ease)}.pal button:hover{transform:translateY(-6px)}
+.keys{display:grid;grid-template-columns:repeat(9,1fr);gap:6px}
+.key{padding:26px 0 12px;border:1px solid var(--line);font:500 11px 'JetBrains Mono';letter-spacing:.1em;text-align:center;background:rgba(255,255,255,.02);transition:background .15s,border-color .15s,transform .15s}.key small{display:block;color:var(--mut);font-size:9px}
+.key.on{background:linear-gradient(180deg,var(--a),var(--b));border-color:transparent;transform:translateY(3px)}
+.pl-grid{display:grid;grid-template-columns:7fr 5fr;gap:var(--m);align-items:start}
+.res{position:sticky;top:calc(var(--m) + 80px);padding:32px;border:1px solid var(--line);background:rgba(8,8,10,.85);backdrop-filter:blur(12px);display:flex;flex-direction:column;gap:14px}
+.res h3{font:700 var(--t3)/.95 'Space Grotesk';letter-spacing:-.055em}.mbar{height:6px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}.mbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a),var(--b));transition:width .7s var(--ease)}
+.rg{display:flex;align-items:center;gap:20px;margin:10px 0 30px}.rg input{flex:1;accent-color:var(--b)}.rg b{font:700 var(--t2) 'Space Grotesk';min-width:2ch;text-align:right}
+/* about/contact */
 .form{display:grid;gap:36px;max-width:720px}.fld{position:relative}
 .fld input,.fld textarea{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--fg);font:400 var(--t1) Inter;padding:18px 0 12px;outline:0;border-radius:0;resize:vertical}
 .fld label{position:absolute;left:0;top:18px;font:400 var(--t1) Inter;color:var(--mut);pointer-events:none;transition:.4s var(--ease);transform-origin:left}
@@ -206,11 +228,10 @@ body[data-rk=process] .rail{display:flex}.rail i{width:2px;height:16px;backgroun
 .mail{font:500 var(--t2) 'Space Grotesk';letter-spacing:-.04em;text-decoration:none;background:linear-gradient(90deg,var(--a),var(--b)) 0 100%/0 2px no-repeat;transition:background-size .6s var(--ease)}.mail:hover{background-size:100% 2px}
 .facts{list-style:none;margin-top:6vh;border-top:1px solid var(--line)}.facts li{display:flex;justify-content:space-between;gap:20px;padding:16px 0;border-bottom:1px solid var(--line);color:#cdc8c0}.facts b{font:400 var(--t-1) 'JetBrains Mono';letter-spacing:.2em;text-transform:uppercase;color:var(--mut);font-weight:400}
 .live{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2fd37a;margin-right:10px;box-shadow:0 0 0 0 rgba(47,211,122,.6);animation:lv 2s infinite}@keyframes lv{70%{box-shadow:0 0 0 10px rgba(47,211,122,0)}100%{box-shadow:0 0 0 0 rgba(47,211,122,0)}}
-footer{position:relative;padding:10vh var(--m) 70px;border-top:1px solid var(--line);display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:var(--m);background:linear-gradient(180deg,transparent,rgba(3,3,4,.88) 30%);isolation:isolate}
+footer{position:relative;padding:10vh var(--m) 70px;border-top:1px solid var(--line);display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:var(--m);background:linear-gradient(180deg,transparent,rgba(3,3,4,.9) 30%);isolation:isolate}
 footer h4{font:400 var(--t-1) 'JetBrains Mono';letter-spacing:.3em;text-transform:uppercase;color:var(--mut);margin-bottom:18px;font-weight:400}footer a{display:block;text-decoration:none;color:#cdc8c0;padding:4px 0;transition:color .3s}footer a:hover{color:var(--b)}
 footer .fb{font:700 var(--t3)/.95 'Space Grotesk';letter-spacing:-.05em}footer .cp{grid-column:1/-1;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;color:var(--mut);font:400 10px 'JetBrains Mono';letter-spacing:.2em;text-transform:uppercase;margin-top:6vh}
 body[data-rk=explore] footer{display:none}
-/* explore */
 #xui{position:fixed;inset:0;z-index:70;pointer-events:none}
 #xh{position:absolute;top:calc(var(--m)*.9 + 62px);left:var(--m);font:500 var(--t-1) 'JetBrains Mono';letter-spacing:.25em;text-transform:uppercase;line-height:2}#xh b{color:var(--b);font-weight:500}
 #xhint{position:absolute;left:50%;bottom:60px;transform:translateX(-50%);padding:12px 22px;border:1px solid var(--line);border-radius:99px;background:rgba(0,0,0,.55);backdrop-filter:blur(10px);font:400 10px 'JetBrains Mono';letter-spacing:.16em;text-transform:uppercase;color:var(--mut);white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis;transition:opacity 1s}
@@ -220,12 +241,11 @@ body[data-rk=explore] #exit{opacity:1;pointer-events:all}body[data-rk=explore] n
 #joy,#gj{position:fixed;left:26px;bottom:90px;width:120px;height:120px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.35);backdrop-filter:blur(8px);z-index:150;display:none;touch-action:none}
 #joy i,#gj i{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--b))}
 @media(pointer:coarse){body[data-rk=explore] #joy{display:block}body.playing #gj{display:block}}
-/* game */
 #garena{position:fixed;inset:0;z-index:140;background:#050507;display:none}body.playing #garena{display:block}
 #gc{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
 #gtop{position:absolute;top:14px;right:14px;display:flex;gap:8px;z-index:3}
 #gtop button{padding:8px 14px;border:1px solid var(--line);background:rgba(0,0,0,.6);font:500 10px 'JetBrains Mono';letter-spacing:.18em;text-transform:uppercase}#gtop button:hover{border-color:var(--b)}
-.gov{position:absolute;inset:0;z-index:4;display:none;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:rgba(3,3,4,.8);backdrop-filter:blur(6px);text-align:center;padding:20px}.gov.show{display:flex}
+.gov{position:absolute;inset:0;z-index:4;display:none;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:rgba(3,3,4,.82);backdrop-filter:blur(6px);text-align:center;padding:20px}.gov.show{display:flex}
 .gov h2{font:700 var(--t3)/1 'Space Grotesk';letter-spacing:-.05em}.gov .btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
 #gch{display:grid;grid-template-columns:repeat(3,minmax(0,260px));gap:16px}
 .gcard{padding:22px;border:1px solid var(--line);background:rgba(10,10,12,.92);text-align:left;display:flex;flex-direction:column;gap:8px;transition:.25s}.gcard:hover,.gcard:focus-visible{border-color:var(--b);transform:translateY(-4px)}
@@ -233,38 +253,42 @@ body[data-rk=explore] #exit{opacity:1;pointer-events:all}body[data-rk=explore] n
 #gst p{font:400 var(--t-1) 'JetBrains Mono';letter-spacing:.2em;text-transform:uppercase;color:var(--mut);line-height:2.2}#gst b{color:var(--fg);font-weight:500}
 body.playing #menuBtn,body.playing .ui-bl,body.playing #hudr,body.playing nav,body.playing #cd,body.playing #cr{display:none}
 body.playing,body.playing *{cursor:crosshair!important}
-.gl2{display:grid;grid-template-columns:1fr 1fr;gap:0 var(--m)}.gl2 li{display:block}.gl2 li b{color:var(--fg);font-weight:500;display:block}.gl2 li span{color:var(--mut);font-size:.92rem}.gl2 li::before{display:none}
+#cmd{position:fixed;inset:0;z-index:650;background:rgba(3,3,4,.7);backdrop-filter:blur(8px);display:none;align-items:flex-start;justify-content:center;padding-top:16vh}#cmd.open{display:flex}
+#cmdBox{width:min(620px,92vw);border:1px solid var(--line);background:#09090c;box-shadow:0 30px 100px rgba(0,0,0,.7),0 0 60px -20px var(--a)}
+#cmdIn{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);padding:20px;color:var(--fg);font:400 1.05rem 'JetBrains Mono';outline:0}
+#cmdList{list-style:none;max-height:44vh;overflow:auto}#cmdList li{padding:13px 20px;cursor:pointer;display:flex;justify-content:space-between;gap:12px;font:400 13px 'JetBrains Mono';letter-spacing:.06em;color:#cdc8c0}
+#cmdList li.sel,#cmdList li:hover{background:linear-gradient(90deg,rgba(255,61,46,.2),transparent);color:#fff}#cmdList li small{color:var(--mut)}
 #toast{position:fixed;bottom:30px;left:50%;transform:translate(-50%,120px);background:#fff;color:#000;padding:12px 22px;border-radius:99px;font:500 12px 'JetBrains Mono';z-index:700;transition:transform .5s var(--ease)}#toast.show{transform:translate(-50%,0)}
 #cd,#cr{position:fixed;left:0;top:0;pointer-events:none;z-index:800;border-radius:50%;display:none}
 #cd{width:7px;height:7px;margin:-3.5px;background:var(--b)}
 #cr{width:38px;height:38px;margin:-19px;border:1px solid rgba(255,255,255,.5);transition:width .3s,height .3s,margin .3s,background .3s,border-color .3s;mix-blend-mode:difference}
 #cr.big{width:84px;height:84px;margin:-42px;background:rgba(255,255,255,.9);border-color:transparent}
-@media(hover:hover) and (pointer:fine){body,a,button,label{cursor:none}#cd,#cr{display:block}}
-@media(max-width:1000px){nav .links a,nav .clk{display:none}.fgrid{grid-template-columns:1fr 1fr}.strip{grid-template-columns:1fr 1fr}.strip div:nth-child(2){border-right:0}}
+@media(hover:hover) and (pointer:fine){body,a,button,label{cursor:none}#cd,#cr{display:block}.fi{cursor:text}}
+@media(max-width:1100px){nav .links a,nav .clk{display:none}.fgrid{grid-template-columns:1fr 1fr}.strip{grid-template-columns:1fr 1fr}.strip div:nth-child(2){border-right:0}}
 @media(max-width:900px){
- .two,.step,.acc-in,.chk,.flow,.cwv,footer,.tz,.fgrid,#menu .mg,.gl2{grid-template-columns:1fr}.two>.stk{position:static}
- .acc-in{padding-left:0}.row{grid-template-columns:1fr;gap:8px}.row .go,.row .rn{display:none}
- .step .num{font-size:clamp(6rem,30vw,12rem)}.flow div{padding-right:0}.ui-bl>span,#vol,#hudr{display:none}.hud.br{display:none}
- #gch{grid-template-columns:1fr}#menu a{font-size:var(--t1)}
+ .two,.step,.acc-in,.chk,.flow,.cwv,footer,.fgrid,#menu .mg,.gl2,.lab-grid,.pl-grid,.row2{grid-template-columns:1fr}.two>.stk,.res{position:static}
+ .acc-in{padding-left:0}.row,.row.r3{grid-template-columns:1fr;gap:8px}.row .go,.row .rn{display:none}
+ .step .num{font-size:clamp(6rem,30vw,12rem)}.flow div{padding-right:0}.ui-bl>span,#vol,#hudr,#kbtn{display:none}.hud.br{display:none}
+ #gch{grid-template-columns:1fr}#menu a{font-size:var(--t1)}.keys{grid-template-columns:repeat(5,1fr)}.cres{grid-template-columns:1fr 1fr}
 }
-@media(prefers-reduced-motion:reduce){.ch,.rv{transition:none}.grain,.lp-m div,.big-mq div,.scl i,.live{animation:none}#shut .s{transform:none;opacity:0;transition:opacity .4s}#shut.in .s{opacity:1}#shut.out .s{opacity:0}}
+@media(prefers-reduced-motion:reduce){.js .ch,.js .rv{transition:none}.grain,.lp-m div,.big-mq div,.scl i,.live{animation:none}#shut .s{transform:none;opacity:0;transition:opacity .4s}#shut.in .s{opacity:1}#shut.out .s{opacity:0}}
 </style>
-<noscript><style>.rv,.ch{opacity:1!important;transform:none!important;filter:none!important}#pre{display:none}body.lock{overflow:auto}.page{display:block!important}.wk-info,.mw{opacity:1!important}.cw .mk{left:var(--at)}</style></noscript>
 </head>
 <body class="lock" data-rk="home">
-<a class="skip" href="#main">Skip to content</a>
+<a class="skip" id="skip" href="#main">Skip to content</a>
 <div id="pre"><div class="h t"></div><div class="h b"></div><div class="c"><div class="n">000</div><div class="t" id="pst">Initialising</div></div><div class="l"></div></div>
 <div id="shut" aria-hidden="true"><i class="s" style="--i:0"></i><i class="s" style="--i:1"></i><i class="s" style="--i:2"></i><i class="s" style="--i:3"></i><i class="s" style="--i:4"></i><i class="s" style="--i:5"></i><i class="s" style="--i:6"></i><i class="s" style="--i:7"></i></div><div id="shutT" aria-hidden="true"></div>
-<canvas id="gl" aria-hidden="true"></canvas><div class="grain"></div><div class="scan"></div><div id="bar"></div><div id="cd"></div><div id="cr"></div><div id="toast" role="status" aria-live="polite">Email copied</div>
+<canvas id="gl" aria-hidden="true"></canvas><div class="grain"></div><div class="scan"></div><div id="bar"></div><div id="cd"></div><div id="cr"></div><div id="toast" role="status" aria-live="polite">Done</div>
+<div id="cmd" role="dialog" aria-label="Command palette" aria-modal="true"><div id="cmdBox"><input id="cmdIn" placeholder="Type a command or page…" aria-label="Command" autocomplete="off"><ul id="cmdList"></ul></div></div>
 
 <header>
 <nav aria-label="Main"><a class="logo" href="#/" aria-label="Pavan Patel, home">PP.</a>
-<div class="links"><a href="#/work" data-r="work">Work</a><a href="#/services" data-r="services">Services</a><a href="#/features" data-r="features">Features</a><a href="#/game" data-r="game">Game</a><a href="#/about" data-r="about">About</a><a href="#/contact" data-r="contact">Contact</a><span class="clk" id="clk"></span></div></nav>
+<div class="links"><a href="#/work" data-r="work">Work</a><a href="#/services" data-r="services">Services</a><a href="#/features" data-r="features">Features</a><a href="#/lab" data-r="lab">Lab</a><a href="#/game" data-r="game">Game</a><a href="#/about" data-r="about">About</a><a href="#/contact" data-r="contact">Contact</a><span class="clk" id="clk"></span></div></nav>
 <button id="menuBtn" aria-expanded="false" aria-controls="menu">Menu</button>
 <div id="menu" aria-hidden="true"><div class="mg" id="mg"></div></div>
 </header>
 <div class="rail" id="rail" aria-hidden="true"></div>
-<div class="ui-bl"><span>Theme</span><div class="th" id="thm"></div><button id="snd" aria-pressed="false">Sound off</button><input id="vol" type="range" min="0" max="1" step=".05" value=".6" aria-label="Volume"></div>
+<div class="ui-bl"><span>Theme</span><div class="th" id="thm"></div><button id="snd" aria-pressed="false">Sound off</button><input id="vol" type="range" min="0" max="1" step=".05" value=".6" aria-label="Volume"><button id="kbtn" aria-label="Open command palette">Ctrl K</button></div>
 <div id="hudr" aria-hidden="true"></div>
 <a id="exit" href="#/">Exit world ✕</a>
 
@@ -284,7 +308,7 @@ body.playing,body.playing *{cursor:crosshair!important}
     <h1 class="sr">Pavan Patel — web designer, developer and SEO in Sydney</h1>
     <div class="bw" aria-hidden="true"><div class="bw-in top" id="bwT"><span>Pavan</span><span class="l2">Patel</span></div><div class="bw-in bot" id="bwB"><span>Pavan</span><span class="l2">Patel</span></div></div>
     <div class="hud tl" id="hTL"><div class="lab accent">Sydney, Australia — Open to projects</div><div class="role"><span class="mut">I'm a</span><b id="role" style="font-weight:500">Web Designer</b><i class="caret"></i></div></div>
-    <div class="hud bl" id="hBL"><p class="mut">Websites that look unforgettable, load instantly and get found. Turn the sound on, move your mouse, then scroll slowly. The music follows you.</p></div>
+    <div class="hud bl" id="hBL"><p class="mut">Websites that look unforgettable, load instantly and get found. Turn the sound on, move your mouse, then scroll slowly. The music follows you. Press Ctrl K for the command palette.</p></div>
     <div class="hud br" id="hBR"><div class="scl"><span class="lab mut">Scroll</span><i></i></div></div>
   </div></section>
   <section id="manifesto" aria-label="Manifesto"><div class="stick"><div class="lp" id="lp">
@@ -297,10 +321,12 @@ body.playing,body.playing *{cursor:crosshair!important}
       <a class="row rv" href="#/services" data-r="services"><span class="rn">01</span><h3>Web design &amp; build</h3><p>Custom, hand-coded websites with a point of view, built mobile-first and ready to grow.</p><span class="go">→</span><i class="rl"></i></a>
       <a class="row rv" href="#/seo" data-r="seo"><span class="rn">02</span><h3>SEO &amp; performance</h3><p>Technical foundations, structured data and Core Web Vitals so search engines and people both love the site.</p><span class="go">→</span><i class="rl"></i></a>
       <a class="row rv" href="#/features" data-r="features"><span class="rn">03</span><h3>Signature features</h3><p>Generative sound, 3D worlds, cinematic transitions, games. The things that make a site memorable.</p><span class="go">→</span><i class="rl"></i></a>
-      <a class="row rv" href="#/process" data-r="process"><span class="rn">04</span><h3>A clear process</h3><p>Seven steps from first conversation to launch and beyond. No surprises.</p><span class="go">→</span><i class="rl"></i></a>
-      <a class="row rv" href="#/insights" data-r="insights"><span class="rn">05</span><h3>Design insights</h3><p>How I think about type, colour, motion, speed and search, written down plainly.</p><span class="go">→</span><i class="rl"></i></a>
+      <a class="row rv" href="#/lab" data-r="lab"><span class="rn">04</span><h3>Free web tools</h3><p>A snippet previewer, contrast checker, type scale, palette maker and a tiny synth. Use them right here.</p><span class="go">→</span><i class="rl"></i></a>
+      <a class="row rv" href="#/plan" data-r="plan"><span class="rn">05</span><h3>Scope planner</h3><p>Describe your project in a minute and see what kind of build it is, then send the plan to me.</p><span class="go">→</span><i class="rl"></i></a>
+      <a class="row rv" href="#/process" data-r="process"><span class="rn">06</span><h3>A clear process</h3><p>Seven steps from first conversation to launch and beyond. No surprises.</p><span class="go">→</span><i class="rl"></i></a>
+      <a class="row rv" href="#/insights" data-r="insights"><span class="rn">07</span><h3>Design insights</h3><p>How I think about type, colour, motion, speed, accessibility and search, written plainly.</p><span class="go">→</span><i class="rl"></i></a>
     </div></section>
-  <div class="strip rv"><div><b><span class="num" data-to="8">0</span></b><span class="lab mut">Core services</span></div><div><b><span class="num" data-to="7">0</span></b><span class="lab mut">Process steps</span></div><div><b><span class="num" data-to="3">0</span></b><span class="lab mut">Core Web Vitals</span></div><div><b><span class="num" data-to="4">0</span></b><span class="lab mut">Live themes</span></div></div>
+  <div class="strip rv"><div><b><span class="num" data-to="8">0</span></b><span class="lab mut">Core services</span></div><div><b><span class="num" data-to="13">0</span></b><span class="lab mut">Pages</span></div><div><b><span class="num" data-to="5">0</span></b><span class="lab mut">Free tools</span></div><div><b><span class="num" data-to="4">0</span></b><span class="lab mut">Live themes</span></div></div>
   <section class="sec veil"><div class="two"><div class="stk"><div class="lab accent rv">03 — Principles</div><h2 class="hd split pd">How I think.</h2></div>
     <div><div class="pr rv"><b>01</b><div><h3>Speed is design</h3><p>A beautiful site that loads slowly is a bad site. Performance is part of the visual design, not final polish.</p></div></div>
     <div class="pr rv"><b>02</b><div><h3>Clarity beats cleverness</h3><p>Visitors should know what you do and what to do next within seconds. Motion and 3D support that goal.</p></div></div>
@@ -309,9 +335,10 @@ body.playing,body.playing *{cursor:crosshair!important}
     <div class="pr rv"><b>05</b><div><h3>You own the result</h3><p>Plain HTML, CSS and JavaScript on hosting you control. No lock-in, no mystery plugins.</p></div></div></div></div></section>
   <section class="sec veil"><div class="lab accent rv">04 — Try it</div><h2 class="hd split pd">Don't just read. Play.</h2>
     <div class="tz rv"><a class="brk" href="#/game" data-r="game"><span class="lab accent">Original game</span><h3>Bug Storm</h3><p>A survivor-style arcade game about squashing web bugs. Built into this site, free to play.</p></a>
-    <a class="brk" href="#/explore" data-r="explore" data-needs-gl><span class="lab accent">3D world</span><h3>Enter the world</h3><p>Fly through the scene in first person and find five hidden signals.</p></a></div></section>
+    <a class="brk" href="#/explore" data-r="explore" data-needs-gl><span class="lab accent">3D world</span><h3>Enter the world</h3><p>Fly through the scene in first person and find five hidden signals.</p></a>
+    <a class="brk" href="#/lab" data-r="lab"><span class="lab accent">Web tools</span><h3>The Lab</h3><p>Preview your Google snippet, check colour contrast, build a type scale and jam on a synth.</p></a></div></section>
   <div class="big-mq" aria-hidden="true"><div><span>Web design</span><span>SEO</span><span>Performance</span><span>3D</span><span>Sound</span><span>Games</span><span>Web design</span><span>SEO</span><span>Performance</span><span>3D</span><span>Sound</span><span>Games</span></div></div>
-  <section class="sec big-cta"><div class="lab accent rv">05 — Next</div><h2 class="split pd">Have a project in mind?</h2><div class="rv"><a class="cta solid mag" href="#/contact" data-r="contact">Start a conversation →</a></div></section>
+  <section class="sec big-cta"><div class="lab accent rv">05 — Next</div><h2 class="split pd">Have a project in mind?</h2><div class="rv"><a class="cta solid mag" href="#/plan" data-r="plan">Plan it in a minute →</a> <a class="cta mag" href="#/contact" data-r="contact">Or just say hello</a></div></section>
 </div>
 
 <!-- WORK -->
@@ -320,65 +347,41 @@ body.playing,body.playing *{cursor:crosshair!important}
     <div class="wk-top lab"><span>Concept builds — scroll to fly</span><span id="wkc">01 / 05</span></div>
     <div class="wk-info" id="wki"><div class="lab accent" id="wkn">01</div><h2 id="wkt">Nova</h2><p class="wk-d" id="wkd"></p><div class="wk-tags" id="wkg"></div><a class="wk-l" href="#/contact" data-r="contact">Build something like this ↗</a></div>
     <div class="wk-ticks" id="wkticks" aria-hidden="true"></div></div></section>
-  <section class="sec veil"><div class="lab accent rv">Concept work</div><h2 class="hd split pd">Concepts. Yours could be next.</h2><div class="prose rv"><p class="big">Each panel explores a different challenge: dense data, graceful 3D, kinetic type, fast storefronts and shader experiments.</p><p>Real client projects will appear here as they launch. Until then, these show the standard I hold every build to.</p></div><div class="rv"><a class="cta solid mag" href="#/contact" data-r="contact">Start a project →</a></div></section>
+  <section class="sec veil"><div class="lab accent rv">Concept work</div><h2 class="hd split pd">Concepts. Yours could be next.</h2><div class="prose rv"><p class="big">Each panel explores a different challenge: dense data, graceful 3D, kinetic type, fast storefronts and shader experiments.</p><p>Real client projects will appear here as they launch. Until then, these show the standard I hold every build to.</p></div>
+    <div class="rows"><div class="row r3 rv"><span class="rn">01</span><h3>Nova</h3><p>Proves calm hierarchy in dense interfaces.</p><i class="rl"></i></div><div class="row r3 rv"><span class="rn">02</span><h3>Orbit</h3><p>Proves 3D can degrade gracefully.</p><i class="rl"></i></div><div class="row r3 rv"><span class="rn">03</span><h3>Pulse</h3><p>Proves type and sound can carry a brand.</p><i class="rl"></i></div><div class="row r3 rv"><span class="rn">04</span><h3>Ember</h3><p>Proves speed and SEO come first in shops.</p><i class="rl"></i></div><div class="row r3 rv"><span class="rn">05</span><h3>Lab</h3><p>Proves new ideas get tested before they ship.</p><i class="rl"></i></div></div>
+    <div class="rv" style="margin-top:6vh"><a class="cta solid mag" href="#/contact" data-r="contact">Start a project →</a></div></section>
 </div>
 
 <!-- SERVICES -->
 <div class="page" data-p="services">
   <section class="ph"><div class="lab accent rv">Services</div><h1 class="split pd">Services.</h1><p class="lede rv d1">Everything a modern website needs to look exceptional, load fast and be found, designed and built by one person who cares about the details.</p></section>
-  <section class="sec veil" aria-label="Service list"><div class="accs" data-single>
-    <div class="acc"><button aria-expanded="false"><span class="n">01</span><h3>Website design</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>Design starts from your goals, not a template. I define the message, structure the pages, then craft a visual language, from type scale to motion, that feels like your business.</p><ul class="list"><li>Sitemap and wireframes</li><li>Type, colour and spacing system</li><li>Responsive layouts for every screen</li><li>Designed in the browser, so approved means shipped</li></ul></div></div></div></div>
-    <div class="acc"><button aria-expanded="false"><span class="n">02</span><h3>Custom development</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>Hand-written HTML, CSS and JavaScript: lean, fast and easy to maintain. JavaScript is used where it earns its place, and pages work without it where they should.</p><ul class="list"><li>Semantic, accessible markup</li><li>Modern CSS, no heavy frameworks</li><li>Forms and lightweight integrations</li><li>Hosting friendly: GitHub Pages, Cloudflare and more</li></ul></div></div></div></div>
-    <div class="acc"><button aria-expanded="false"><span class="n">03</span><h3>Website redesign</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>Already have a dated or underperforming site? I audit what exists, keep what works, such as content and search equity, and rebuild what doesn't.</p><ul class="list"><li>Content, design and technical audit</li><li>URL and redirect mapping</li><li>Improved structure and conversion paths</li><li>Staged launch with before-and-after checks</li></ul></div></div></div></div>
-    <div class="acc"><button aria-expanded="false"><span class="n">04</span><h3>SEO</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>Technical and on-page SEO built into every project. Honest work, no guaranteed-rank promises.</p><ul class="list"><li>Keyword and intent research</li><li>Titles, descriptions, heading structure</li><li>Sitemap, robots.txt, canonicals</li><li>Structured data (JSON-LD) and local SEO</li></ul></div></div></div></div>
-    <div class="acc"><button aria-expanded="false"><span class="n">05</span><h3>Performance</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>Speed affects rankings, conversions and how your brand feels. I tune for Core Web Vitals so pages feel instant, even on slow phones.</p><ul class="list"><li>Image and font optimisation</li><li>JavaScript and CSS budgets</li><li>Lazy loading and caching</li><li>Lighthouse and real-device testing</li></ul></div></div></div></div>
-    <div class="acc"><button aria-expanded="false"><span class="n">06</span><h3>Accessibility</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>A site everyone can use is a better site for everyone. Accessibility is part of the build, guided by WCAG principles.</p><ul class="list"><li>Keyboard navigation and focus states</li><li>Colour contrast and readable type</li><li>Meaningful alt text and labels</li><li>Reduced-motion and sound-off defaults</li></ul></div></div></div></div>
-    <div class="acc"><button aria-expanded="false"><span class="n">07</span><h3>Interactive, 3D &amp; sound</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>When a brand deserves to be remembered: WebGL scenes, scroll storytelling, shader effects, generative audio and even playable games, always with fast fallbacks.</p><ul class="list"><li>Three.js hero scenes and walkable worlds</li><li>Scroll-linked animation and transitions</li><li>Optional generative sound that reacts to the page</li><li>Adaptive quality and graceful fallbacks</li></ul></div></div></div></div>
-    <div class="acc"><button aria-expanded="false"><span class="n">08</span><h3>Launch, hosting &amp; care</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>Domain, DNS, HTTPS, analytics and Search Console set up properly, then simple ongoing care so the site stays fast, secure and current.</p><ul class="list"><li>Domain and DNS configuration</li><li>HTTPS, redirects, sitemap, robots</li><li>Analytics and Search Console</li><li>Updates and small edits</li></ul></div></div></div></div>
-  </div></section>
+  <section class="sec veil" aria-label="Service list"><div class="accs" id="svcA"></div></section>
   <section class="sec veil"><div class="two"><div class="stk"><div class="lab accent rv">Ways to work</div><h2 class="hd split pd">Pick your starting point.</h2></div>
     <div><div class="pr rv"><b>01</b><div><h3>Launch site</h3><p>A focused one-to-few page site with strong design, SEO foundations and speed. Ideal for new businesses and personal brands.</p></div></div>
     <div class="pr rv"><b>02</b><div><h3>Full build</h3><p>A larger, multi-page site with custom interactions, content structure and a proper search strategy.</p></div></div>
     <div class="pr rv"><b>03</b><div><h3>Redesign &amp; rescue</h3><p>Rebuild a slow or dated site while protecting the rankings and content that already work.</p></div></div>
-    <div class="pr rv"><b>04</b><div><h3>Care plan</h3><p>Ongoing updates, monitoring and improvements after launch. Optional, simple, cancel any time.</p></div></div></div></div></section>
+    <div class="pr rv"><b>04</b><div><h3>Care plan</h3><p>Ongoing updates, monitoring and improvements after launch. Optional and simple.</p></div></div></div></div></section>
   <section class="sec veil"><div class="two"><div class="stk"><div class="lab accent rv">Toolkit</div><h2 class="hd split pd">What I build with.</h2></div>
     <div class="prose"><p class="big rv">Lean tools, chosen on purpose.</p><div class="tk rv"><!-- EDIT: keep only what you use --><span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>Three.js</span><span>WebGL / GLSL</span><span>Web Audio API</span><span>Canvas 2D</span><span>Git &amp; GitHub</span><span>GitHub Pages</span><span>Cloudflare</span><span>Search Console</span><span>Lighthouse</span></div>
     <p class="rv" style="margin-top:28px">Engagements start with a short conversation about your goals, then a scoped quote with clear milestones and defined revision rounds. No hidden extras.</p></div></div></section>
-  <section class="sec big-cta"><div class="lab accent rv">Ready?</div><h2 class="split pd">Let's scope your project.</h2><div class="rv"><a class="cta solid mag" href="#/contact" data-r="contact">Request a quote →</a></div></section>
+  <section class="sec big-cta"><div class="lab accent rv">Ready?</div><h2 class="split pd">Let's scope your project.</h2><div class="rv"><a class="cta solid mag" href="#/plan" data-r="plan">Use the planner →</a> <a class="cta mag" href="#/contact" data-r="contact">Request a quote</a></div></section>
 </div>
 
 <!-- FEATURES -->
 <div class="page" data-p="features">
-  <section class="ph"><div class="lab accent rv">Signature features</div><h1 class="split pd">Features.</h1><p class="lede rv d1">The things I can build into your site that most sites never have. Every card below is a live demo. Touch them.</p></section>
-  <section class="sec veil"><div class="fgrid" id="fgrid">
-    <div class="fc brk"><i class="gl"></i><span class="no">01</span><h3>Scroll-reactive sound</h3><p>Generative ambient music that changes key, tempo and intensity as visitors scroll. Optional, silent by default, volume controlled.</p><div class="demo"><button class="cta mag" data-d="snd">Toggle sound</button></div></div>
-    <div class="fc brk"><i class="gl"></i><span class="no">02</span><h3>3D hero worlds</h3><p>Three.js scenes with liquid shaders, GPU particles and cinematic cameras, with adaptive quality and a static fallback.</p><div class="demo"><a class="cta" href="#/explore" data-r="explore" data-needs-gl>Walk through one →</a></div></div>
-    <div class="fc brk"><i class="gl"></i><span class="no">03</span><h3>Cinematic transitions</h3><p>Page changes that feel directed: shutter wipes, camera warps, ripples and chromatic glitch, never a hard cut.</p><div class="demo"><button class="cta" data-d="trn">Replay transition</button></div></div>
-    <div class="fc brk"><i class="gl"></i><span class="no">04</span><h3>Magnetic, tactile UI</h3><p>Buttons that lean toward the cursor, cards that tilt with glare, links that scramble. Interfaces with weight.</p><div class="demo"><button class="cta solid mag">Chase me</button></div></div>
-    <div class="fc brk"><i class="gl"></i><span class="no">05</span><h3>Live theme engine</h3><p>Switch the entire palette, the 3D scene and even the favicon in one click. Your brand colours, your moods.</p><div class="demo" id="fsw"></div></div>
-    <div class="fc brk"><i class="gl"></i><span class="no">06</span><h3>Built-in browser games</h3><p>A real, replayable game inside your site. Great for engagement, memorability and press. This one is called Bug Storm.</p><div class="demo"><a class="cta solid" href="#/game" data-r="game">Play Bug Storm →</a></div></div>
-    <div class="fc brk"><i class="gl"></i><span class="no">07</span><h3>Kinetic typography</h3><p>Letter-level reveals, variable-weight waves, scrambles and split words that move with scroll and cursor.</p><div class="demo"><span class="big" id="fscr" tabindex="0">HOVER ME</span></div></div>
-    <div class="fc brk" id="flt"><i class="gl"></i><span class="no">08</span><h3>Dark &amp; light chapters</h3><p>Dramatic palette flips in the middle of a scroll story, like the light chapter on the home page.</p><div class="demo"><button class="cta" data-d="lt">Flip chapter</button></div></div>
-    <div class="fc brk"><i class="gl"></i><span class="no">09</span><h3>Adaptive performance</h3><p>Resolution and particle counts scale to the device in real time, with rendering paused when covered. Live readout:</p><div class="demo"><span class="rd" id="fperf">measuring…</span></div></div>
-    <div class="fc brk"><i class="gl"></i><span class="no">10</span><h3>SEO-first architecture</h3><p>Semantic structure, schema, canonical and social metadata, sitemap and speed built in. Try the self-audit.</p><div class="demo"><a class="cta" href="#/seo" data-r="seo">Run the audit →</a></div></div>
-    <div class="fc brk"><i class="gl"></i><span class="no">11</span><h3>Accessibility built in</h3><p>Keyboard paths, focus states, reduced-motion support and honest labels. Your device is currently reporting:</p><div class="demo"><span class="rd" id="fmot">checking…</span></div></div>
-    <div class="fc brk"><i class="gl"></i><span class="no">12</span><h3>Micro-interactions</h3><p>Ripples, sounds and responses to every click, so the whole site feels alive and rewards curiosity.</p><div class="demo"><div class="rpad" id="rpad">Click anywhere here</div></div></div>
-  </div></section>
+  <section class="ph"><div class="lab accent rv">Signature features</div><h1 class="split pd">Features.</h1><p class="lede rv d1">The things I can build into your site that most sites never have. Every card is a live demo. Touch them.</p></section>
+  <section class="sec veil"><div class="fgrid" id="fgrid"></div></section>
   <section class="sec veil"><div class="two"><div class="stk"><div class="lab accent rv">Philosophy</div><h2 class="hd split pd">Features with a reason.</h2></div>
-    <div class="prose"><p class="big rv">Every feature has to earn its place by improving clarity, memorability or speed.</p><p class="rv">I don't add effects to show off. I choose the one or two signature moments that make your brand unforgettable, then make sure the rest of the site is fast, accessible and easy to find on Google.</p><ul class="list rv"><li>Sound is always opt-in and remembers the visitor's choice</li><li>3D scales down on weak devices and falls back cleanly</li><li>Everything respects reduced-motion settings</li><li>Real content always lives in HTML for search engines</li></ul></div></div></section>
-  <section class="sec big-cta"><div class="lab accent rv">Want some of this?</div><h2 class="split pd">Let's pick your signature moves.</h2><div class="rv"><a class="cta solid mag" href="#/contact" data-r="contact">Talk to me →</a></div></section>
+    <div class="prose"><p class="big rv">Every feature has to earn its place by improving clarity, memorability or speed.</p><p class="rv">I don't add effects to show off. I choose the one or two signature moments that make your brand unforgettable, then make sure the rest of the site is fast, accessible and easy to find on Google.</p><ul class="list rv"><li>Sound is always opt-in and remembers the visitor's choice</li><li>3D scales down on weak devices and falls back cleanly</li><li>Everything respects reduced-motion settings</li><li>Real content always lives in HTML for search engines</li><li>If a script ever fails, the page still opens and works</li></ul></div></div></section>
+  <section class="sec big-cta"><div class="lab accent rv">Want some of this?</div><h2 class="split pd">Let's pick your signature moves.</h2><div class="rv"><a class="cta solid mag" href="#/plan" data-r="plan">Plan your project →</a></div></section>
 </div>
 
 <!-- PROCESS -->
 <div class="page" data-p="process">
   <section class="ph"><div class="lab accent rv">Process</div><h1 class="split pd">Process.</h1><p class="lede rv d1">Seven steps from first conversation to a site that keeps working for you. Scroll to travel through the pipeline.</p></section>
-  <section class="step veil"><div class="num" aria-hidden="true">01</div><div><div class="lab accent">Discover</div><h2>Understand the goal.</h2><p>We talk about your business, audience and what success looks like. I review your current site, competitors and search landscape, so every decision has a reason.</p><ul class="list"><li>Goals, audience, success metrics</li><li>Site and competitor audit</li><li>Seed keyword and intent research</li></ul></div></section>
-  <section class="step veil"><div class="num" aria-hidden="true">02</div><div><div class="lab accent">Strategy</div><h2>Structure before style.</h2><p>Pages, navigation and content are mapped around how people search and decide. SEO architecture and conversion paths are planned before a pixel is designed.</p><ul class="list"><li>Sitemap and page purposes</li><li>Content outline and messaging</li><li>Internal linking plan</li></ul></div></section>
-  <section class="step veil"><div class="num" aria-hidden="true">03</div><div><div class="lab accent">Design</div><h2>A visual language.</h2><p>Wireframes become a considered system: type scale, colour, spacing, components and motion principles, tested at every screen size.</p><ul class="list"><li>Wireframes and direction</li><li>Design tokens and layouts</li><li>Motion and sound rules</li></ul></div></section>
-  <section class="step veil"><div class="num" aria-hidden="true">04</div><div><div class="lab accent">Build</div><h2>Semantic first.</h2><p>Meaningful HTML first, then CSS, then JavaScript only where it adds value. Everything is keyboard friendly and degrades gracefully.</p><ul class="list"><li>Accessible markup</li><li>Maintainable CSS</li><li>Progressive enhancement</li></ul></div></section>
-  <section class="step veil"><div class="num" aria-hidden="true">05</div><div><div class="lab accent">Optimise</div><h2>Make it fast.</h2><p>Performance budgets, optimised images and fonts, lean scripts, then repeated tests on real devices until Core Web Vitals sit in the green.</p><ul class="list"><li>Image and font tuning</li><li>JS and CSS budgets</li><li>Lighthouse and device testing</li></ul></div></section>
-  <section class="step veil"><div class="num" aria-hidden="true">06</div><div><div class="lab accent">Launch</div><h2>Ship it properly.</h2><p>Domain, HTTPS, redirects, sitemap, robots and Search Console are configured and checked, with a launch checklist before anything goes live.</p><ul class="list"><li>DNS, HTTPS, redirects</li><li>Sitemap, robots, analytics</li><li>Final cross-browser QA</li></ul></div></section>
-  <section class="step veil"><div class="num" aria-hidden="true">07</div><div><div class="lab accent">Grow</div><h2>Keep improving.</h2><p>Launch is the start. I monitor performance and search visibility and recommend small, honest improvements that compound.</p><ul class="list"><li>Monitoring and reporting</li><li>Content and technical refinements</li><li>Optional ongoing care</li></ul></div></section>
+  <div id="stepsHost"></div>
+  <section class="sec veil"><div class="lab accent rv">Interactive</div><h2 class="hd split pd">Pre-launch checklist.</h2><p class="mut rv" style="max-width:52ch;margin-bottom:5vh">Use this before any site goes live. Your ticks are saved in this browser.</p>
+    <div class="score rv"><svg class="ring" viewBox="0 0 120 120" role="img" aria-label="Launch checklist progress"><circle class="bg" cx="60" cy="60" r="52"/><circle class="fg" id="lcFg" cx="60" cy="60" r="52" stroke="url(#rg)" stroke-dasharray="326.7" stroke-dashoffset="326.7"/><text x="60" y="60" id="lcN">0/14</text></svg><p class="scoreT" id="lcT" aria-live="polite">Tick each item as you finish it.</p></div><div class="chk rv" id="lcList"></div></section>
   <section class="sec big-cta"><div class="lab accent rv">Start at step one</div><h2 class="split pd">Let's talk about your goals.</h2><div class="rv"><a class="cta solid mag" href="#/contact" data-r="contact">Get in touch →</a></div></section>
 </div>
 
@@ -396,15 +399,12 @@ body.playing,body.playing *{cursor:crosshair!important}
     <div class="pr rv"><b>03</b><div><h3>Content</h3><p>Pages that answer real questions in plain language, matched to what people actually search for.</p></div></div>
     <div class="pr rv"><b>04</b><div><h3>Authority &amp; local</h3><p>Genuine reviews, a complete Google Business Profile, consistent business details and earned mentions.</p></div></div></div></div></section>
   <section class="sec veil" aria-labelledby="h-audit"><div class="lab accent rv">Interactive</div><h2 class="hd split pd" id="h-audit">Quick self-audit.</h2>
-    <div class="score rv"><svg class="ring" viewBox="0 0 120 120" role="img" aria-label="SEO checklist score"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--a)"/><stop offset="1" style="stop-color:var(--b)"/></linearGradient></defs><circle class="bg" cx="60" cy="60" r="52"/><circle class="fg" id="ringFg" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"/><text x="60" y="60" id="scoreN">0/12</text></svg><p id="scoreT" aria-live="polite">Tick what your site already does.</p></div>
-    <div class="chk rv" id="chk"></div></section>
+    <div class="score rv"><svg class="ring" viewBox="0 0 120 120" role="img" aria-label="SEO checklist score"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--a)"/><stop offset="1" style="stop-color:var(--b)"/></linearGradient></defs><circle class="bg" cx="60" cy="60" r="52"/><circle class="fg" id="ringFg" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"/><text x="60" y="60" id="scoreN">0/12</text></svg><p class="scoreT" id="scoreT" aria-live="polite">Tick what your site already does.</p></div>
+    <div class="chk rv" id="chk"></div><p class="mut rv" style="margin-top:3vh"><a class="mail" style="font-size:var(--t1)" href="#/lab" data-r="lab">Try the snippet previewer in the Lab →</a></p></section>
   <section class="sec veil"><div class="two"><div class="stk"><div class="lab accent rv">Local</div><h2 class="hd split pd">Found in Sydney.</h2></div><div class="prose rv"><p class="big">If customers search with a suburb or "near me", local SEO matters.</p><p>That means a complete Google Business Profile, consistent name, address and phone details everywhere, genuinely useful location pages and a steady habit of asking happy customers for reviews.</p><ul class="list"><li>Google Business Profile guidance</li><li>LocalBusiness structured data</li><li>Review and citation strategy, never bought</li></ul></div></div></section>
   <section class="sec veil"><div class="two"><div class="stk"><div class="lab accent rv">Honesty</div><h2 class="hd split pd">What I won't do.</h2></div><ul class="list rv"><li>Promise guaranteed #1 rankings. Nobody honestly can.</li><li>Buy links or use link schemes</li><li>Stuff keywords or hide text</li><li>Copy content from other sites</li><li>Hide results behind jargon</li></ul></div></section>
-  <section class="sec veil"><div class="lab accent rv">FAQ</div><h2 class="hd split pd">Common questions.</h2><div class="accs" data-single>
-    <div class="acc"><button aria-expanded="false"><span class="n">01</span><h3>How long does SEO take?</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>Technical fixes can show effects within weeks, but meaningful ranking growth usually takes months and depends on competition, content and authority.</p></div></div></div></div>
-    <div class="acc"><button aria-expanded="false"><span class="n">02</span><h3>Will a redesign hurt my rankings?</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>Not if it's planned. A redirect map, preserved content and a launch checklist protect the visibility you already have.</p></div></div></div></div>
-    <div class="acc"><button aria-expanded="false"><span class="n">03</span><h3>Is 3D bad for SEO?</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>It can be if it slows the page or hides content. I keep real content in HTML, load 3D lazily and always provide a fast fallback.</p></div></div></div></div>
-  </div></section>
+  <section class="sec veil"><div class="lab accent rv">Glossary</div><h2 class="hd split pd">Plain-English terms.</h2><ul class="list gl2 rv" id="gloss"></ul></section>
+  <section class="sec veil"><div class="lab accent rv">FAQ</div><h2 class="hd split pd">Common questions.</h2><div class="accs" id="faqSeo"></div></section>
   <section class="sec big-cta"><div class="lab accent rv">Want a proper audit?</div><h2 class="split pd">Let's make your site findable.</h2><div class="rv"><a class="cta solid mag" href="#/contact" data-r="contact">Ask about SEO →</a></div></section>
 </div>
 
@@ -414,29 +414,54 @@ body.playing,body.playing *{cursor:crosshair!important}
     <div class="rv d2" style="display:flex;gap:16px;flex-wrap:wrap;align-items:center"><button class="cta solid mag" id="playBtn">Play now →</button><span class="rd">Best score <b id="bestS" style="color:var(--fg)">0</b></span></div></section>
   <section class="sec veil"><div class="two"><div class="stk"><div class="lab accent rv">How to play</div><h2 class="hd split pd">Move. Survive. Evolve.</h2></div>
     <div class="prose"><p class="big rv">Your ship fires automatically. You just have to stay alive and choose well.</p>
-    <ul class="list rv"><li><span><b style="color:var(--fg)">Move:</b> WASD or arrow keys. Hold the mouse to steer toward the cursor. On touch, use the joystick.</span></li><li><span><b style="color:var(--fg)">Collect:</b> glowing gems dropped by bugs. Fill the bar to level up.</span></li><li><span><b style="color:var(--fg)">Choose:</b> pick 1 of 3 upgrades each level (press 1, 2 or 3).</span></li><li><span><b style="color:var(--fg)">Pause:</b> Esc or P. Turn the music on for the full experience, because the soundtrack intensifies as the swarm grows.</span></li><li><span><b style="color:var(--fg)">Boss:</b> a Memory Leak arrives every 90 seconds. Kill it for a huge reward.</span></li></ul></div></div></section>
+    <ul class="list rv"><li><span><b style="color:var(--fg)">Move:</b> WASD or arrow keys. Hold the mouse to steer toward the cursor. On touch, use the joystick.</span></li><li><span><b style="color:var(--fg)">Collect:</b> glowing gems dropped by bugs. Fill the bar to level up.</span></li><li><span><b style="color:var(--fg)">Choose:</b> pick 1 of 3 upgrades each level (press 1, 2 or 3).</span></li><li><span><b style="color:var(--fg)">Pause:</b> Esc or P. Turn the music on: the soundtrack intensifies as the swarm grows.</span></li><li><span><b style="color:var(--fg)">Boss:</b> a Memory Leak arrives every 90 seconds. Kill it for a huge reward.</span></li><li><span><b style="color:var(--fg)">Secret:</b> type "play" on any page (outside text fields) to jump straight in.</span></li></ul></div></div></section>
   <section class="sec veil"><div class="lab accent rv">Upgrades</div><h2 class="hd split pd">Build your loadout.</h2><ul class="list gl2 rv" id="uplist"></ul></section>
   <section class="sec veil"><div class="lab accent rv">Bestiary</div><h2 class="hd split pd">Know your enemy.</h2><div class="rows">
-    <div class="row rv" style="grid-template-columns:5ch 1fr minmax(0,40ch)"><span class="rn">01</span><h3>404</h3><p>The classic. Shambles toward you. Mildly embarrassing, endlessly numerous.</p><i class="rl"></i></div>
-    <div class="row rv" style="grid-template-columns:5ch 1fr minmax(0,40ch)"><span class="rn">02</span><h3>Lag</h3><p>Tiny, fast and annoying. Arrives in packs and punishes standing still.</p><i class="rl"></i></div>
-    <div class="row rv" style="grid-template-columns:5ch 1fr minmax(0,40ch)"><span class="rn">03</span><h3>Pop-up</h3><p>Slow, tanky and rude. Takes a lot of closing but drops extra XP.</p><i class="rl"></i></div>
-    <div class="row rv" style="grid-template-columns:5ch 1fr minmax(0,40ch)"><span class="rn">04</span><h3>Layout Shift</h3><p>Teleports toward you when you least expect it. Keep your distance stable.</p><i class="rl"></i></div>
-    <div class="row rv" style="grid-template-columns:5ch 1fr minmax(0,40ch)"><span class="rn">05</span><h3>Memory Leak</h3><p>The boss. Grows heavier every minute and spawns Lag minions until put down.</p><i class="rl"></i></div></div></section>
+    <div class="row r3 rv"><span class="rn">01</span><h3>404</h3><p>The classic. Shambles toward you. Mildly embarrassing, endlessly numerous.</p><i class="rl"></i></div>
+    <div class="row r3 rv"><span class="rn">02</span><h3>Lag</h3><p>Tiny, fast and annoying. Arrives in packs and punishes standing still.</p><i class="rl"></i></div>
+    <div class="row r3 rv"><span class="rn">03</span><h3>Pop-up</h3><p>Slow, tanky and rude. Takes a lot of closing but drops extra XP.</p><i class="rl"></i></div>
+    <div class="row r3 rv"><span class="rn">04</span><h3>Layout Shift</h3><p>Teleports toward you when you least expect it. Keep your distance stable.</p><i class="rl"></i></div>
+    <div class="row r3 rv"><span class="rn">05</span><h3>Memory Leak</h3><p>The boss. Grows heavier every minute and spawns Lag minions until put down.</p><i class="rl"></i></div></div></section>
   <section class="sec big-cta"><div class="lab accent rv">Like what you see?</div><h2 class="split pd">I can build games into your site too.</h2><div class="rv"><a class="cta solid mag" href="#/contact" data-r="contact">Let's talk →</a></div></section>
+</div>
+
+<!-- LAB -->
+<div class="page" data-p="lab">
+  <section class="ph"><div class="lab accent rv">Free tools</div><h1 class="split pd">The Lab.</h1><p class="lede rv d1">Five small tools I actually use when designing sites. Everything runs in your browser. Nothing is uploaded.</p></section>
+  <section class="sec veil"><div class="lab-grid">
+    <div class="tool brk full"><span class="lab accent">01 · SEO</span><h3>Search snippet preview</h3><p class="s">See roughly how a page could look in Google. Limits are approximate because Google measures width in pixels.</p>
+      <div class="row2"><div><label class="l" for="sT">Title <span class="cnt" id="sTc"></span></label><input class="fi" id="sT" value="Web Design in Sydney | Pavan Patel"></div><div><label class="l" for="sU">URL</label><input class="fi" id="sU" value="https://pavanp.me/services"></div></div>
+      <div><label class="l" for="sD">Description <span class="cnt" id="sDc"></span></label><textarea class="fi" id="sD" rows="3">Fast, accessible, search-friendly websites designed and built in Sydney. See services, process and free tools.</textarea></div>
+      <div class="serp" aria-label="Preview"><div class="u" id="sPu"></div><div class="t" id="sPt"></div><div class="d" id="sPd"></div></div></div>
+    <div class="tool brk"><span class="lab accent">02 · Accessibility</span><h3>Contrast checker</h3><p class="s">WCAG contrast ratio for text and background colours.</p>
+      <div class="row2"><div><label class="l" for="cFg">Text</label><input class="fi" type="color" id="cFg" value="#f2efe9" style="height:46px;padding:4px"></div><div><label class="l" for="cBg">Background</label><input class="fi" type="color" id="cBg" value="#030304" style="height:46px;padding:4px"></div></div>
+      <div class="cbig" id="cRat">0:1</div><div class="cres" id="cRes"></div><div class="cprev" id="cPrev">The quick brown fox jumps over the lazy dog.</div></div>
+    <div class="tool brk"><span class="lab accent">03 · Typography</span><h3>Type scale</h3><p class="s">A modular scale from a base size and ratio.</p>
+      <div class="row2"><div><label class="l" for="tB">Base (px)</label><input class="fi" type="number" id="tB" value="18" min="12" max="28"></div><div><label class="l" for="tR">Ratio</label><select class="fi" id="tR"><option value="1.125">Major second 1.125</option><option value="1.2">Minor third 1.2</option><option value="1.25" selected>Major third 1.25</option><option value="1.333">Perfect fourth 1.333</option><option value="1.5">Perfect fifth 1.5</option><option value="1.618">Golden 1.618</option></select></div></div>
+      <div class="tscale" id="tOut"></div><pre class="code" id="tCss"></pre><button class="cta" id="tCp">Copy CSS</button></div>
+    <div class="tool brk"><span class="lab accent">04 · Colour</span><h3>Palette maker</h3><p class="s">Built from your current theme colour. Click a swatch to copy its hex.</p>
+      <div class="row2"><div><label class="l" for="pM">Harmony</label><select class="fi" id="pM"><option value="analog">Analogous</option><option value="comp">Complementary</option><option value="triad">Triad</option><option value="mono">Monochrome</option></select></div><div><label class="l">&nbsp;</label><button class="cta" id="pG">Shuffle</button></div></div>
+      <div class="pal" id="pal"></div></div>
+    <div class="tool brk"><span class="lab accent">05 · Sound</span><h3>Pocket synth</h3><p class="s">Play with keys A S D F G H J K L or tap the pads. Always your choice, never autoplay.</p>
+      <div class="row2"><div><label class="l" for="yW">Wave</label><select class="fi" id="yW"><option>triangle</option><option>sine</option><option>sawtooth</option><option>square</option></select></div><div><label class="l" for="yS">Scale</label><select class="fi" id="yS"><option value="pent">Minor pentatonic</option><option value="maj">Major</option><option value="min">Minor</option><option value="chrom">Chromatic</option></select></div></div>
+      <div class="keys" id="keys"></div></div>
+  </div></section>
+  <section class="sec big-cta"><div class="lab accent rv">Need these built into your workflow?</div><h2 class="split pd">I make tools too.</h2><div class="rv"><a class="cta solid mag" href="#/contact" data-r="contact">Get in touch →</a></div></section>
+</div>
+
+<!-- PLAN -->
+<div class="page" data-p="plan">
+  <section class="ph"><div class="lab accent rv">Scope planner</div><h1 class="split pd">Plan.</h1><p class="lede rv d1">Tell me roughly what you need and see what kind of build it is. No prices are shown, because a proper quote depends on your goals. Send the plan to me when you're done.</p></section>
+  <section class="sec veil"><div class="pl-grid"><div>
+    <label class="lab mut" for="plPages">Approximate number of pages</label><div class="rg"><input type="range" id="plPages" min="1" max="20" value="5"><b id="plPv">5</b></div>
+    <div class="lab mut" style="margin-bottom:10px">What else do you need?</div><div class="chk" id="plOpts"></div></div>
+    <aside class="res brk"><span class="lab accent">Suggested scope</span><h3 id="plTier">Launch site</h3><p id="plTxt" class="mut"></p><div class="mbar"><i id="plBar"></i></div><ul class="list" id="plList"></ul><button class="cta solid mag" id="plSend">Send this plan to Pavan →</button></aside></div></section>
 </div>
 
 <!-- INSIGHTS -->
 <div class="page" data-p="insights">
-  <section class="ph"><div class="lab accent rv">Insights</div><h1 class="split pd">Insights.</h1><p class="lede rv d1">How I think about designing websites, written plainly. Seven short reads on speed, type, colour, motion, 3D, sound and search.</p></section>
-  <section class="sec veil"><div class="accs" data-single>
-    <div class="acc"><button aria-expanded="false"><span class="n">01</span><h3>Why speed is part of the design</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>A page that paints in under 2.5 seconds feels confident. Heavy hero videos, unoptimised images and blocking scripts quietly tax every visitor. I set a performance budget before design begins and treat it like a constraint on typography or colour.</p><ul class="list"><li>Budget fonts, images and scripts first</li><li>Use modern image formats</li><li>Defer everything below the fold</li><li>Test on a mid-range phone</li></ul></div></div></div></div>
-    <div class="acc"><button aria-expanded="false"><span class="n">02</span><h3>A type scale that does the heavy lifting</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>Most weak designs are really weak typography. A modular scale with fluid clamp() sizes keeps hierarchy consistent from phone to ultrawide, and wide tracking on small caps labels adds the editorial feel.</p><ul class="list"><li>Pick 5–6 sizes and stick to them</li><li>Tight tracking on big headings, wide on labels</li><li>Keep lines to 55–70 characters</li><li>One display face, one text face, one mono accent</li></ul></div></div></div></div>
-    <div class="acc"><button aria-expanded="false"><span class="n">03</span><h3>Colour with intent</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>Near-black backgrounds make light feel precious. One hot accent pair (here ember red and amber) carries the energy, and everything else stays neutral. Contrast is checked, not assumed.</p><ul class="list"><li>Limit the palette to one accent pair</li><li>Check contrast ratios on every text colour</li><li>Use colour to guide attention, not decorate</li><li>Offer theme choices without breaking the system</li></ul></div></div></div></div>
-    <div class="acc"><button aria-expanded="false"><span class="n">04</span><h3>Motion that earns its place</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>Animation should explain, guide or reward. Entrances establish order, transitions preserve context, hover states confirm interactivity. And everything respects reduced-motion settings.</p><ul class="list"><li>Never animate everything at once</li><li>Keep durations and easing consistent</li><li>Animate transforms and opacity only</li><li>Provide a calm alternative</li></ul></div></div></div></div>
-    <div class="acc"><button aria-expanded="false"><span class="n">05</span><h3>3D without the penalty</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>WebGL can transform a brand, but it can also wreck performance. I load Three.js lazily, scale resolution and particle counts to the device, pause rendering when it's covered and always ship a static fallback.</p><ul class="list"><li>Lazy-load the 3D library</li><li>Scale quality in real time</li><li>Keep real content in HTML</li><li>Handle WebGL failure gracefully</li></ul></div></div></div></div>
-    <div class="acc"><button aria-expanded="false"><span class="n">06</span><h3>Sound as an invitation</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>Sound can add atmosphere, but only when invited. It stays off by default, remembers the visitor's choice and, on this site, is generated live in the browser, reacting to how you scroll. No licensed audio, no downloads.</p><ul class="list"><li>Never autoplay</li><li>Always show a visible toggle and volume</li><li>Fade in and out smoothly</li><li>Tie sound to interaction, not noise</li></ul></div></div></div></div>
-    <div class="acc"><button aria-expanded="false"><span class="n">07</span><h3>SEO is built in the markup</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>Before any visual polish, a page needs one H1, a unique title, a real description, semantic landmarks, structured data and fast loading. Search engines read structure. People feel speed.</p><ul class="list"><li>One H1 and a logical heading order</li><li>Unique title and description per page</li><li>JSON-LD that matches visible content</li><li>Fast, stable, mobile-first layouts</li></ul></div></div></div></div>
-  </div></section>
+  <section class="ph"><div class="lab accent rv">Insights</div><h1 class="split pd">Insights.</h1><p class="lede rv d1">How I think about designing websites, written plainly. Ten short reads on speed, type, colour, motion, 3D, sound, accessibility, SEO and hosting.</p></section>
+  <section class="sec veil"><div class="accs" id="insA"></div></section>
   <section class="sec big-cta"><div class="lab accent rv">Questions?</div><h2 class="split pd">Ask me anything about your site.</h2><div class="rv"><a class="cta solid mag" href="#/contact" data-r="contact">Get in touch →</a></div></section>
 </div>
 
@@ -446,12 +471,13 @@ body.playing,body.playing *{cursor:crosshair!important}
   <section class="sec veil"><div class="two"><div class="stk"><div class="lab accent rv">Story</div><h2 class="hd split pd">Why I build.</h2></div>
     <div class="prose"><p class="big rv">I believe a website should be a place people want to stay in, not just a page they pass through.</p><!-- EDIT: replace with your own story --><p class="rv">I design and code websites by hand, caring about details most people never consciously notice: how type breathes, how motion guides attention, how quickly a page appears on a weak phone connection.</p><p class="rv">I'm building my own studio here in Sydney and taking on projects for people and businesses who want a site that looks distinctive, performs well and is easy for search engines and customers to find.</p></div></div></section>
   <section class="sec veil"><div class="lab accent rv">Principles</div><h2 class="hd split pd">What I stand for.</h2><div class="rows">
-    <div class="row rv" style="grid-template-columns:5ch 1fr minmax(0,34ch)"><span class="rn">01</span><h3>Speed first</h3><p>Fast sites respect people's time.</p><i class="rl"></i></div>
-    <div class="row rv" style="grid-template-columns:5ch 1fr minmax(0,34ch)"><span class="rn">02</span><h3>Clear over clever</h3><p>Every effect has to earn its place.</p><i class="rl"></i></div>
-    <div class="row rv" style="grid-template-columns:5ch 1fr minmax(0,34ch)"><span class="rn">03</span><h3>Accessible</h3><p>If it excludes people, it isn't finished.</p><i class="rl"></i></div>
-    <div class="row rv" style="grid-template-columns:5ch 1fr minmax(0,34ch)"><span class="rn">04</span><h3>Honest</h3><p>Plain language, fair scopes, no overpromising.</p><i class="rl"></i></div></div></section>
+    <div class="row r3 rv"><span class="rn">01</span><h3>Speed first</h3><p>Fast sites respect people's time.</p><i class="rl"></i></div>
+    <div class="row r3 rv"><span class="rn">02</span><h3>Clear over clever</h3><p>Every effect has to earn its place.</p><i class="rl"></i></div>
+    <div class="row r3 rv"><span class="rn">03</span><h3>Accessible</h3><p>If it excludes people, it isn't finished.</p><i class="rl"></i></div>
+    <div class="row r3 rv"><span class="rn">04</span><h3>Honest</h3><p>Plain language, fair scopes, no overpromising.</p><i class="rl"></i></div>
+    <div class="row r3 rv"><span class="rn">05</span><h3>Curious</h3><p>Always testing new ideas in the Lab before they reach clients.</p><i class="rl"></i></div></div></section>
   <section class="sec veil"><div class="two"><div class="stk"><div class="lab accent rv">Working with me</div><h2 class="hd split pd">What to expect.</h2></div>
-    <ul class="list rv"><li>A short first call or message about your goals</li><li>A scoped quote with milestones and revision rounds</li><li>Regular, plain-language updates, never radio silence</li><li>Timelines depend on scope. A small site is often a few weeks <!-- EDIT --></li><li>A clear handover so you stay in control</li></ul></div></section>
+    <ul class="list rv"><li>A short first call or message about your goals</li><li>A scoped quote with milestones and revision rounds</li><li>Regular, plain-language updates, never radio silence</li><li>Timelines that depend on scope and how quickly content is ready <!-- EDIT --></li><li>A clear handover so you stay in control</li></ul></div></section>
   <section class="sec big-cta"><div class="lab accent rv">Say hello</div><h2 class="split pd">Let's work together.</h2><div class="rv"><a class="cta solid mag" href="#/contact" data-r="contact">Contact me →</a></div></section>
 </div>
 
@@ -459,7 +485,7 @@ body.playing,body.playing *{cursor:crosshair!important}
 <div class="page" data-p="contact">
   <section class="ph"><div class="lab accent rv">Contact</div><h1 class="split pd">Contact.</h1><p class="lede rv d1">Tell me about your project and I'll reply as soon as I can.</p></section>
   <section class="sec veil"><div class="two"><div class="stk">
-    <a class="mail rv" id="mailA" href="mailto:hello@pavanp.me">hello@pavanp.me</a><!-- EDIT: your real email here and in the script -->
+    <a class="mail rv" id="mailA" href="mailto:hello@pavanp.me">hello@pavanp.me</a><!-- EDIT: your real email here and in the script (MAIL) -->
     <div class="rv" style="margin-top:28px"><button class="cta mag" id="copy" type="button">Copy email</button></div>
     <ul class="facts rv"><li><b>Status</b><span><i class="live"></i>Open to projects</span></li><li><b>Location</b><span>Sydney, NSW</span></li><li><b>Local time</b><span id="clk3">--:--</span></li><li><b>Next</b><span>I reply, we scope, you get a clear quote</span></li></ul></div>
     <form class="form rv" id="cform" novalidate>
@@ -470,6 +496,7 @@ body.playing,body.playing *{cursor:crosshair!important}
       <div class="fld"><textarea id="f-msg" name="message" rows="4" placeholder=" " required></textarea><label for="f-msg">Tell me about your project</label><i class="ln"></i></div>
       <div><button class="cta solid mag" type="submit">Send message →</button></div><p id="cnote" role="status" aria-live="polite"></p>
     </form></div></section>
+  <section class="sec veil"><div class="lab accent rv">FAQ</div><h2 class="hd split pd">Before you write.</h2><div class="accs" id="faqCon"></div></section>
 </div>
 
 <!-- EXPLORE -->
@@ -482,10 +509,10 @@ body.playing,body.playing *{cursor:crosshair!important}
 
 <footer>
   <div><div class="fb">Pavan<br>Patel.</div><p class="mut" style="margin-top:20px;max-width:34ch">Web design, development and SEO from Sydney. Fast, immersive, findable.</p></div>
-  <div><h4>Build</h4><a href="#/services" data-r="services">Services</a><a href="#/features" data-r="features">Features</a><a href="#/process" data-r="process">Process</a><a href="#/seo" data-r="seo">SEO</a></div>
-  <div><h4>Explore</h4><a href="#/work" data-r="work">Work</a><a href="#/game" data-r="game">Bug Storm</a><a href="#/insights" data-r="insights">Insights</a><a href="#/explore" data-r="explore" data-needs-gl>3D world</a></div>
+  <div><h4>Build</h4><a href="#/services" data-r="services">Services</a><a href="#/features" data-r="features">Features</a><a href="#/process" data-r="process">Process</a><a href="#/seo" data-r="seo">SEO</a><a href="#/plan" data-r="plan">Scope planner</a></div>
+  <div><h4>Explore</h4><a href="#/work" data-r="work">Work</a><a href="#/game" data-r="game">Bug Storm</a><a href="#/lab" data-r="lab">The Lab</a><a href="#/insights" data-r="insights">Insights</a><a href="#/explore" data-r="explore" data-needs-gl>3D world</a></div>
   <div><h4>Contact</h4><a href="#/about" data-r="about">About</a><a href="#/contact" data-r="contact">Get in touch</a><a href="mailto:hello@pavanp.me">hello@pavanp.me</a></div>
-  <div class="cp"><span>© 2026 Pavan Patel</span><span>Sydney <b id="clk2">--:--:--</b></span><span>Press "T" to change theme</span></div>
+  <div class="cp"><span>© 2026 Pavan Patel</span><span>Sydney <b id="clk2">--:--:--</b></span><span>Ctrl K palette · T theme</span></div>
 </footer>
 
 <script>
@@ -493,49 +520,102 @@ body.playing,body.playing *{cursor:crosshair!important}
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const clamp=(v,a,b)=>Math.min(Math.max(v,a),b),lerp=(a,b,t)=>a+(b-a)*t,sm=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t)};
 const damp=(a,b,l,dt)=>a+(b-a)*(1-Math.exp(-l*dt)),sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const safe=(f,n)=>{try{f()}catch(e){console.error('[pp] '+(n||''),e)}};
+const on=(sel,ev,fn)=>{const e=$(sel);if(e)e.addEventListener(ev,fn);return e};
 const RM=matchMedia('(prefers-reduced-motion:reduce)').matches,FINE=matchMedia('(hover:hover) and (pointer:fine)').matches;
 const NAV=navigator,CONN=NAV.connection||{},SAVE=!!CONN.saveData,LOW=(NAV.hardwareConcurrency||8)<=4||(NAV.deviceMemory||8)<=4||innerWidth<760;
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-const CHARS='!<>-_\\/[]{}=+*^?#$%&@',DYNFAV=true;/* set DYNFAV=false to keep your uploaded favicon file untouched */
+const CHARS='!<>-_\\/[]{}=+*^?#$%&@',DYNFAV=true;/* DYNFAV=false keeps your uploaded favicon file untouched */
 if('scrollRestoration' in history)history.scrollRestoration='manual';
-const LK=new Set(['pre']);const lock=(k,on)=>{on?LK.add(k):LK.delete(k);document.body.classList.toggle('lock',LK.size>0)};
+const LK=new Set(['pre']);const lock=(k,v)=>{v?LK.add(k):LK.delete(k);document.body.classList.toggle('lock',LK.size>0)};
 const S={y:0,sy:0,vel:0},m={x:0,y:0,px:0,py:0,cx:innerWidth/2,cy:innerHeight/2,rx:innerWidth/2,ry:innerHeight/2,lx:-999,ly:-999};
 const FX={pulse:0,flash:0},TR={warp:0,target:0},AU={level:0};
-let G=null,RK='home',busy=false,pending=null,PD=[],SKW=[];
+let G=null,RK='home',busy=false,pending=null,PD=[],SKW=[],stepIO=null,PLAN_TEXT='',PLAN_CHIPS=[];
+const MAIL='hello@pavanp.me';/* EDIT */
 
-/* ---------- Routes ---------- */
+/* ---------- Content data ---------- */
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const accHTML=a=>a.map((x,i)=>`<div class="acc"><button aria-expanded="false"><span class="n">${String(i+1).padStart(2,'0')}</span><h3>${x[0]}</h3><span class="pl">+</span></button><div class="acc-b"><div><div class="acc-in"><p>${x[1]}</p>${x[2]?`<ul class="list">${x[2].map(l=>`<li>${l}</li>`).join('')}</ul>`:'<span></span>'}</div></div></div></div>`).join('');
+const SVC=[
+ ['Website design','Design starts from your goals, not a template. I define the message, structure the pages, then craft a visual language, from type scale to motion, that feels like your business.',['Sitemap and wireframes','Type, colour and spacing system','Responsive layouts for every screen','Designed in the browser, so approved means shipped']],
+ ['Custom development','Hand-written HTML, CSS and JavaScript: lean, fast and easy to maintain. JavaScript is used where it earns its place, and pages work without it where they should.',['Semantic, accessible markup','Modern CSS, no heavy frameworks','Forms and lightweight integrations','Hosting friendly: GitHub Pages, Cloudflare and more']],
+ ['Website redesign','Already have a dated or underperforming site? I audit what exists, keep what works, such as content and search equity, and rebuild what does not.',['Content, design and technical audit','URL and redirect mapping','Improved structure and conversion paths','Staged launch with before-and-after checks']],
+ ['SEO','Technical and on-page SEO built into every project. Honest work, no guaranteed-rank promises.',['Keyword and intent research','Titles, descriptions, heading structure','Sitemap, robots.txt, canonicals','Structured data (JSON-LD) and local SEO']],
+ ['Performance','Speed affects rankings, conversions and how your brand feels. I tune for Core Web Vitals so pages feel instant, even on slow phones.',['Image and font optimisation','JavaScript and CSS budgets','Lazy loading and caching','Lighthouse and real-device testing']],
+ ['Accessibility','A site everyone can use is a better site for everyone. Accessibility is part of the build, guided by WCAG principles.',['Keyboard navigation and focus states','Colour contrast and readable type','Meaningful alt text and labels','Reduced-motion and sound-off defaults']],
+ ['Interactive, 3D &amp; sound','When a brand deserves to be remembered: WebGL scenes, scroll storytelling, shader effects, generative audio and even playable games, always with fast fallbacks.',['Three.js hero scenes and walkable worlds','Scroll-linked animation and transitions','Optional generative sound that reacts to the page','Adaptive quality and graceful fallbacks']],
+ ['Launch, hosting &amp; care','Domain, DNS, HTTPS, analytics and Search Console set up properly, then simple ongoing care so the site stays fast, secure and current.',['Domain and DNS configuration','HTTPS, redirects, sitemap, robots','Analytics and Search Console','Updates and small edits']]];
+const INS=[
+ ['Why speed is part of the design','A page that paints in under 2.5 seconds feels confident. Heavy hero videos, unoptimised images and blocking scripts quietly tax every visitor. I set a performance budget before design begins and treat it like a constraint on typography or colour.',['Budget fonts, images and scripts first','Use modern image formats','Defer everything below the fold','Test on a mid-range phone']],
+ ['A type scale that does the heavy lifting','Most weak designs are really weak typography. A modular scale with fluid clamp() sizes keeps hierarchy consistent from phone to ultrawide, and wide tracking on small caps labels adds the editorial feel.',['Pick 5 to 6 sizes and stick to them','Tight tracking on big headings, wide on labels','Keep lines to 55 to 70 characters','One display face, one text face, one mono accent']],
+ ['Colour with intent','Near-black backgrounds make light feel precious. One hot accent pair carries the energy, and everything else stays neutral. Contrast is checked, not assumed.',['Limit the palette to one accent pair','Check contrast ratios on every text colour','Use colour to guide attention, not decorate','Offer theme choices without breaking the system']],
+ ['Motion that earns its place','Animation should explain, guide or reward. Entrances establish order, transitions preserve context, hover states confirm interactivity. And everything respects reduced-motion settings.',['Never animate everything at once','Keep durations and easing consistent','Animate transforms and opacity only','Provide a calm alternative']],
+ ['3D without the penalty','WebGL can transform a brand, but it can also wreck performance. I load Three.js lazily, scale resolution and particle counts to the device, pause rendering when it is covered and always ship a static fallback.',['Lazy-load the 3D library','Scale quality in real time','Keep real content in HTML','Handle WebGL failure gracefully']],
+ ['Sound as an invitation','Sound can add atmosphere, but only when invited. It stays off by default, remembers the visitor\'s choice and, on this site, is generated live in the browser, reacting to how you scroll. No licensed audio, no downloads.',['Never autoplay','Always show a visible toggle and volume','Fade in and out smoothly','Tie sound to interaction, not noise']],
+ ['SEO is built in the markup','Before any visual polish, a page needs one H1, a unique title, a real description, semantic landmarks, structured data and fast loading. Search engines read structure. People feel speed.',['One H1 and a logical heading order','Unique title and description per page','JSON-LD that matches visible content','Fast, stable, mobile-first layouts']],
+ ['Accessibility is not a feature','It is the baseline. Good contrast, keyboard paths, visible focus, honest labels and motion that can be turned down make a site better for everyone, including people on bright screens or slow connections.',['Test with the keyboard only','Check every colour pair','Label every control','Respect prefers-reduced-motion']],
+ ['Local SEO for small businesses','If customers search with a suburb or near me, the basics matter most: a complete Google Business Profile, consistent contact details, useful location content and real reviews from real customers.',['Claim and complete the profile','Keep name, address and phone identical everywhere','Write helpful location content','Ask happy customers for reviews']],
+ ['Hosting and domains, demystified','A custom domain points to your host through DNS records. With static hosting such as GitHub Pages you add the domain, set the records at your registrar, wait for DNS to update and then turn on HTTPS. Keep the registrar login safe.',['Know where your domain is registered','Add the host\'s DNS records','Force HTTPS once the certificate is ready','Set up redirects from www or the old domain']]];
+const GLOSS=[['Crawl','When a search engine visits a page by following links.'],['Index','The search engine\'s stored copy of a page, used to show it in results.'],['Canonical','The preferred URL for a page, used to avoid duplicate content.'],['Schema / JSON-LD','Structured data that tells search engines what a page is about.'],['LCP','Largest Contentful Paint. How fast the main content appears.'],['INP','Interaction to Next Paint. How quickly the page responds to input.'],['CLS','Cumulative Layout Shift. How much the layout jumps while loading.'],['SERP','Search engine results page.'],['Alt text','A text description of an image for screen readers and search.'],['WCAG','Web Content Accessibility Guidelines.'],['Sitemap','A file listing the pages you want search engines to find.'],['robots.txt','A file telling crawlers which areas of a site to visit.'],['Semantic HTML','Using elements like header, nav, main and button for their real meaning.'],['Lighthouse','A free auditing tool built into Chrome for speed, SEO and accessibility.']];
+const FAQ_SEO=[['How long does SEO take?','Technical fixes can show effects within weeks, but meaningful ranking growth usually takes months and depends on competition, content and authority.'],['Will a redesign hurt my rankings?','Not if it is planned. A redirect map, preserved content and a launch checklist protect the visibility you already have.'],['Is 3D bad for SEO?','It can be if it slows the page or hides content. I keep real content in HTML, load 3D lazily and always provide a fast fallback.'],['Do I need a blog?','Only if you can publish genuinely useful content. A few strong pages that answer real questions beat many thin posts.'],['Can you guarantee page one?','No. Anyone who guarantees rankings is guessing or cutting corners. I can promise solid foundations and honest reporting.']];
+const FAQ_CON=[['How do we start?','Send a message with a few lines about your goals, or use the scope planner. I reply, we talk through the project, and you receive a clear scoped quote.'],['What do you need from me?','Your goals, any existing content or branding, examples you like and a contact person for feedback. If you do not have content yet, I can help structure it.'],['Who owns the website?','You do. You get the files, the domain stays in your name and the code is plain HTML, CSS and JavaScript any developer can work with.'],['Do you work with clients outside Sydney?','Yes. Everything can be done remotely. I am based in Sydney and can meet locally where it makes sense. <!-- EDIT -->'],['How do revisions work?','Each milestone includes defined revision rounds so feedback stays focused. Extra changes are scoped and agreed before any work starts.'],['Can you improve my existing site instead?','Yes. An audit usually shows quick wins in speed, structure and search visibility, and a partial redesign is often enough.']];
+const STEPS=[['Discover','Understand the goal.','We talk about your business, audience and what success looks like. I review your current site, competitors and search landscape, so every decision has a reason.',['Goals, audience, success metrics','Site and competitor audit','Seed keyword and intent research']],['Strategy','Structure before style.','Pages, navigation and content are mapped around how people search and decide. SEO architecture and conversion paths are planned before a pixel is designed.',['Sitemap and page purposes','Content outline and messaging','Internal linking plan']],['Design','A visual language.','Wireframes become a considered system: type scale, colour, spacing, components and motion principles, tested at every screen size.',['Wireframes and direction','Design tokens and layouts','Motion and sound rules']],['Build','Semantic first.','Meaningful HTML first, then CSS, then JavaScript only where it adds value. Everything is keyboard friendly and degrades gracefully.',['Accessible markup','Maintainable CSS','Progressive enhancement']],['Optimise','Make it fast.','Performance budgets, optimised images and fonts, lean scripts, then repeated tests on real devices until Core Web Vitals sit in the green.',['Image and font tuning','JS and CSS budgets','Lighthouse and device testing']],['Launch','Ship it properly.','Domain, HTTPS, redirects, sitemap, robots and Search Console are configured and checked, with a launch checklist before anything goes live.',['DNS, HTTPS, redirects','Sitemap, robots, analytics','Final cross-browser QA']],['Grow','Keep improving.','Launch is the start. I monitor performance and search visibility and recommend small, honest improvements that compound.',['Monitoring and reporting','Content and technical refinements','Optional ongoing care']]];
+const FEATS=[
+ ['Scroll-reactive music','Generative ambient music that changes key, tempo and intensity as visitors scroll. Optional, silent by default, volume controlled.','<button class="cta mag" data-d="snd">Toggle sound</button>'],
+ ['3D hero worlds','Three.js scenes with liquid shaders, GPU particles and cinematic cameras, with adaptive quality and a static fallback.','<a class="cta" href="#/explore" data-r="explore" data-needs-gl>Walk through one →</a>'],
+ ['Cinematic transitions','Page changes that feel directed: shutter wipes, camera warps, ripples and chromatic glitch, never a hard cut.','<button class="cta" data-d="trn">Replay transition</button>'],
+ ['Magnetic, tactile UI','Buttons that lean toward the cursor, cards that tilt with glare, links that scramble. Interfaces with weight.','<button class="cta solid mag">Chase me</button>'],
+ ['Live theme engine','Switch the entire palette, the 3D scene and even the favicon in one click. Your brand colours, your moods.','<span id="fsw" style="display:flex;gap:12px"></span>'],
+ ['Built-in browser games','A real, replayable game inside your site. Great for engagement, memorability and press. This one is called Bug Storm.','<a class="cta solid" href="#/game" data-r="game">Play Bug Storm →</a>'],
+ ['Kinetic typography','Letter-level reveals, scrambles and split words that move with scroll and cursor.','<span class="big" id="fscr" tabindex="0">HOVER ME</span>'],
+ ['Dark and light chapters','Dramatic palette flips in the middle of a scroll story, like the light chapter on the home page.','<button class="cta" data-d="lt">Flip chapter</button>'],
+ ['Adaptive performance','Resolution and particle counts scale to the device in real time, with rendering paused when covered. Live readout:','<span class="rd" id="fperf">measuring…</span>'],
+ ['SEO-first architecture','Semantic structure, schema, canonical and social metadata, sitemap and speed built in. Try the self-audit.','<a class="cta" href="#/seo" data-r="seo">Run the audit →</a>'],
+ ['Accessibility built in','Keyboard paths, focus states, reduced-motion support and honest labels. Your device is reporting:','<span class="rd" id="fmot">checking…</span>'],
+ ['Micro-interactions','Ripples, sounds and responses to every click, so the whole site feels alive and rewards curiosity.','<div class="rpad" id="rpad">Click anywhere here</div>'],
+ ['Command palette','Jump anywhere or trigger actions from the keyboard. Power-user navigation, built in.','<button class="cta" data-d="cmd">Open (Ctrl K)</button>'],
+ ['Free web tools','Snippet preview, contrast checker, type scale, palette maker and a tiny synth, all running locally.','<a class="cta" href="#/lab" data-r="lab">Open the Lab →</a>'],
+ ['Scope planner','Visitors describe their project and instantly see what kind of build it is, then send the plan to you.','<a class="cta" href="#/plan" data-r="plan">Try the planner →</a>'],
+ ['Remembers preferences','Theme, sound choice, volume, checklist ticks and game best score are saved in the visitor\'s browser. Current:','<span class="rd" id="fpref">…</span>']];
+function buildContent(){
+  $('#svcA').innerHTML=accHTML(SVC);$('#insA').innerHTML=accHTML(INS);$('#faqSeo').innerHTML=accHTML(FAQ_SEO);$('#faqCon').innerHTML=accHTML(FAQ_CON);
+  $('#gloss').innerHTML=GLOSS.map(g=>`<li><b>${g[0]}</b><span>${g[1]}</span></li>`).join('');
+  $('#stepsHost').innerHTML=STEPS.map((s,i)=>`<section class="step veil"><div class="num" aria-hidden="true">0${i+1}</div><div><div class="lab accent">${s[0]}</div><h2>${s[1]}</h2><p>${s[2]}</p><ul class="list">${s[3].map(l=>`<li>${l}</li>`).join('')}</ul></div></section>`).join('');
+  $('#fgrid').innerHTML=FEATS.map((f,i)=>`<div class="fc brk"><i class="gl"></i><span class="no">${String(i+1).padStart(2,'0')}</span><h3>${f[0]}</h3><p>${f[1]}</p><div class="demo">${f[2]}</div></div>`).join('');
+}
+safe(buildContent,'content');
 const ROUTES={
  home:{h:'/',t:'Pavan Patel | Web Designer, Developer & SEO in Sydney',d:'Pavan Patel is a Sydney web designer and creative developer building fast, immersive, search-friendly websites with 3D, generative sound and games.',n:'Home',note:220,mode:'minor'},
  work:{h:'/work',t:'Concept Work | Pavan Patel',d:'Fly through concept builds by Pavan Patel: dashboards, 3D landing pages, kinetic type and fast storefronts.',n:'Work',note:196,mode:'phryg'},
  services:{h:'/services',t:'Web Design, Development & SEO Services | Pavan Patel',d:'Website design, custom development, redesigns, SEO, performance, accessibility and 3D experiences from Sydney designer-developer Pavan Patel.',n:'Services',note:246.9,mode:'dorian'},
  features:{h:'/features',t:'Unique Website Features: Sound, 3D, Games | Pavan Patel',d:'Signature website features Pavan Patel builds: scroll-reactive sound, 3D worlds, cinematic transitions, themes, games and adaptive performance.',n:'Features',note:261.6,mode:'lydian'},
- process:{h:'/process',t:'My Web Design Process | Pavan Patel',d:'A seven-step web design process: discover, strategy, design, build, optimise, launch and grow.',n:'Process',note:174.6,mode:'minor'},
- seo:{h:'/seo',t:'SEO for Sydney Websites | Pavan Patel',d:'Technical, on-page and local SEO that starts in the code. Core Web Vitals, structured data and an interactive self-audit.',n:'SEO',note:233,mode:'dorian'},
+ process:{h:'/process',t:'My Web Design Process | Pavan Patel',d:'A seven-step web design process: discover, strategy, design, build, optimise, launch and grow. Plus an interactive pre-launch checklist.',n:'Process',note:174.6,mode:'minor'},
+ seo:{h:'/seo',t:'SEO for Sydney Websites | Pavan Patel',d:'Technical, on-page and local SEO that starts in the code. Core Web Vitals, structured data, an interactive self-audit and a plain-English glossary.',n:'SEO',note:233,mode:'dorian'},
  game:{h:'/game',t:'Bug Storm: Free Browser Game | Pavan Patel',d:'Bug Storm is a free survivor-style browser game built by Pavan Patel. Squash web bugs, collect gems and choose upgrades.',n:'Game',note:164.8,mode:'harm'},
- insights:{h:'/insights',t:'Web Design Insights | Pavan Patel',d:'Plain-language notes on speed, typography, colour, motion, 3D, sound and SEO from Sydney web designer Pavan Patel.',n:'Insights',note:207.7,mode:'dorian'},
+ lab:{h:'/lab',t:'Free Web Tools: SERP Preview, Contrast, Type Scale | Pavan Patel',d:'Free browser tools by Pavan Patel: Google snippet preview, WCAG contrast checker, type scale generator, palette maker and a pocket synth.',n:'Lab',note:185,mode:'lydian'},
+ plan:{h:'/plan',t:'Website Scope Planner | Pavan Patel',d:'Describe your website project and see what kind of build it is, then send the plan to Pavan Patel in Sydney.',n:'Plan',note:207.7,mode:'dorian'},
+ insights:{h:'/insights',t:'Web Design Insights | Pavan Patel',d:'Plain-language notes on speed, typography, colour, motion, 3D, sound, accessibility, SEO and hosting from Sydney web designer Pavan Patel.',n:'Insights',note:207.7,mode:'dorian'},
  about:{h:'/about',t:'About Pavan Patel | Sydney Web Designer & Developer',d:'About Pavan Patel, a Sydney web designer and creative developer focused on speed, clarity, accessibility and honesty.',n:'About',note:196,mode:'minor'},
  contact:{h:'/contact',t:'Contact Pavan Patel | Start a Web Project',d:'Contact Pavan Patel to discuss web design, development, SEO or a 3D website project in Sydney.',n:'Contact',note:220,mode:'phryg'},
  explore:{h:'/explore',t:'Explore the 3D World | Pavan Patel',d:'Fly through an interactive 3D world and discover signals about how Pavan Patel designs websites.',n:'Explore',note:146.8,mode:'lydian'}};
 const H2R={};Object.keys(ROUTES).forEach(k=>H2R[ROUTES[k].h]=k);
 const routeFromHash=()=>{const r=H2R[location.hash.replace(/^#/,'')||'/']||'home';return r==='explore'&&!G?'home':r};
-{const mg=$('#mg');Object.keys(ROUTES).forEach((k,i)=>{const a=document.createElement('a');a.href='#'+ROUTES[k].h;a.dataset.r=k;a.style.setProperty('--i',i);a.innerHTML=`<small>${String(i).padStart(2,'0')}</small>${ROUTES[k].n}`;if(k==='explore')a.dataset.needsGl='';mg.appendChild(a)})}
+safe(()=>{const mg=$('#mg');Object.keys(ROUTES).forEach((k,i)=>{const a=document.createElement('a');a.href='#'+ROUTES[k].h;a.dataset.r=k;a.style.setProperty('--i',i);a.innerHTML=`<small>${String(i).padStart(2,'0')}</small>${ROUTES[k].n}`;if(k==='explore')a.setAttribute('data-needs-gl','');mg.appendChild(a)})},'menu');
 
 /* ---------- Themes + favicon ---------- */
 const TH=[{a:'#ff3d2e',b:'#ffb020'},{a:'#00e5ff',b:'#7c5cff'},{a:'#ff2e93',b:'#ffb86c'},{a:'#39ff88',b:'#00c2ff'}];
 let thi=Math.min(+store.get('pp-theme')||0,3);const themeCbs=[];
-const mkSw=host=>TH.forEach((t,i)=>{const b=document.createElement('button');b.className=host.id==='fsw'?'sw':'';b.style.background=`linear-gradient(135deg,${t.a},${t.b})`;b.setAttribute('aria-label','Colour theme '+(i+1));b.onclick=()=>{setTheme(i);tone(520+i*90,.25)};host.appendChild(b)});
-mkSw($('#thm'));mkSw($('#fsw'));
+function mkSw(host,cls){if(!host)return;TH.forEach((t,i)=>{const b=document.createElement('button');if(cls)b.className=cls;b.style.background=`linear-gradient(135deg,${t.a},${t.b})`;b.setAttribute('aria-label','Colour theme '+(i+1));b.onclick=()=>{setTheme(i);tone(520+i*90,.25)};host.appendChild(b)})}
 function favicon(t){if(!DYNFAV)return;const svg=`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='${t.a}'/><stop offset='1' stop-color='${t.b}'/></linearGradient><radialGradient id='r' cx='.3' cy='.2' r='1'><stop offset='0' stop-color='#2a0d0a'/><stop offset='1' stop-color='#050507'/></radialGradient></defs><rect width='64' height='64' rx='16' fill='url(#r)'/><circle cx='32' cy='32' r='25' fill='none' stroke='url(#g)' stroke-opacity='.35' stroke-width='1.5'/><path d='M22 48V17h14.5a9.5 9.5 0 010 19H22' fill='none' stroke='url(#g)' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/><circle cx='47' cy='47' r='3.6' fill='${t.b}'/></svg>`;$('#fav').href='data:image/svg+xml,'+encodeURIComponent(svg)}
-function setTheme(i){thi=i%TH.length;const t=TH[thi],r=document.documentElement.style;r.setProperty('--a',t.a);r.setProperty('--b',t.b);themeCbs.forEach(f=>f(t));favicon(t);store.set('pp-theme',thi);$$('#thm button,#fsw button').forEach((b,k)=>b.classList.toggle('on',k%4===thi))}
-setTheme(thi);
-addEventListener('keydown',e=>{if((e.key==='t'||e.key==='T')&&RK!=='explore'&&!GM.run&&!/INPUT|TEXTAREA/.test(e.target.tagName))setTheme(thi+1)});
+function setTheme(i){thi=((i%TH.length)+TH.length)%TH.length;const t=TH[thi],r=document.documentElement.style;r.setProperty('--a',t.a);r.setProperty('--b',t.b);themeCbs.forEach(f=>safe(()=>f(t),'themeCb'));favicon(t);store.set('pp-theme',thi);$$('#thm button').forEach((b,k)=>b.classList.toggle('on',k===thi));$$('#fsw button').forEach((b,k)=>b.classList.toggle('on',k===thi));prefTxt()}
+safe(()=>{mkSw($('#thm'));mkSw($('#fsw'),'sw');setTheme(thi)},'themes');
+function prefTxt(){const e=$('#fpref');if(e)e.textContent=`theme ${thi+1} · sound ${MUS.on?'on':'off'} · best ${store.get('pp-best')||0}`}
 
 /* ---------- Generative music engine (reacts to scroll) ---------- */
 const MODES={minor:[0,2,3,5,7,8,10],phryg:[0,1,3,5,7,8,10],dorian:[0,2,3,5,7,9,10],lydian:[0,2,4,6,7,9,11],harm:[0,2,3,5,7,8,11]};
 const PROG=[0,5,3,6,2,4,1,5];
 const MUS={ctx:null,on:false,vol:.6,step:0,next:0,bpm:70,inten:0,pp:0,root:220,mode:MODES.minor,chord:0,game:0};
-try{const p=JSON.parse(store.get('pp-snd')||'null');if(p){MUS.on=!!p.on;MUS.vol=clamp(+p.vol||.6,0,1)}}catch(e){}
-$('#vol').value=MUS.vol;
+safe(()=>{const p=JSON.parse(store.get('pp-snd')||'null');if(p){MUS.on=!!p.on;MUS.vol=clamp(+p.vol||.6,0,1)}},'sndprefs');
 const mfreq=deg=>{const o=Math.floor(deg/7),d=((deg%7)+7)%7;return MUS.root*Math.pow(2,(MUS.mode[d]+o*12)/12)};
 function musBuild(){
   const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;const c=new AC();
@@ -569,85 +649,145 @@ function musStep(s,t){const I=MUS.inten;
 function musStart(){if(!MUS.ctx&&!musBuild())return;if(MUS.ctx.state==='suspended')MUS.ctx.resume();musApply();musRoute()}
 function musApply(){if(!MUS.ctx)return;MUS.master.gain.setTargetAtTime(MUS.on?MUS.vol*.55:0,MUS.ctx.currentTime,.5);if(!MUS.on)setTimeout(()=>{if(!MUS.on&&MUS.ctx.state==='running')MUS.ctx.suspend()},1500)}
 const musSave=()=>store.set('pp-snd',JSON.stringify({on:MUS.on,vol:MUS.vol}));
-function musRoute(){const R=ROUTES[RK];MUS.root=R.note;MUS.mode=MODES[R.mode]}
-function updSnd(){$('#snd').textContent=MUS.on?'Sound on':'Sound off';$('#snd').setAttribute('aria-pressed',MUS.on)}
+function musRoute(){const R=ROUTES[RK];if(R){MUS.root=R.note;MUS.mode=MODES[R.mode]}}
+function updSnd(){const b=$('#snd');if(b){b.textContent=MUS.on?'Sound on':'Sound off';b.setAttribute('aria-pressed',MUS.on)}prefTxt()}
 function sndToggle(){MUS.on=!MUS.on;if(MUS.on)musStart();else musApply();updSnd();musSave()}
-$('#snd').onclick=sndToggle;$('#vol').oninput=e=>{MUS.vol=+e.target.value;if(MUS.on)musStart();musApply();musSave()};updSnd();
+safe(()=>{const v=$('#vol');v.value=MUS.vol;v.oninput=e=>{MUS.vol=+e.target.value;if(MUS.on)musStart();musApply();musSave()};$('#snd').onclick=sndToggle;updSnd()},'sndui');
 const firstGesture=()=>{if(MUS.on)musStart();removeEventListener('pointerdown',firstGesture);removeEventListener('keydown',firstGesture)};addEventListener('pointerdown',firstGesture);addEventListener('keydown',firstGesture);
 function tone(fr,dur=.3,type='sine',g0=.1,slide=2){if(!MUS.on||!MUS.ctx||MUS.ctx.state!=='running')return;const c=MUS.ctx,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(fr,c.currentTime);o.frequency.exponentialRampToValueAtTime(Math.max(20,fr*slide),c.currentTime+dur*.6);g.gain.setValueAtTime(g0,c.currentTime);g.gain.exponentialRampToValueAtTime(.0008,c.currentTime+dur);o.connect(g);g.connect(MUS.sfx);o.start();o.stop(c.currentTime+dur+.05)}
-function whoosh(){if(!MUS.on||!MUS.ctx)return;const t=MUS.ctx.currentTime;MUS.bp.frequency.cancelScheduledValues(t);MUS.bp.frequency.setValueAtTime(300,t);MUS.bp.frequency.exponentialRampToValueAtTime(5000,t+.8);MUS.sh.gain.cancelScheduledValues(t);MUS.sh.gain.setValueAtTime(0,t);MUS.sh.gain.linearRampToValueAtTime(.35,t+.4);MUS.sh.gain.linearRampToValueAtTime(0,t+1)}
+function whoosh(){if(!MUS.on||!MUS.ctx||MUS.ctx.state!=='running')return;const t=MUS.ctx.currentTime;MUS.bp.frequency.cancelScheduledValues(t);MUS.bp.frequency.setValueAtTime(300,t);MUS.bp.frequency.exponentialRampToValueAtTime(5000,t+.8);MUS.sh.gain.cancelScheduledValues(t);MUS.sh.gain.setValueAtTime(0,t);MUS.sh.gain.linearRampToValueAtTime(.35,t+.4);MUS.sh.gain.linearRampToValueAtTime(0,t+1)}
 let lastTick=0;
-document.addEventListener('pointerover',e=>{const el=e.target.closest&&e.target.closest('a,button,label');if(el){$('#cr').classList.add('big');const n=performance.now();if(n-lastTick>90){lastTick=n;tone(1200,.05,'sine',.025,1.2)}}});
-document.addEventListener('pointerout',e=>{if(e.target.closest&&e.target.closest('a,button,label'))$('#cr').classList.remove('big')});
+document.addEventListener('pointerover',e=>{const el=e.target.closest&&e.target.closest('a,button,label');if(el){const cr=$('#cr');cr&&cr.classList.add('big');const n=performance.now();if(n-lastTick>90){lastTick=n;tone(1200,.05,'sine',.025,1.2)}}});
+document.addEventListener('pointerout',e=>{if(e.target.closest&&e.target.closest('a,button,label')){const cr=$('#cr');cr&&cr.classList.remove('big')}});
 
 /* ---------- Text effects ---------- */
-function scr(el,txt){clearInterval(el._i);let f=0;el._i=setInterval(()=>{let o='';for(let i=0;i<txt.length;i++)o+=i<f/2?txt[i]:(txt[i]===' '?' ':CHARS[Math.random()*CHARS.length|0]);el.textContent=o;if(++f>txt.length*2){clearInterval(el._i);el.textContent=txt}},30)}
+function scr(el,txt){if(!el)return;clearInterval(el._i);let f=0;el._i=setInterval(()=>{let o='';for(let i=0;i<txt.length;i++)o+=i<f/2?txt[i]:(txt[i]===' '?' ':CHARS[Math.random()*CHARS.length|0]);el.textContent=o;if(++f>txt.length*2){clearInterval(el._i);el.textContent=txt}},30)}
 const roles=['Web Designer','Creative Developer','SEO Strategist','Sound Tinkerer','Game Maker'];let ri=0;
 if(!RM)setInterval(()=>{if(RK!=='home')return;ri=(ri+1)%roles.length;scr($('#role'),roles[ri])},2800);
-$$('.split').forEach(el=>{const txt=el.textContent.trim();el.textContent='';el.setAttribute('aria-label',txt);let n=0;
+safe(()=>$$('.split').forEach(el=>{const txt=el.textContent.trim();el.textContent='';el.setAttribute('aria-label',txt);let n=0;
   txt.split(/(\s+)/).forEach(word=>{if(!word)return;if(/^\s+$/.test(word)){el.appendChild(document.createTextNode(' '));return}
     const w=document.createElement('span');w.className='w';w.setAttribute('aria-hidden','true');
-    [...word].forEach(c=>{const s=document.createElement('span');s.className='ch';s.textContent=c;s.style.transitionDelay=(n++*24)+'ms';w.appendChild(s)});el.appendChild(w)})});
+    [...word].forEach(c=>{const s=document.createElement('span');s.className='ch';s.textContent=c;s.style.transitionDelay=(n++*24)+'ms';w.appendChild(s)});el.appendChild(w)})}),'split');
 function count(el){if(el.dataset.done)return;el.dataset.done=1;const to=+el.dataset.to,dec=+el.dataset.dec||0,t0=performance.now();(function f(t){const p=Math.min((t-t0)/1700,1);el.textContent=(to*(1-Math.pow(1-p,4))).toFixed(dec);if(p<1)requestAnimationFrame(f)})(t0)}
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting||LK.has('pre')||LK.has('tr'))return;e.target.classList.add('in');io.unobserve(e.target);$$('.num',e.target).forEach(count)}),{threshold:0,rootMargin:'0px 0px -10% 0px'});
 function armReveals(){$$('.page.on .split,.page.on .rv').forEach(e=>{e.classList.remove('in');io.unobserve(e);io.observe(e)});$$('.page.on .num').forEach(n=>{n.dataset.done='';n.textContent='0'})}
-const mfEl=$('#mf'),MW=mfEl.textContent.trim().split(/\s+/).map(w=>{const s=document.createElement('span');s.className='mw'+(/^(places|Google|forget)/.test(w)?' hl':'');s.textContent=w+' ';return s});mfEl.textContent='';MW.forEach(s=>mfEl.appendChild(s));
+let MW=[];safe(()=>{const mfEl=$('#mf');MW=mfEl.textContent.trim().split(/\s+/).map(w=>{const s=document.createElement('span');s.className='mw'+(/^(places|Google|forget)/.test(w)?' hl':'');s.textContent=w+' ';return s});mfEl.textContent='';MW.forEach(s=>mfEl.appendChild(s))},'manifesto');
 
 /* ---------- Layout ---------- */
 const L={vh:innerHeight,docH:0};
 const si=id=>{const e=$(id);if(!e)return null;const r=e.getBoundingClientRect();return{t:r.top+scrollY,h:r.height}};
 function measure(){L.vh=innerHeight;L.docH=document.documentElement.scrollHeight;L.hero=RK==='home'?si('#hero'):null;L.man=RK==='home'?si('#manifesto'):null;L.work=RK==='work'?si('#work'):null}
 const prog=s=>clamp((S.sy-s.t)/Math.max(1,s.h-L.vh),0,1);
-addEventListener('resize',()=>{
-  measure();
-  if(G) G.resize();
-  if(typeof GM !== 'undefined' && GM && typeof GM.resize === 'function') GM.resize();
+addEventListener('resize',()=>{measure();G&&G.resize();GM.resize()});
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),1900)}
+
+/* ---------- Global click delegation (accordions, features, anchors) ---------- */
+document.addEventListener('click',e=>{
+  const ab=e.target.closest&&e.target.closest('.acc>button');
+  if(ab){const a=ab.parentElement,open=!a.classList.contains('open'),grp=a.parentElement;
+    $$('.acc.open',grp).forEach(x=>{if(x!==a){x.classList.remove('open');$('button',x).setAttribute('aria-expanded','false')}});
+    a.classList.toggle('open',open);ab.setAttribute('aria-expanded',open);tone(open?520:380,.18);setTimeout(measure,800);return}
+  const d=e.target.closest&&e.target.closest('[data-d]');
+  if(d){const k=d.dataset.d;if(k==='snd')sndToggle();else if(k==='lt'){$('#fgrid .fc:nth-child(8)').classList.toggle('lt');tone(480,.2)}else if(k==='trn')demoTransition();else if(k==='cmd')cmdOpen(true)}
+  const a=e.target.closest&&e.target.closest('a[href^="#/"]');
+  if(a){e.preventDefault();menuToggle(false);const h=a.getAttribute('href');if(H2R[h.slice(1)]===RK)scrollTo({top:0,behavior:RM?'auto':'smooth'});else location.hash=h}
 });
+on('#skip','click',e=>{e.preventDefault();const mn=$('#main');mn&&mn.focus()});
+addEventListener('mousemove',e=>{const c=e.target.closest&&e.target.closest('.fc');if(c){const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;c.style.setProperty('--gx',x*100+'%');c.style.setProperty('--gy',y*100+'%');c.style.transform=`rotateY(${(x-.5)*8}deg) rotateX(${-(y-.5)*8}deg)`}
+  const t=e.target.closest&&e.target.closest('.tz a');if(t){const r=t.getBoundingClientRect();t.style.setProperty('--gx',(e.clientX-r.left)/r.width*100+'%');t.style.setProperty('--gy',(e.clientY-r.top)/r.height*100+'%')}
+  const mg=e.target.closest&&e.target.closest('.mag');if(mg){const r=mg.getBoundingClientRect();mg.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.28}px,${(e.clientY-r.top-r.height/2)*.35}px)`}});
+addEventListener('mouseout',e=>{const c=e.target.closest&&e.target.closest('.fc');if(c&&!c.contains(e.relatedTarget))c.style.transform='';const mg=e.target.closest&&e.target.closest('.mag');if(mg&&!mg.contains(e.relatedTarget))mg.style.transform=''});
+
 /* ---------- Page widgets ---------- */
-$$('.acc>button').forEach(b=>b.addEventListener('click',()=>{const a=b.parentElement,open=!a.classList.contains('open'),grp=a.parentElement;
-  if(grp.hasAttribute('data-single'))$$('.acc.open',grp).forEach(x=>{if(x!==a){x.classList.remove('open');$('button',x).setAttribute('aria-expanded','false')}});
-  a.classList.toggle('open',open);b.setAttribute('aria-expanded',open);tone(open?520:380,.18);setTimeout(measure,800)}));
-const CHK=['One unique, descriptive title tag per page','A clear meta description that earns the click','One H1 per page with a logical heading order','Canonical URLs set to avoid duplicates','XML sitemap submitted to Search Console','robots.txt allows crawling of key pages','HTTPS everywhere, no mixed content','Mobile-friendly, responsive layout','Structured data that matches visible content','Descriptive alt text on meaningful images','LCP under 2.5s, INP under 200ms, CLS under 0.1','Internal links with descriptive anchor text'];
-const chk=$('#chk');CHK.forEach(t=>{const l=document.createElement('label');l.innerHTML=`<input type="checkbox" aria-label="${t}"><span>${t}</span>`;chk.appendChild(l)});
-const VERD=['Tick what your site already does.','Lots of easy wins here.','Solid start. Let\'s tighten it.','Nearly there. Details decide rankings.','Strong technical base. Content and authority come next.'];
-chk.addEventListener('change',()=>{const n=$$('input:checked',chk).length;$('#scoreN').textContent=n+'/12';$('#ringFg').style.strokeDashoffset=(326.7*(1-n/12)).toFixed(1);$('#scoreT').textContent=VERD[n===0?0:n<4?1:n<8?2:n<12?3:4];tone(400+n*60,.22,'triangle',.08);FX.pulse=.6});
-const steps=$$('.step'),rail=$('#rail');steps.forEach(()=>rail.appendChild(document.createElement('i')));
-let stepIO = null;
+safe(()=>{const CHK=['One unique, descriptive title tag per page','A clear meta description that earns the click','One H1 per page with a logical heading order','Canonical URLs set to avoid duplicates','XML sitemap submitted to Search Console','robots.txt allows crawling of key pages','HTTPS everywhere, no mixed content','Mobile-friendly, responsive layout','Structured data that matches visible content','Descriptive alt text on meaningful images','LCP under 2.5s, INP under 200ms, CLS under 0.1','Internal links with descriptive anchor text'];
+  const chk=$('#chk');CHK.forEach(t=>{const l=document.createElement('label');l.innerHTML=`<input type="checkbox" aria-label="${esc(t)}"><span>${t}</span>`;chk.appendChild(l)});
+  const V=['Tick what your site already does.','Lots of easy wins here.','Solid start. Let\'s tighten it.','Nearly there. Details decide rankings.','Strong technical base. Content and authority come next.'];
+  chk.addEventListener('change',()=>{const n=$$('input:checked',chk).length;$('#scoreN').textContent=n+'/12';$('#ringFg').style.strokeDashoffset=(326.7*(1-n/12)).toFixed(1);$('#scoreT').textContent=V[n===0?0:n<4?1:n<8?2:n<12?3:4];tone(400+n*60,.22,'triangle',.08);FX.pulse=.6})},'seoaudit');
+safe(()=>{const LC=['Every page has a unique title and meta description','Favicon, Open Graph image and Twitter card added','Canonical URL set to the final domain','sitemap.xml and robots.txt uploaded','Redirects from old URLs tested','HTTPS working, no mixed content','Forms tested end to end','All links and buttons checked','Keyboard and screen-reader pass done','Contrast checked on every colour pair','Images optimised with alt text','Lighthouse run on mobile','Analytics and Search Console connected','Backup and handover notes saved'];
+  let saved=[];try{saved=JSON.parse(store.get('pp-launch')||'[]')}catch(e){}
+  const host=$('#lcList');LC.forEach((t,i)=>{const l=document.createElement('label');l.innerHTML=`<input type="checkbox" data-i="${i}" aria-label="${esc(t)}"${saved.includes(i)?' checked':''}><span>${t}</span>`;host.appendChild(l)});
+  const upd=()=>{const n=$$('input:checked',host).length;$('#lcN').textContent=n+'/'+LC.length;$('#lcFg').style.strokeDashoffset=(326.7*(1-n/LC.length)).toFixed(1);$('#lcT').textContent=n===LC.length?'Ready to launch.':n?`${LC.length-n} to go.`:'Tick each item as you finish it.'};
+  host.addEventListener('change',()=>{store.set('pp-launch',JSON.stringify($$('input:checked',host).map(x=>+x.dataset.i)));upd();tone(440+$$('input:checked',host).length*40,.2,'triangle',.07)});upd()},'launch');
+let steps=[];
+function bindSteps(){const rail=$('#rail');rail.innerHTML='';steps=$$('.step');steps.forEach(()=>rail.appendChild(document.createElement('i')));if(stepIO)stepIO.disconnect();
+  stepIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const i=steps.indexOf(e.target);steps.forEach((s,k)=>s.classList.toggle('act',k===i));$$('i',rail).forEach((t,k)=>t.classList.toggle('on',k===i));tone(280+i*40,.2,'sine',.05)}}),{threshold:.55});steps.forEach(s=>stepIO.observe(s))}
+safe(bindSteps,'steps');
+safe(()=>{on('#copy','click',()=>{try{NAV.clipboard.writeText(MAIL)}catch(e){}toast('Email copied');tone(660,.3)});
+  on('#cform','submit',e=>{e.preventDefault();const f=e.target,n=f.name.value.trim(),em=f.email.value.trim(),msg=f.message.value.trim(),note=$('#cnote');
+    if(!n||!/^\S+@\S+\.\S+$/.test(em)||!msg){note.textContent='Please add your name, a valid email and a message.';tone(200,.3,'sawtooth',.06,.6);return}
+    const ints=$$('.chips input:checked',f).map(x=>x.value).join(', ')||'Not specified';
+    const body=`Hi Pavan,\n\n${msg}\n\nInterested in: ${ints}\nBudget / timeline: ${f.budget.value||'Not specified'}\n\nFrom: ${n} (${em})`;
+    note.textContent='Opening your email app…';FX.pulse=1;FX.flash=1;tone(740,.4);location.href=`mailto:${MAIL}?subject=${encodeURIComponent('Website enquiry from '+n)}&body=${encodeURIComponent(body)}`})},'contact');
+safe(()=>{const w=$('#fscr');if(w){w.addEventListener('pointerenter',()=>scr(w,'HOVER ME'));w.addEventListener('focus',()=>scr(w,'HOVER ME'))}
+  on('#rpad','pointerdown',e=>{const t=e.currentTarget,r=t.getBoundingClientRect(),d=document.createElement('i');d.className='rp';d.style.left=e.clientX-r.left+'px';d.style.top=e.clientY-r.top+'px';t.appendChild(d);setTimeout(()=>d.remove(),900);tone(300+Math.random()*600,.3,'sine',.08)});
+  const fm=$('#fmot');if(fm)fm.textContent='prefers-reduced-motion: '+(RM?'reduce (honoured)':'no preference');prefTxt()},'featdemos');
+async function demoTransition(){if(busy)return;busy=true;lock('tr',true);scr($('#shutT'),'Wow');whoosh();TR.target=1;$('#shut').className='in';await sleep(900);TR.target=0;$('#shut').className='out';await sleep(900);$('#shut').className='';lock('tr',false);busy=false}
 
-function initStepObserver(){
-  if(!('IntersectionObserver' in window)) return;
+/* ---------- LAB tools ---------- */
+safe(()=>{ /* 01 SERP */
+  const T=$('#sT'),U=$('#sU'),D=$('#sD');const cnt=(el,v,ok,warn)=>{el.textContent=v+' chars';el.className='cnt '+(v<=ok?'ok':v<=warn?'warn':'bad')};
+  const up=()=>{cnt($('#sTc'),T.value.length,60,70);cnt($('#sDc'),D.value.length,160,175);$('#sPu').textContent=U.value;const t=T.value.length>60?T.value.slice(0,58).trim()+'…':T.value,d=D.value.length>160?D.value.slice(0,157).trim()+'…':D.value;$('#sPt').textContent=t||'Page title';$('#sPd').textContent=d||'Meta description'};
+  [T,U,D].forEach(x=>x.addEventListener('input',up));up()},'serp');
+safe(()=>{ /* 02 contrast */
+  const fg=$('#cFg'),bg=$('#cBg'),lum=h=>{const c=h.replace('#','');const [r,g,b]=[0,2,4].map(i=>parseInt(c.substr(i,2),16)/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));return .2126*r+.7152*g+.0722*b};
+  const up=()=>{const a=lum(fg.value),b=lum(bg.value),r=(Math.max(a,b)+.05)/(Math.min(a,b)+.05);$('#cRat').textContent=r.toFixed(2)+':1';
+    const t=[['AA text',4.5],['AA large',3],['AAA text',7],['AAA large',4.5]];$('#cRes').innerHTML=t.map(x=>`<span class="${r>=x[1]?'p':'f'}">${x[0]}<br>${r>=x[1]?'PASS':'FAIL'}</span>`).join('');const p=$('#cPrev');p.style.color=fg.value;p.style.background=bg.value};
+  [fg,bg].forEach(x=>x.addEventListener('input',up));up()},'contrast');
+safe(()=>{ /* 03 type scale */
+  const B=$('#tB'),R=$('#tR'),up=()=>{const b=clamp(+B.value||18,10,40),r=+R.value;const rows=[];let css=':root{\n';
+    for(let n=-2;n<=6;n++){const px=b*Math.pow(r,n),rem=px/16;rows.push(`<div style="font-size:${clamp(px,11,64).toFixed(1)}px"><span>Aa Type</span><small>${n>=0?'+':''}${n} · ${px.toFixed(1)}px · ${rem.toFixed(3)}rem</small></div>`);css+=`  --step-${n<0?'m'+(-n):n}: ${rem.toFixed(3)}rem;\n`}
+    $('#tOut').innerHTML=rows.reverse().join('');$('#tCss').textContent=css+'}'};
+  [B,R].forEach(x=>x.addEventListener('input',up));up();on('#tCp','click',()=>{try{NAV.clipboard.writeText($('#tCss').textContent)}catch(e){}toast('CSS copied')})},'typescale');
+safe(()=>{ /* 04 palette */
+  const h2=h=>{const n=parseInt(h.slice(1),16),r=n>>16&255,g=n>>8&255,b=n&255;const mx=Math.max(r,g,b)/255,mn=Math.min(r,g,b)/255,l=(mx+mn)/2,d=mx-mn;let hh=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));const R=r/255,G2=g/255,B=b/255;hh=mx===R?((G2-B)/d)%6:mx===G2?(B-R)/d+2:(R-G2)/d+4;hh=(hh*60+360)%360}return[hh,s,l]};
+  const hex=(h,s,l)=>{h=((h%360)+360)%360;const c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),mm=l-c/2;let r=0,g=0,b=0;if(h<60){r=c;g=x}else if(h<120){r=x;g=c}else if(h<180){g=c;b=x}else if(h<240){g=x;b=c}else if(h<300){r=x;b=c}else{r=c;b=x}return'#'+[r,g,b].map(v=>Math.round((v+mm)*255).toString(16).padStart(2,'0')).join('')};
+  const up=()=>{const base=h2(TH[thi].a),h=base[0],j=Math.random()*24-12,mode=$('#pM').value;let hs;
+    if(mode==='analog')hs=[h-40+j,h-20+j,h,h+20+j,h+40];else if(mode==='comp')hs=[h,h+15,h+180,h+195+j,h+165];else if(mode==='triad')hs=[h,h+120,h+240,h+60+j,h+180];else hs=[h,h,h,h,h];
+    const L2=mode==='mono'?[.08,.22,.45,.68,.9]:[.08,.3,.52,.68,.9],S2=mode==='mono'?[.5,.55,.65,.7,.7]:[.45,.65,.8,.75,.5];
+    $('#pal').innerHTML=hs.map((hh,i)=>{const c=hex(hh,S2[i],L2[i]);return`<button style="background:${c};color:${L2[i]>.5?'#000':'#fff'}" data-c="${c}">${c}</button>`}).join('')};
+  $('#pM').addEventListener('change',up);on('#pG','click',up);$('#pal').addEventListener('click',e=>{const b=e.target.closest('button');if(b){try{NAV.clipboard.writeText(b.dataset.c)}catch(x){}toast(b.dataset.c+' copied')}});up();themeCbs.push(up)},'palette');
+safe(()=>{ /* 05 synth */
+  const KS='asdfghjkl'.split(''),SC={pent:[0,3,5,7,10,12,15,17,19],maj:[0,2,4,5,7,9,11,12,14],min:[0,2,3,5,7,8,10,12,14],chrom:[0,1,2,3,4,5,6,7,8]};
+  const host=$('#keys');KS.forEach((k,i)=>{const b=document.createElement('button');b.className='key';b.dataset.i=i;b.innerHTML=`${k.toUpperCase()}<small>${i+1}</small>`;host.appendChild(b)});
+  let lc=null,dly=null;const ensure=()=>{if(lc){if(lc.state==='suspended')lc.resume();return true}const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;lc=new AC();dly=lc.createDelay();dly.delayTime.value=.28;const fb=lc.createGain();fb.gain.value=.32;dly.connect(fb);fb.connect(dly);const o=lc.createGain();o.gain.value=.5;dly.connect(o);o.connect(lc.destination);return true};
+  const play=i=>{if(!ensure())return;const semi=SC[$('#yS').value][i],f=110*Math.pow(2,semi/12),o=lc.createOscillator(),g=lc.createGain(),fl=lc.createBiquadFilter();o.type=$('#yW').value;o.frequency.value=f;fl.type='lowpass';fl.frequency.value=2600;
+    const t=lc.currentTime,v=.22*MUS.vol+.02;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0008,t+.9);o.connect(fl);fl.connect(g);g.connect(lc.destination);g.connect(dly);o.start(t);o.stop(t+1);
+    const b=host.children[i];b.classList.add('on');setTimeout(()=>b.classList.remove('on'),140);FX.pulse=Math.max(FX.pulse,.4)};
+  host.addEventListener('pointerdown',e=>{const b=e.target.closest('.key');if(b)play(+b.dataset.i)});
+  addEventListener('keydown',e=>{if(RK!=='lab'||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)||e.ctrlKey||e.metaKey||e.repeat)return;const i=KS.indexOf(e.key.toLowerCase());if(i>=0)play(i)})},'synth');
 
-  stepIO = new IntersectionObserver(es=>{
-    es.forEach(e=>{
-      if(e.isIntersecting){
-        const i=steps.indexOf(e.target);
-        steps.forEach((s,k)=>s.classList.toggle('act',k===i));
-        $$('i',rail).forEach((t,k)=>t.classList.toggle('on',k===i));
-        tone(280+i*40,.2,'sine',.05);
-      }
-    });
-  },{threshold:.55});
+/* ---------- PLAN tool ---------- */
+safe(()=>{const OPTS=[['Custom design system',6,'i1'],['Blog or content pages',5,null],['Booking or contact forms',3,null],['3D or interactive hero',8,'i5'],['Built-in game or microsite',9,'i6'],['Generative sound',5,'i6'],['SEO setup and content strategy',6,'i3'],['Performance and Core Web Vitals work',4,'i4'],['Accessibility review',4,null],['Migration and redirects from an old site',6,'i2'],['Ongoing care after launch',3,null]];
+  const host=$('#plOpts');OPTS.forEach((o,i)=>{const l=document.createElement('label');l.innerHTML=`<input type="checkbox" data-i="${i}" aria-label="${esc(o[0])}"><span>${o[0]}</span>`;host.appendChild(l)});
+  const TIERS=[['Launch site','A focused site with strong design, solid SEO foundations and fast loading. A great place to start.'],['Full build','A larger, multi-page build with custom interactions, structured content and a proper search strategy.'],['Custom experience','A bespoke, signature build with advanced interactivity. Best started with a short discovery conversation.']];
+  const up=()=>{const pg=+$('#plPages').value;$('#plPv').textContent=pg;const sel=$$('input:checked',host).map(x=>OPTS[+x.dataset.i]);const score=pg*2+sel.reduce((a,o)=>a+o[1],0);
+    const ti=score<16?0:score<36?1:2;$('#plTier').textContent=TIERS[ti][0];$('#plTxt').textContent=TIERS[ti][1];$('#plBar').style.width=clamp(score/80*100,6,100)+'%';
+    $('#plList').innerHTML=`<li>${pg} page${pg>1?'s':''}</li>`+sel.map(o=>`<li>${o[0]}</li>`).join('');
+    PLAN_TEXT=`Scope planner result: ${TIERS[ti][0]}\nPages: ${pg}\nExtras: ${sel.length?sel.map(o=>o[0]).join(', '):'none selected'}`;PLAN_CHIPS=[...new Set(sel.map(o=>o[2]).filter(Boolean))]};
+  $('#plPages').addEventListener('input',up);host.addEventListener('change',()=>{up();tone(500,.15)});up();
+  on('#plSend','click',()=>{location.hash='#/contact';FX.pulse=1;tone(700,.3)})},'plan');
+function applyPlan(){if(RK!=='contact'||!PLAN_TEXT)return;const ta=$('#f-msg');if(ta&&!ta.value)ta.value='Hi Pavan,\n\nI used your scope planner.\n\n'+PLAN_TEXT+'\n\n';PLAN_CHIPS.forEach(id=>{const c=$('#'+id);if(c)c.checked=true})}
 
-  steps.forEach(s=>stepIO.observe(s));
-}
-const MAIL='hello@pavanp.me';/* EDIT */
-function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1900)}
-$('#copy').onclick=()=>{try{navigator.clipboard.writeText(MAIL)}catch(e){}toast('Email copied');tone(660,.3)};
-$('#cform').addEventListener('submit',e=>{e.preventDefault();const f=e.target,n=f.name.value.trim(),em=f.email.value.trim(),msg=f.message.value.trim(),note=$('#cnote');
-  if(!n||!/^\S+@\S+\.\S+$/.test(em)||!msg){note.textContent='Please add your name, a valid email and a message.';tone(200,.3,'sawtooth',.06,.6);return}
-  const ints=$$('.chips input:checked',f).map(x=>x.value).join(', ')||'Not specified';
-  const body=`Hi Pavan,\n\n${msg}\n\nInterested in: ${ints}\nBudget / timeline: ${f.budget.value||'Not specified'}\n\nFrom: ${n} (${em})`;
-  note.textContent='Opening your email app…';FX.pulse=1;FX.flash=1;tone(740,.4);location.href=`mailto:${MAIL}?subject=${encodeURIComponent('Website enquiry from '+n)}&body=${encodeURIComponent(body)}`});
-$$('.mag').forEach(b=>{b.addEventListener('mousemove',e=>{const r=b.getBoundingClientRect();b.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.28}px,${(e.clientY-r.top-r.height/2)*.35}px)`});b.addEventListener('mouseleave',()=>b.style.transform='')});
-$$('.fc').forEach(c=>{c.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;c.style.setProperty('--gx',x*100+'%');c.style.setProperty('--gy',y*100+'%');c.style.transform=`rotateY(${(x-.5)*8}deg) rotateX(${-(y-.5)*8}deg)`});c.addEventListener('mouseleave',()=>c.style.transform='')});
-$$('.tz a').forEach(c=>c.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect();c.style.setProperty('--gx',(e.clientX-r.left)/r.width*100+'%');c.style.setProperty('--gy',(e.clientY-r.top)/r.height*100+'%')}));
-/* feature demos */
-$('[data-d=snd]').onclick=sndToggle;
-$('[data-d=lt]').onclick=()=>{$('#flt').classList.toggle('lt');tone(480,.2)};
-$('[data-d=trn]').onclick=async()=>{if(busy)return;busy=true;lock('tr',true);scr(shutT,'Wow');whoosh();TR.target=1;shut.className='in';await sleep(900);TR.target=0;shut.className='out';await sleep(900);shut.className='';lock('tr',false);busy=false};
-{const w=$('#fscr');w.addEventListener('pointerenter',()=>scr(w,'HOVER ME'));w.addEventListener('focus',()=>scr(w,'HOVER ME'))}
-$('#rpad').addEventListener('pointerdown',e=>{const r=e.currentTarget.getBoundingClientRect(),d=document.createElement('i');d.className='rp';d.style.left=e.clientX-r.left+'px';d.style.top=e.clientY-r.top+'px';e.currentTarget.appendChild(d);setTimeout(()=>d.remove(),900);tone(300+Math.random()*600,.3,'sine',.08)});
-$('#fmot').textContent='prefers-reduced-motion: '+(RM?'reduce (honoured)':'no preference');
+/* ---------- Command palette + easter eggs ---------- */
+const cmd=$('#cmd'),cin=$('#cmdIn'),clist=$('#cmdList');let cmdSel=0,cmdItems=[];
+function cmdAll(){const a=[];Object.keys(ROUTES).forEach(k=>{if(k==='explore'&&!G)return;a.push({n:'Go to '+ROUTES[k].n,s:'page',f:()=>{location.hash='#'+ROUTES[k].h}})});
+  a.push({n:'Toggle sound',s:'action',f:sndToggle},{n:'Next colour theme',s:'action',f:()=>setTheme(thi+1)},{n:'Play Bug Storm',s:'game',f:()=>GM.start()},{n:'Copy email address',s:'action',f:()=>{try{NAV.clipboard.writeText(MAIL)}catch(e){}toast('Email copied')}},{n:'Scroll to top',s:'action',f:()=>scrollTo({top:0,behavior:'smooth'})});return a}
+function cmdRender(){const q=cin.value.toLowerCase().trim();cmdItems=cmdAll().filter(x=>!q||x.n.toLowerCase().includes(q));cmdSel=clamp(cmdSel,0,Math.max(0,cmdItems.length-1));clist.innerHTML=cmdItems.map((x,i)=>`<li class="${i===cmdSel?'sel':''}" data-i="${i}">${x.n}<small>${x.s}</small></li>`).join('')||'<li>No matches</li>'}
+function cmdOpen(v){cmd.classList.toggle('open',v);lock('cmd',v);if(v){cin.value='';cmdSel=0;cmdRender();setTimeout(()=>cin.focus(),30);tone(600,.15)}}
+function cmdRun(i){const x=cmdItems[i];if(!x)return;cmdOpen(false);setTimeout(x.f,60)}
+cin.addEventListener('input',()=>{cmdSel=0;cmdRender()});
+clist.addEventListener('click',e=>{const li=e.target.closest('li[data-i]');if(li)cmdRun(+li.dataset.i)});
+cmd.addEventListener('pointerdown',e=>{if(e.target===cmd)cmdOpen(false)});
+on('#kbtn','click',()=>cmdOpen(true));
+let typed='';
+addEventListener('keydown',e=>{
+  if(cmd.classList.contains('open')){if(e.key==='Escape')cmdOpen(false);else if(e.key==='ArrowDown'){e.preventDefault();cmdSel=Math.min(cmdSel+1,cmdItems.length-1);cmdRender()}else if(e.key==='ArrowUp'){e.preventDefault();cmdSel=Math.max(cmdSel-1,0);cmdRender()}else if(e.key==='Enter'){e.preventDefault();cmdRun(cmdSel)}return}
+  const typing=/INPUT|TEXTAREA|SELECT/.test(e.target.tagName);
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();cmdOpen(true);return}
+  if(typing||GM.run||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.key==='/'){e.preventDefault();cmdOpen(true);return}
+  if((e.key==='t'||e.key==='T')&&RK!=='explore'&&RK!=='lab')setTheme(thi+1);
+  if(RK!=='lab'){typed=(typed+e.key.toLowerCase()).slice(-4);if(typed==='play'){typed='';GM.start()}}});
 
 /* ---------- Work UI ---------- */
 const PROJ=[ /* EDIT: replace concept entries with real projects when you have them */
@@ -665,12 +805,12 @@ function workUI(wp){const vt=wp+.1;let k=0,best=9;PT.forEach((t,i)=>{const d=Mat
 /* ---------- Explore ---------- */
 const EX={active:false,blend:0,yaw:0,pitch:0,keys:{},vel:null,pos:null,q:null,drag:false,lx:0,ly:0,speed:0,joy:{x:0,y:0},found:0};
 const DISC=['Speed is a feature. Good means a main-content paint under 2.5 seconds.','Every page gets one H1, a unique title and a real description.','Accessible by default: keyboard, contrast, alt text and reduced motion.','3D only where it earns its place, always with a fast fallback.','Plain HTML, CSS and JS on hosting you control. No lock-in.'];
-function joyBind(el,out){const k=$('i',el);let id=null,c=null;
+function joyBind(el,out){if(!el)return;const k=$('i',el);let id=null,c=null;
   const mv=e=>{let dx=e.clientX-c.x,dy=e.clientY-c.y;const l=Math.hypot(dx,dy),R=50;if(l>R){dx*=R/l;dy*=R/l}k.style.transform=`translate(${dx}px,${dy}px)`;out.x=dx/R;out.y=-dy/R};
   el.addEventListener('pointerdown',e=>{e.stopPropagation();id=e.pointerId;el.setPointerCapture(e.pointerId);const r=el.getBoundingClientRect();c={x:r.left+r.width/2,y:r.top+r.height/2};mv(e)});
   el.addEventListener('pointermove',e=>{if(e.pointerId===id)mv(e)});const end=e=>{if(e.pointerId!==id)return;id=null;out.x=out.y=0;k.style.transform=''};el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end)}
 joyBind($('#joy'),EX.joy);
-addEventListener('keydown',e=>{if(RK!=='explore')return;const k=e.key.toLowerCase();if(k==='escape'){location.hash='#/';return}EX.keys[k]=true;EX.keys.shift=e.shiftKey;if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault()});
+addEventListener('keydown',e=>{if(RK!=='explore'||cmd.classList.contains('open'))return;const k=e.key.toLowerCase();if(k==='escape'){location.hash='#/';return}EX.keys[k]=true;EX.keys.shift=e.shiftKey;if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault()});
 addEventListener('keyup',e=>{const k=e.key.toLowerCase();EX.keys[k]=false;EX.keys.shift=e.shiftKey});addEventListener('blur',()=>{EX.keys={}});
 function onFound(msg,n){const d=$('#disc');d.textContent=msg;d.classList.add('show');clearTimeout(d._t);d._t=setTimeout(()=>d.classList.remove('show'),4600);$('#xs').textContent=n+' / 5';
   [523,659,784].forEach((f,i)=>setTimeout(()=>tone(f,.5,'sine',.1,1.01),i*110));if(n===5)setTimeout(()=>{d.textContent='All signals found. That is how I think about every website.';d.classList.add('show');FX.pulse=1.5},4800)}
@@ -678,13 +818,13 @@ function onFound(msg,n){const d=$('#disc');d.textContent=msg;d.classList.add('sh
 /* ================= GAME: BUG STORM ================= */
 const GM=(()=>{
   const cv=$('#gc'),cx=cv.getContext('2d');let W=0,H=0,run=false,paused=false,over=false,choosing=false;
-  let P,en,bl,gm,pt,bolts,rings,T,spT,score,kills,xp,lvl,need,shake,bossT,boss,UP,fT,oA,cT,nT,hT,warn,choices,lastHit=0;
-  const keys={},J={x:0,y:0};let md=false,mx=0,my=0,best=+store.get('pp-best')||0;$('#bestS').textContent=best;
+  let P,en,bl,gm,pt,bolts,rings,T,spT,score,kills,xp,lvl,need,shake,bossT,boss,UPG,fT,oA,cT,nT,hT,warn,choices,lastHit=0;
+  const keys={},J={x:0,y:0};let md=false,mx=0,my=0,best=+store.get('pp-best')||0;const bs=$('#bestS');if(bs)bs.textContent=best;
   const POOL=[{k:'rate',n:'Overclock',d:'Fire 18% faster',max:6},{k:'dmg',n:'Hotfix',d:'+25% bullet damage',max:6},{k:'multi',n:'Fork()',d:'+1 projectile per shot',max:4},{k:'pierce',n:'Pass-through',d:'Bullets pierce +1 target',max:4},{k:'orbit',n:'Orbit Blades',d:'+1 spinning blade guards you',max:5},{k:'chain',n:'Chain Lightning',d:'Arcs between nearby bugs',max:5},{k:'nova',n:'Shockwave',d:'Periodic blast that damages and pushes back',max:5},{k:'magnet',n:'Magnet',d:'+40% gem pickup range',max:4},{k:'speed',n:'Turbo',d:'+10% move speed',max:5},{k:'hp',n:'Firewall',d:'+25 max HP and a heal',max:5},{k:'regen',n:'Auto-repair',d:'Slowly regenerate HP',max:4}];
-  $('#uplist').innerHTML=POOL.map(u=>`<li><b>${u.n}</b><span>${u.d}</span></li>`).join('');
+  const ul=$('#uplist');if(ul)ul.innerHTML=POOL.map(u=>`<li><b>${u.n}</b><span>${u.d}</span></li>`).join('');
   const fm=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0');
   function size(){const d=Math.min(devicePixelRatio,2);W=innerWidth;H=innerHeight;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0)}
-  function reset(){P={x:0,y:0,hp:100,max:100,r:11,ang:0,vx:0,vy:0};en=[];bl=[];gm=[];pt=[];bolts=[];rings=[];T=0;spT=0;score=0;kills=0;xp=0;lvl=1;need=6;shake=0;bossT=90;boss=null;warn=0;UP={rate:0,dmg:0,multi:0,pierce:0,orbit:0,chain:0,nova:0,magnet:0,speed:0,hp:0,regen:0};fT=0;oA=0;cT=1.5;nT=3;hT=0;over=false;choosing=false;paused=false}
+  function reset(){P={x:0,y:0,hp:100,max:100,r:11,ang:0,vx:0,vy:0};en=[];bl=[];gm=[];pt=[];bolts=[];rings=[];T=0;spT=0;score=0;kills=0;xp=0;lvl=1;need=6;shake=0;bossT=90;boss=null;warn=0;UPG={rate:0,dmg:0,multi:0,pierce:0,orbit:0,chain:0,nova:0,magnet:0,speed:0,hp:0,regen:0};fT=0;oA=0;cT=1.5;nT=3;hT=0;over=false;choosing=false;paused=false}
   const SF={shoot:()=>tone(880,.05,'square',.012,.5),hit:()=>{const n=performance.now();if(n-lastHit>60){lastHit=n;tone(240,.07,'sawtooth',.025,.6)}},kill:()=>tone(160,.14,'triangle',.05,.4),gem:()=>tone(1320,.06,'sine',.025,1.4),hurt:()=>tone(110,.3,'sawtooth',.09,.5),lvl:()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.4,'sine',.08,1.01),i*80)),boss:()=>tone(70,1.2,'sawtooth',.12,.5)};
   const sfx=k=>SF[k]&&SF[k]();
   const DEF={bug:{hp:8,sp:62,r:12,dmg:8,xp:1,c:'a',sh:0},lag:{hp:4,sp:118,r:8,dmg:6,xp:1,c:'b',sh:1},pop:{hp:44,sp:42,r:19,dmg:14,xp:4,c:'a',sh:2},shift:{hp:16,sp:74,r:11,dmg:9,xp:2,c:'b',sh:3},boss:{hp:700,sp:48,r:42,dmg:22,xp:30,c:'a',sh:4}};
@@ -693,11 +833,11 @@ const GM=(()=>{
   function burst(x,y,n,c,sp=140){for(let i=0;i<n;i++){const a=Math.random()*6.283,v=sp*(.3+Math.random());pt.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:.5+Math.random()*.4,c})}}
   function nearest(x,y,rg,ex){let b=null,bd=rg*rg;for(const e of en){if(ex&&ex.includes(e))continue;const d=(e.x-x)**2+(e.y-y)**2;if(d<bd){bd=d;b=e}}return b}
   function hit(e,d,kx,ky){e.hp-=d;e.f=.09;e.kx+=kx;e.ky+=ky}
-  function offer(){const ok=POOL.filter(u=>UP[u.k]<u.max),ch=[];while(ch.length<3&&ok.length)ch.push(ok.splice(Math.random()*ok.length|0,1)[0]);
-    if(!ch.length){P.hp=P.max;return}choices=ch;$('#gch').innerHTML=ch.map((u,i)=>`<button class="gcard" data-i="${i}"><small>${i+1} · LV ${UP[u.k]+1}/${u.max}</small><b>${u.n}</b><span>${u.d}</span></button>`).join('');
+  function offer(){const ok=POOL.filter(u=>UPG[u.k]<u.max),ch=[];while(ch.length<3&&ok.length)ch.push(ok.splice(Math.random()*ok.length|0,1)[0]);
+    if(!ch.length){P.hp=P.max;return}choices=ch;$('#gch').innerHTML=ch.map((u,i)=>`<button class="gcard" data-i="${i}"><small>${i+1} · LV ${UPG[u.k]+1}/${u.max}</small><b>${u.n}</b><span>${u.d}</span></button>`).join('');
     $('#gup').classList.add('show');choosing=true;sfx('lvl');setTimeout(()=>{const b=$('#gch button');b&&b.focus()},60)}
-  function pick(i){const u=choices&&choices[i];if(!u)return;UP[u.k]++;if(u.k==='hp'){P.max+=25;P.hp=Math.min(P.max,P.hp+40)}$('#gup').classList.remove('show');choosing=false;tone(660,.2)}
-  function end(){over=true;const nb=score>best;if(nb){best=score;store.set('pp-best',best);$('#bestS').textContent=best}
+  function pick(i){const u=choices&&choices[i];if(!u)return;UPG[u.k]++;if(u.k==='hp'){P.max+=25;P.hp=Math.min(P.max,P.hp+40)}$('#gup').classList.remove('show');choosing=false;tone(660,.2)}
+  function end(){over=true;const nb=score>best;if(nb){best=score;store.set('pp-best',best);if(bs)bs.textContent=best;prefTxt()}
     $('#gst').innerHTML=`<p>Score <b>${score}</b>${nb?' · <span style="color:var(--b)">New best!</span>':''}<br>Survived <b>${fm(T)}</b> · Bugs squashed <b>${kills}</b> · Level <b>${lvl}</b><br>Best <b>${best}</b></p>`;$('#gover').classList.add('show');sfx('hurt')}
   function step(dt){
     if(!(paused||over||choosing)){
@@ -705,23 +845,23 @@ const GM=(()=>{
       let ix=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+J.x,iy=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0)-J.y;
       if(md&&!ix&&!iy){ix=mx-W/2;iy=my-H/2;const l=Math.hypot(ix,iy);if(l>20){ix/=l;iy/=l}else ix=iy=0}
       const l0=Math.hypot(ix,iy);if(l0>1){ix/=l0;iy/=l0}
-      const sp=190*(1+.1*UP.speed);P.vx=damp(P.vx,ix*sp,12,dt);P.vy=damp(P.vy,iy*sp,12,dt);P.x+=P.vx*dt;P.y+=P.vy*dt;
-      hT-=dt;shake*=Math.pow(.01,dt);if(warn>0)warn-=dt;P.hp=Math.min(P.max,P.hp+UP.regen*.8*dt);
+      const sp=190*(1+.1*UPG.speed);P.vx=damp(P.vx,ix*sp,12,dt);P.vy=damp(P.vy,iy*sp,12,dt);P.x+=P.vx*dt;P.y+=P.vy*dt;
+      hT-=dt;shake*=Math.pow(.01,dt);if(warn>0)warn-=dt;P.hp=Math.min(P.max,P.hp+UPG.regen*.8*dt);
       const tg=nearest(P.x,P.y,560);if(tg)P.ang=Math.atan2(tg.y-P.y,tg.x-P.x);else if(ix||iy)P.ang=Math.atan2(iy,ix);
-      fT-=dt;if(fT<=0&&tg){fT=.5/(1+.18*UP.rate);const n=1+UP.multi;for(let i=0;i<n;i++){const a=P.ang+(i-(n-1)/2)*.16;bl.push({x:P.x,y:P.y,vx:Math.cos(a)*540,vy:Math.sin(a)*540,d:10*(1+.25*UP.dmg),p:1+UP.pierce,l:1.1,h:[]})}sfx('shoot')}
+      fT-=dt;if(fT<=0&&tg){fT=.5/(1+.18*UPG.rate);const n=1+UPG.multi;for(let i=0;i<n;i++){const a=P.ang+(i-(n-1)/2)*.16;bl.push({x:P.x,y:P.y,vx:Math.cos(a)*540,vy:Math.sin(a)*540,d:10*(1+.25*UPG.dmg),p:1+UPG.pierce,l:1.1,h:[]})}sfx('shoot')}
       for(let i=bl.length-1;i>=0;i--){const b=bl[i];b.x+=b.vx*dt;b.y+=b.vy*dt;b.l-=dt;let dead=b.l<=0;
         if(!dead)for(const e of en){if(b.h.includes(e))continue;const dx=e.x-b.x,dy=e.y-b.y,rr=e.r+4;if(dx*dx+dy*dy<rr*rr){b.h.push(e);hit(e,b.d,b.vx*.18,b.vy*.18);burst(b.x,b.y,3,e.c,80);sfx('hit');if(--b.p<=0){dead=true;break}}}
         if(dead)bl.splice(i,1)}
-      oA+=dt*3.4;if(UP.orbit)for(let i=0;i<UP.orbit;i++){const a=oA+i*6.283/UP.orbit,bx=P.x+Math.cos(a)*64,by=P.y+Math.sin(a)*64;
-        for(const e of en){if(e.ob>0)continue;const dx=e.x-bx,dy=e.y-by,rr=e.r+9;if(dx*dx+dy*dy<rr*rr){hit(e,7*(1+.25*UP.dmg),dx*3,dy*3);e.ob=.25;burst(bx,by,2,e.c,70)}}}
-      cT-=dt;if(UP.chain&&cT<=0){cT=Math.max(.7,2.6-.35*UP.chain);let cur={x:P.x,y:P.y};const hit0=[];for(let j=0;j<2+UP.chain;j++){const e=nearest(cur.x,cur.y,j?170:380,hit0);if(!e)break;hit0.push(e);bolts.push({x1:cur.x,y1:cur.y,x2:e.x,y2:e.y,l:.16});hit(e,14+UP.chain*3,0,0);cur=e}}
-      nT-=dt;if(UP.nova&&nT<=0){nT=Math.max(2.4,6.5-.8*UP.nova);const mr=150+22*UP.nova;rings.push({x:P.x,y:P.y,r:10,mr,l:.5});for(const e of en){const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy)||1;if(d<mr)hit(e,16+7*UP.nova,dx/d*320,dy/d*320)}shake=Math.max(shake,5)}
+      oA+=dt*3.4;if(UPG.orbit)for(let i=0;i<UPG.orbit;i++){const a=oA+i*6.283/UPG.orbit,bx=P.x+Math.cos(a)*64,by=P.y+Math.sin(a)*64;
+        for(const e of en){if(e.ob>0)continue;const dx=e.x-bx,dy=e.y-by,rr=e.r+9;if(dx*dx+dy*dy<rr*rr){hit(e,7*(1+.25*UPG.dmg),dx*3,dy*3);e.ob=.25;burst(bx,by,2,e.c,70)}}}
+      cT-=dt;if(UPG.chain&&cT<=0){cT=Math.max(.7,2.6-.35*UPG.chain);let cur={x:P.x,y:P.y};const hit0=[];for(let j=0;j<2+UPG.chain;j++){const e=nearest(cur.x,cur.y,j?170:380,hit0);if(!e)break;hit0.push(e);bolts.push({x1:cur.x,y1:cur.y,x2:e.x,y2:e.y,l:.16});hit(e,14+UPG.chain*3,0,0);cur=e}}
+      nT-=dt;if(UPG.nova&&nT<=0){nT=Math.max(2.4,6.5-.8*UPG.nova);const mr=150+22*UPG.nova;rings.push({x:P.x,y:P.y,r:10,mr,l:.5});for(const e of en){const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy)||1;if(d<mr)hit(e,16+7*UPG.nova,dx/d*320,dy/d*320)}shake=Math.max(shake,5)}
       for(const e of en){const dx=P.x-e.x,dy=P.y-e.y,d=Math.hypot(dx,dy)||1;e.x+=(dx/d*e.sp+e.kx)*dt;e.y+=(dy/d*e.sp+e.ky)*dt;e.kx*=Math.pow(.02,dt);e.ky*=Math.pow(.02,dt);e.f-=dt;e.ob-=dt;
         if(e.k==='shift'){e.tt-=dt;if(e.tt<=0){e.tt=1.4+Math.random();burst(e.x,e.y,6,'b',90);e.x+=dx/d*95;e.y+=dy/d*95;burst(e.x,e.y,6,'b',90)}}
         if(e.k==='boss'){e.tt-=dt;if(e.tt<=0){e.tt=3.5;for(let i=0;i<3;i++)spawn('lag',e.x+(Math.random()-.5)*90,e.y+(Math.random()-.5)*90)}}
         if(d<P.r+e.r&&hT<=0){P.hp-=e.dmg;hT=.7;shake=14;burst(P.x,P.y,14,'a',180);sfx('hurt')}}
       for(let i=en.length-1;i>=0;i--){const e=en[i];if(e.hp<=0){kills++;score+=e.k==='boss'?500:e.k==='pop'?25:10;burst(e.x,e.y,e.k==='boss'?60:10,e.c,e.k==='boss'?320:160);gm.push({x:e.x,y:e.y,v:e.xp});if(e.k==='boss'){boss=null;shake=24;sfx('lvl')}else sfx('kill');en.splice(i,1)}}
-      const mr=80*(1+.4*UP.magnet);for(let i=gm.length-1;i>=0;i--){const g=gm[i],dx=P.x-g.x,dy=P.y-g.y,d=Math.hypot(dx,dy)||1;if(d<mr||g.m){g.m=true;const s=300+(1-Math.min(d/mr,1))*200;g.x+=dx/d*s*dt;g.y+=dy/d*s*dt}if(d<P.r+8){xp+=g.v;score+=g.v;gm.splice(i,1);sfx('gem')}}
+      const mr=80*(1+.4*UPG.magnet);for(let i=gm.length-1;i>=0;i--){const g=gm[i],dx=P.x-g.x,dy=P.y-g.y,d=Math.hypot(dx,dy)||1;if(d<mr||g.m){g.m=true;const s=300+(1-Math.min(d/mr,1))*200;g.x+=dx/d*s*dt;g.y+=dy/d*s*dt}if(d<P.r+8){xp+=g.v;score+=g.v;gm.splice(i,1);sfx('gem')}}
       if(xp>=need){xp-=need;lvl++;need=Math.floor(6+lvl*3.6);offer()}
       spT-=dt;if(spT<=0){spT=Math.max(.14,.9-T*.006);const n=1+Math.floor(T/35);for(let i=0;i<n&&en.length<260;i++){const r=Math.random();let k='bug';if(T>20&&r<.35)k='lag';if(T>45&&r<.15)k='pop';if(T>70&&r>.88)k='shift';spawn(k)}}
       bossT-=dt;if(bossT<=0&&!boss){bossT=90;spawn('boss');boss=en[en.length-1];warn=3;sfx('boss')}
@@ -738,18 +878,17 @@ const GM=(()=>{
     for(const q of gm){cx.fillStyle=Bc;cx.beginPath();cx.moveTo(X(q.x),Y(q.y)-5);cx.lineTo(X(q.x)+4,Y(q.y));cx.lineTo(X(q.x),Y(q.y)+5);cx.lineTo(X(q.x)-4,Y(q.y));cx.fill()}
     for(const r of rings){cx.strokeStyle=A;cx.globalAlpha=r.l/.5;cx.lineWidth=3;cx.beginPath();cx.arc(X(r.x),Y(r.y),r.r,0,6.283);cx.stroke();cx.globalAlpha=1}
     cx.globalCompositeOperation='source-over';
-    for(const e of en){const x=X(e.x),y=Y(e.y);if(x<-60||x>W+60||y<-60||y>H+60)continue;const col=e.f>0?'#fff':cc(e.c);cx.fillStyle=col+'33';cx.strokeStyle=col;cx.lineWidth=2;cx.beginPath();
+    for(const e of en){const x=X(e.x),y=Y(e.y);if(x<-60||x>W+60||y<-60||y>H+60)continue;const col=e.f>0?'#ffffff':cc(e.c);cx.fillStyle=col+'33';cx.strokeStyle=col;cx.lineWidth=2;cx.beginPath();
       if(e.sh===0){cx.arc(x,y,e.r,0,6.283)}else if(e.sh===1){cx.moveTo(x+e.r,y);cx.lineTo(x-e.r,y-e.r);cx.lineTo(x-e.r,y+e.r);cx.closePath()}else if(e.sh===2){cx.rect(x-e.r,y-e.r,e.r*2,e.r*2)}else if(e.sh===3){cx.moveTo(x,y-e.r);cx.lineTo(x+e.r,y);cx.lineTo(x,y+e.r);cx.lineTo(x-e.r,y);cx.closePath()}else{cx.arc(x,y,e.r,0,6.283)}
       cx.fill();cx.stroke();if(e.sh===2){cx.beginPath();cx.moveTo(x-e.r*.5,y-e.r*.5);cx.lineTo(x+e.r*.5,y+e.r*.5);cx.moveTo(x+e.r*.5,y-e.r*.5);cx.lineTo(x-e.r*.5,y+e.r*.5);cx.stroke()}
       if(e.sh===4){cx.beginPath();cx.arc(x,y,e.r*.6,0,6.283);cx.stroke();for(let i=0;i<8;i++){const a=i*.785+T;cx.moveTo(x+Math.cos(a)*e.r,y+Math.sin(a)*e.r);cx.lineTo(x+Math.cos(a)*(e.r+9),y+Math.sin(a)*(e.r+9))}cx.stroke()}}
     cx.globalCompositeOperation='lighter';
     cx.strokeStyle='#fff';cx.lineWidth=2;cx.beginPath();for(const b of bl){cx.moveTo(X(b.x),Y(b.y));cx.lineTo(X(b.x-b.vx*.02),Y(b.y-b.vy*.02))}cx.stroke();
     for(const b of bolts){cx.strokeStyle=Bc;cx.lineWidth=3;cx.globalAlpha=b.l/.16;cx.beginPath();const mxp=(b.x1+b.x2)/2+(Math.random()-.5)*30,myp=(b.y1+b.y2)/2+(Math.random()-.5)*30;cx.moveTo(X(b.x1),Y(b.y1));cx.lineTo(X(mxp),Y(myp));cx.lineTo(X(b.x2),Y(b.y2));cx.stroke();cx.globalAlpha=1}
-    for(let i=0;i<UP.orbit;i++){const a=oA+i*6.283/UP.orbit;cx.fillStyle=Bc;cx.beginPath();cx.arc(X(P.x+Math.cos(a)*64),Y(P.y+Math.sin(a)*64),6,0,6.283);cx.fill()}
+    for(let i=0;i<UPG.orbit;i++){const a=oA+i*6.283/UPG.orbit;cx.fillStyle=Bc;cx.beginPath();cx.arc(X(P.x+Math.cos(a)*64),Y(P.y+Math.sin(a)*64),6,0,6.283);cx.fill()}
     for(const p of pt){cx.globalAlpha=clamp(p.l*2,0,1);cx.fillStyle=cc(p.c);cx.fillRect(X(p.x)-1.5,Y(p.y)-1.5,3,3)}cx.globalAlpha=1;
     cx.globalCompositeOperation='source-over';
     if(!(hT>0&&Math.floor(T*20)%2)){cx.save();cx.translate(X(P.x),Y(P.y));cx.rotate(P.ang);cx.fillStyle='#fff';cx.strokeStyle=A;cx.lineWidth=2;cx.beginPath();cx.moveTo(15,0);cx.lineTo(-10,-9);cx.lineTo(-5,0);cx.lineTo(-10,9);cx.closePath();cx.fill();cx.stroke();cx.restore()}
-    // HUD
     cx.fillStyle='rgba(255,255,255,.08)';cx.fillRect(0,0,W,5);cx.fillStyle=Bc;cx.fillRect(0,0,W*clamp(xp/need,0,1),5);
     cx.fillStyle='rgba(255,255,255,.1)';cx.fillRect(20,24,200,10);cx.fillStyle=A;cx.fillRect(20,24,200*clamp(P.hp/P.max,0,1),10);
     cx.font='500 12px "JetBrains Mono",monospace';cx.fillStyle='#f2efe9';cx.textAlign='left';cx.fillText('HP '+Math.ceil(P.hp)+'/'+P.max,20,52);cx.fillText('LV '+lvl+'   KILLS '+kills,20,70);
@@ -757,11 +896,12 @@ const GM=(()=>{
     if(boss&&boss.hp>0){const bw=Math.min(420,W*.6);cx.fillStyle='rgba(255,255,255,.1)';cx.fillRect(W/2-bw/2,40,bw,8);cx.fillStyle=A;cx.fillRect(W/2-bw/2,40,bw*clamp(boss.hp/boss.max,0,1),8);cx.fillStyle='#f2efe9';cx.font='500 10px "JetBrains Mono",monospace';cx.fillText('MEMORY LEAK',W/2,64)}
     if(warn>0){cx.globalAlpha=Math.min(1,warn);cx.fillStyle=A;cx.font='700 32px "Space Grotesk",sans-serif';cx.fillText('WARNING: MEMORY LEAK DETECTED',W/2,H*.3);cx.globalAlpha=1}
     cx.textAlign='left'}
-  function start(){size();reset();run=true;document.body.classList.add('playing');lock('game',true);$$('.gov').forEach(x=>x.classList.remove('show'));tone(440,.3)}
+  function start(){if(run)return;size();reset();run=true;document.body.classList.add('playing');lock('game',true);$$('.gov').forEach(x=>x.classList.remove('show'));tone(440,.3)}
+  function restart(){size();reset();$$('.gov').forEach(x=>x.classList.remove('show'));tone(440,.3)}
   function quit(){run=false;document.body.classList.remove('playing');lock('game',false);$$('.gov').forEach(x=>x.classList.remove('show'))}
-  function pause(on){if(over||choosing)return;paused=on===undefined?!paused:on;$('#gpause').classList.toggle('show',paused);$('#gpa').textContent=paused?'Resume':'Pause'}
-  $('#playBtn').onclick=start;$('#gre').onclick=start;$('#gq2').onclick=quit;$('#gq3').onclick=quit;$('#gqx').onclick=quit;$('#gres').onclick=()=>pause(false);$('#gpa').onclick=()=>pause();
-  $('#gsn').onclick=sndToggle;$('#gch').addEventListener('click',e=>{const b=e.target.closest('button');if(b)pick(+b.dataset.i)});
+  function pause(v){if(over||choosing)return;paused=v===undefined?!paused:v;$('#gpause').classList.toggle('show',paused);$('#gpa').textContent=paused?'Resume':'Pause'}
+  on('#playBtn','click',start);on('#gre','click',restart);on('#gq2','click',quit);on('#gq3','click',quit);on('#gqx','click',quit);on('#gres','click',()=>pause(false));on('#gpa','click',()=>pause());
+  on('#gsn','click',sndToggle);on('#gch','click',e=>{const b=e.target.closest('button');if(b)pick(+b.dataset.i)});
   addEventListener('keydown',e=>{if(!run)return;const k=e.key.toLowerCase();keys[k]=true;if(choosing&&'123'.includes(k)&&k)pick(+k-1);if(k==='escape'||k==='p')pause();if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault()});
   addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
   cv.addEventListener('pointerdown',e=>{md=true;mx=e.clientX;my=e.clientY});addEventListener('pointermove',e=>{if(run){mx=e.clientX;my=e.clientY}});addEventListener('pointerup',()=>{md=false});
@@ -770,7 +910,7 @@ const GM=(()=>{
 
 /* ---------- Pointer ---------- */
 function addRipple(x,y,a){if(!G||RM)return;G.rip[G.ripI++%8].set(x,y,G.time,a)}
-addEventListener('pointermove',e=>{m.x=e.clientX/innerWidth*2-1;m.y=-(e.clientY/innerHeight*2-1);m.cx=e.clientX;m.cy=e.clientY;
+addEventListener('pointermove',e=>{if(e.pointerType==='touch'&&EX.joy&&(EX.joy.x||EX.joy.y))return;m.x=e.clientX/innerWidth*2-1;m.y=-(e.clientY/innerHeight*2-1);m.cx=e.clientX;m.cy=e.clientY;
   if(GM.run)return;
   if(FINE&&Math.hypot(e.clientX-m.lx,e.clientY-m.ly)>150){m.lx=e.clientX;m.ly=e.clientY;addRipple(e.clientX/innerWidth,1-e.clientY/innerHeight,.32)}
   if(RK==='explore'&&EX.drag){EX.yaw-=(e.clientX-EX.lx)*.0035;EX.pitch=clamp(EX.pitch-(e.clientY-EX.ly)*.0035,-1.45,1.45);EX.lx=e.clientX;EX.ly=e.clientY}});
@@ -778,7 +918,7 @@ addEventListener('pointerdown',e=>{if(GM.run)return;addRipple(e.clientX/innerWid
 addEventListener('pointerup',()=>{EX.drag=false});
 
 /* ---------- Clock, menu ---------- */
-function clock(){const t=new Date().toLocaleTimeString('en-AU',{timeZone:'Australia/Sydney',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});$('#clk').textContent='SYD '+t.slice(0,5);$('#clk2').textContent=t;$('#clk3').textContent=t.slice(0,5)+' AEST/AEDT'}
+function clock(){const t=new Date().toLocaleTimeString('en-AU',{timeZone:'Australia/Sydney',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});const a=$('#clk'),b=$('#clk2'),c=$('#clk3');a&&(a.textContent='SYD '+t.slice(0,5));b&&(b.textContent=t);c&&(c.textContent=t.slice(0,5)+' AEST/AEDT')}
 clock();setInterval(clock,1000);
 const menu=$('#menu'),mb=$('#menuBtn');
 function menuToggle(open){menu.classList.toggle('open',open);mb.setAttribute('aria-expanded',open);mb.textContent=open?'Close':'Menu';menu.setAttribute('aria-hidden',!open);lock('menu',open);if(open)tone(400,.2)}
@@ -786,21 +926,21 @@ mb.onclick=()=>menuToggle(!menu.classList.contains('open'));addEventListener('ke
 
 /* ---------- Router ---------- */
 const shut=$('#shut'),shutT=$('#shutT'),mainEl=$('#main');
-document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[href^="#/"]');if(!a)return;e.preventDefault();menuToggle(false);const h=a.getAttribute('href');
-  if(H2R[h.slice(1)]===RK){scrollTo({top:0,behavior:RM?'auto':'smooth'})}else location.hash=h});
 addEventListener('hashchange',()=>go(routeFromHash()));
 function showPage(rk){
   RK=rk;const R=ROUTES[rk];$$('.page').forEach(p=>p.classList.toggle('on',p.dataset.p===rk));document.body.dataset.rk=rk;
   document.title=R.t;$('meta[name=description]').content=R.d;$('meta[property="og:title"]').content=R.t;$('meta[property="og:description"]').content=R.d;$('meta[name="twitter:title"]').content=R.t;$('meta[name="twitter:description"]').content=R.d;
   $$('nav .links a[data-r]').forEach(a=>{if(a.dataset.r===rk)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
   scrollTo(0,0);S.y=S.sy=0;EX.active=rk==='explore';wIdx=-1;if(rk!=='explore'){EX.keys={};EX.drag=false}
-  PD=$$('.page.on .pd');SKW=$$('.page.on .big-mq');armReveals();measure();if(G)G.setRoute(rk);musRoute();
+  PD=$$('.page.on .pd');SKW=$$('.page.on .big-mq');armReveals();measure();if(G)safe(()=>G.setRoute(rk),'setRoute');musRoute();applyPlan();
   try{mainEl.focus({preventScroll:true})}catch(e){}}
 async function go(rk){
   if(busy){pending=rk;return}if(rk===RK)return;busy=true;lock('tr',true);
-  scr(shutT,ROUTES[rk].n);whoosh();[392,523,659].forEach((f,i)=>setTimeout(()=>tone(f,.35,'sine',.07,1.01),i*90));
-  if(!RM){TR.target=1;addRipple(.5,.5,1.6)}shut.className='in';await sleep(RM?420:950);
-  showPage(rk);await sleep(140);TR.target=0;if(!RM)addRipple(.5,.5,1.2);shut.className='out';await sleep(RM?420:950);shut.className='';lock('tr',false);busy=false;armReveals();
+  try{scr(shutT,ROUTES[rk].n);whoosh();[392,523,659].forEach((f,i)=>setTimeout(()=>tone(f,.35,'sine',.07,1.01),i*90));
+    if(!RM){TR.target=1;addRipple(.5,.5,1.6)}shut.className='in';await sleep(RM?420:950);
+    showPage(rk);await sleep(140);TR.target=0;if(!RM)addRipple(.5,.5,1.2);shut.className='out';await sleep(RM?420:950)}
+  catch(e){console.error(e);showPage(rk)}
+  shut.className='';lock('tr',false);busy=false;armReveals();
   if(pending!==null){const p=pending;pending=null;if(p!==RK)go(p)}}
 
 /* ================= WEBGL ================= */
@@ -829,7 +969,7 @@ float snoise(vec3 v){
  vec4 mm=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);mm=mm*mm;
  return 42.*dot(mm*mm,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
 }`;
-function loadThree(){return new Promise((res,rej)=>{if(window.THREE)return res();const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';s.async=true;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+function loadThree(){return new Promise((res,rej)=>{if(window.THREE)return res();const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';s.async=true;s.onload=res;s.onerror=()=>rej(new Error('three load failed'));document.head.appendChild(s);setTimeout(()=>rej(new Error('three timeout')),6000)})}
 
 function initGL(){
   const V3=THREE.Vector3,rnd=Math.random,mob=innerWidth<760,canvas=$('#gl');
@@ -868,7 +1008,6 @@ function initGL(){
   const blob=new THREE.Mesh(new THREE.IcosahedronGeometry(1,mob?28:40),blobMat);blob.frustumCulled=false;hero.add(blob);
   const rings=[];for(let i=0;i<3;i++){const r=new THREE.Mesh(new THREE.TorusGeometry(2.7+i*.5,.008,8,180),new THREE.MeshBasicMaterial({color:0xffb020,transparent:true,opacity:.5}));r.rotation.set(rnd()*3,rnd()*3,0);rings.push(r);hero.add(r)}
   const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xff3d2e,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false}));spr.scale.set(11,11,1);spr.position.z=-1.5;hero.add(spr);scene.add(hero);
-
   const NP=mob?5200:10000,A0=new Float32Array(NP*3),A1=new Float32Array(NP*3),A2=new Float32Array(NP*3),A3=new Float32Array(NP*3),AR=new Float32Array(NP*4);
   const put=(a,i,x,y,z)=>{a[i*3]=x;a[i*3+1]=y;a[i*3+2]=z};
   for(let i=0;i<NP;i++){
@@ -894,7 +1033,6 @@ function initGL(){
       vC=mix(uA,uB,aR.w);vA=(.35+.65*aR.w)*smoothstep(300.,60.,-mv.z);}`,
     fragmentShader:`varying vec3 vC;varying float vA;void main(){float d=length(gl_PointCoord-.5);float a=smoothstep(.5,0.,d);a*=a;gl_FragColor=vec4(vC*1.4,a*vA);}`});
   const pts=new THREE.Points(pg,pmat);pts.frustumCulled=false;scene.add(pts);
-
   const NR=30,ringList=[],tunnelGroup=new THREE.Group();scene.add(tunnelGroup);
   for(let i=0;i<NR;i++){const t=i/(NR-1),p=curve.getPointAt(t),T=curve.getTangentAt(t);
     const r=new THREE.Mesh(new THREE.TorusGeometry(6.8,.018,6,120),new THREE.MeshBasicMaterial({color:0xff3d2e,transparent:true,opacity:.15,blending:THREE.AdditiveBlending,depthWrite:false}));
@@ -922,7 +1060,7 @@ function initGL(){
   for(let i=0;i<NS;i++){let p;if(i<NS*.25){const u=rnd()*2-1,th=rnd()*6.2832,s=Math.sqrt(1-u*u),R=7+rnd()*7;p=new V3(R*s*Math.cos(th),R*u*.6,R*s*Math.sin(th)-4)}
     else{const t=rnd(),c=curve.getPointAt(t),th=rnd()*6.2832,R=3.5+rnd()*6;p=c.clone().add(new V3(Math.cos(th)*R,Math.sin(th)*R,0))}
     SD.push({p,s:rnd()*1.1+.35,rx:rnd()*6,ry:rnd()*6,sp:rnd()*.6+.2,off:rnd()*6})}
-  scene.add(shards);const recolor=()=>{for(let i=0;i<NS;i++)shards.setColorAt(i,i%3?cA:cB);shards.instanceColor.needsUpdate=true};recolor();
+  scene.add(shards);const recolor=()=>{for(let i=0;i<NS;i++)shards.setColorAt(i,i%3?cA:cB);if(shards.instanceColor)shards.instanceColor.needsUpdate=true};recolor();
   const og=new THREE.Group();og.visible=false;scene.add(og);const orbs=[];
   function mkOrb(p,msg){const g=new THREE.Group();g.position.copy(p);const core=new THREE.Mesh(new THREE.IcosahedronGeometry(.32,1),new THREE.MeshBasicMaterial({color:0xffffff}));
     const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xffb020,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false}));halo.scale.set(3.4,3.4,1);g.add(core,halo);g.userData={msg,found:false,halo,core};og.add(g);orbs.push(g)}
@@ -984,6 +1122,7 @@ function initGL(){
       else if(rk==='process'){bx=B.x;by=B.y;bz=B.z;hs=2.4;camT=lerp(.03,.97,pp);flight(camT);uF=2+sm(.7,1,pp)}
       else if(rk==='seo'){bx=mobN?0:3.2;by=mobN?1.4:0;hs=1.1;orbit(ZERO,lerp(9,11,pp),pp*1.6+t*.03,2+m.py*.8);uF=1}
       else if(rk==='game'){bx=B.x;by=B.y;bz=B.z;hs=2.5;orbit(B,11,t*.12,1+m.py);uF=3}
+      else if(rk==='lab'||rk==='plan'){bx=mobN?0:3;by=mobN?1.4:0;hs=1.1;orbit(ZERO,9.5,pp*1.4+t*.05,1.5+m.py*.8);uF=1}
       else if(rk==='insights'){bx=mobN?0:3;by=mobN?1.3:0;hs=1.2;orbit(ZERO,9,-pp*1.2+t*.03,1+m.py*.6);uF=1}
       else if(rk==='about'){bx=mobN?0:2.8;by=mobN?1.3:0;hs=1.5;orbit(ZERO,8,-.4+pp*.9+Math.sin(t*.1)*.1,.3+m.py*.5);uF=0}
       else if(rk==='contact'){bx=B.x;by=B.y;bz=B.z;hs=2.6;orbit(B,lerp(14,6.5,pp),pp*.7+Math.sin(t*.15)*.2,m.py*1.2+Math.sin(t*.3)*.4);uF=3}
@@ -1028,10 +1167,11 @@ function initGL(){
 let last=performance.now(),frame=0,fpsAcc=0,fps=60;
 function tick(now){
   requestAnimationFrame(tick);
+  try{
   const dt=Math.min((now-last)/1000,.1);last=now;const t=now/1000;frame++;fpsAcc+=dt;if(frame%30===0){fps=Math.round(30/fpsAcc);fpsAcc=0}
   S.y=scrollY;const prev=S.sy;S.sy=damp(S.sy,S.y,RM?30:7,dt);S.vel=damp(S.vel,(S.sy-prev)/Math.max(dt,.001),8,dt);
   m.px=damp(m.px,m.x,4,dt);m.py=damp(m.py,m.y,4,dt);m.rx=damp(m.rx,m.cx,14,dt);m.ry=damp(m.ry,m.cy,14,dt);TR.warp=damp(TR.warp,TR.target,6,dt);
-  if(GM.run){GM.step(dt)}
+  if(GM.run)GM.step(dt);
   if(FINE){$('#cd').style.transform=`translate(${m.cx}px,${m.cy}px)`;$('#cr').style.transform=`translate(${m.rx}px,${m.ry}px)`}
   const pp=clamp(S.sy/Math.max(1,L.docH-L.vh),0,1);$('#bar').style.transform=`scaleX(${pp})`;
   let hp=0,mp=0,hr=0,wp=0,ep=0,lpR=0;
@@ -1043,30 +1183,35 @@ function tick(now){
   if(RK==='work'&&L.work){wp=prog(L.work);const after=L.work.t+L.work.h-L.vh;ep=clamp((S.sy-after)/Math.max(1,L.docH-L.vh-after),0,1);if(wp>0&&wp<1)workUI(wp);else wki.style.opacity=0}
   if(!RM){for(let i=0;i<PD.length;i++)PD[i].style.transform=`translate3d(${(m.px*-10).toFixed(1)}px,${(m.py*6).toFixed(1)}px,0)`;
     const sk=clamp(S.vel*-.004,-8,8).toFixed(2);for(let i=0;i<SKW.length;i++)SKW[i].style.transform=`skewX(${sk}deg)`}
-  /* music follows scroll + game */
   MUS.pp=pp;MUS.game=GM.inten;const vn=clamp(Math.abs(S.vel)/2500,0,1);
   MUS.inten=damp(MUS.inten,clamp(.14+vn*.8+MUS.game*.5+(RK==='explore'?.15:0),0,1),2,dt);
   if(MUS.on&&MUS.an&&frame%2===0){MUS.an.getByteFrequencyData(MUS.buf);let s=0;for(let i=0;i<6;i++)s+=MUS.buf[i];AU.level=damp(AU.level,s/6/255,8,dt)}else if(!MUS.on)AU.level=damp(AU.level,0,4,dt);
   if(MUS.on&&MUS.ctx&&MUS.ctx.state==='running'&&frame%8===0){const c=MUS.ctx.currentTime;MUS.dF.frequency.setTargetAtTime(180+MUS.inten*600+pp*400,c,.3);MUS.pF.frequency.setTargetAtTime(500+pp*900+MUS.inten*900,c,.4);MUS.sh.gain.setTargetAtTime(Math.min(Math.abs(S.vel)*.00004,.12),c,.3)}
   if(RK==='explore'&&G&&frame%10===0){const n=G.nearest;$('#xn').textContent=EX.found>=5?'All found':n?Math.round(n)+' m':'—'}
-  if(frame%20===0){$('#hudr').textContent=`PP/OS · ${ROUTES[RK].n} · ${fps} FPS${G?' · Q'+(['HIGH','MED','LOW'][G.quality()]):''}`;if(RK==='features'){$('#fperf').textContent=G?`${fps} fps · quality ${['high','medium','low'][G.quality()]}`:'3D off · static fallback'}}
+  if(frame%20===0){$('#hudr').textContent=`PP/OS · ${ROUTES[RK].n} · ${fps} FPS${G?' · Q '+(['HIGH','MED','LOW'][G.quality()]):''}`;const fp=$('#fperf');if(fp&&RK==='features')fp.textContent=G?`${fps} fps · quality ${['high','medium','low'][G.quality()]}`:'3D off · static fallback'}
   if(G){G.covered=(RK==='home'&&lpR>71)||GM.run;if(!G.covered){G.update(t,dt,{hp,mp,hr,wp,ep,pp});G.render(dt)}}
+  }catch(err){if(!tick.err){tick.err=1;console.error('[pp] frame error',err)}}
 }
 requestAnimationFrame(tick);
-addEventListener('pagehide',()=>{G&&G.dispose()});
+addEventListener('pagehide',()=>{G&&safe(()=>G.dispose(),'dispose')});
 
 /* ---------- Boot ---------- */
 (async function boot(){
   const n=$('#pre .n'),l=$('#pre .l'),pre=$('#pre'),st=$('#pst'),msgs=['Loading fonts','Compiling shaders','Building world','Ready'];
-  let ready=false,v=0;const t0=performance.now();
-  (function counter(){const target=ready?100:88,el=(performance.now()-t0)/2200*100;v=Math.min(target,Math.max(v,el),100);
+  let ready=false,v=0,finished=false;const t0=performance.now();
+  function finish(){if(finished)return;finished=true;setTimeout(()=>{window.__ppOk&&window.__ppOk();pre.classList.add('done');lock('pre',false);safe(measure,'measure');safe(armReveals,'reveals');G&&G.warm();setTimeout(()=>pre.classList.add('gone'),1300);setTimeout(measure,700)},350)}
+  (function counter(){if(performance.now()-t0>7000)ready=true;const target=ready?100:88,el=(performance.now()-t0)/2200*100;v=Math.min(target,Math.max(v,el),100);
     n.textContent=String(Math.floor(v)).padStart(3,'0');l.style.width=v+'%';st.textContent=msgs[Math.min(3,Math.floor(v/26))];
     if(v<100)requestAnimationFrame(counter);else finish()})();
-  await sleep(60);
-  if(SAVE){document.body.classList.add('nogl')}else{try{await loadThree();G=initGL()}catch(e){console.warn('3D disabled:',e);document.body.classList.add('nogl');G=null}}
-  try{await Promise.race([document.fonts&&document.fonts.ready,sleep(3000)])}catch(e){}
- initStepObserver();
-  function finish(){setTimeout(()=>{pre.classList.add('done');lock('pre',false);measure();armReveals();G&&G.warm();setTimeout(()=>pre.classList.add('gone'),1300);setTimeout(measure,700)},350)}
+  try{
+    await sleep(60);
+    if(SAVE){document.body.classList.add('nogl')}
+    else{try{await loadThree();G=initGL()}catch(e){console.warn('3D disabled:',e);document.body.classList.add('nogl');G=null}}
+    try{await Promise.race([document.fonts&&document.fonts.ready,sleep(2500)])}catch(e){}
+    safe(()=>showPage(routeFromHash()),'showPage');
+    G&&safe(()=>G.fonts(),'fonts');
+  }catch(e){console.error('[pp] boot',e)}
+  ready=true;
 })();
 })();
 </script>
