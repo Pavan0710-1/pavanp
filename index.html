@@ -598,8 +598,11 @@ const L={vh:innerHeight,docH:0};
 const si=id=>{const e=$(id);if(!e)return null;const r=e.getBoundingClientRect();return{t:r.top+scrollY,h:r.height}};
 function measure(){L.vh=innerHeight;L.docH=document.documentElement.scrollHeight;L.hero=RK==='home'?si('#hero'):null;L.man=RK==='home'?si('#manifesto'):null;L.work=RK==='work'?si('#work'):null}
 const prog=s=>clamp((S.sy-s.t)/Math.max(1,s.h-L.vh),0,1);
-addEventListener('resize',()=>{measure();G&&G.resize();GM.resize()});
-
+addEventListener('resize',()=>{
+  measure();
+  if(G) G.resize();
+  if(typeof GM !== 'undefined' && GM && typeof GM.resize === 'function') GM.resize();
+});
 /* ---------- Page widgets ---------- */
 $$('.acc>button').forEach(b=>b.addEventListener('click',()=>{const a=b.parentElement,open=!a.classList.contains('open'),grp=a.parentElement;
   if(grp.hasAttribute('data-single'))$$('.acc.open',grp).forEach(x=>{if(x!==a){x.classList.remove('open');$('button',x).setAttribute('aria-expanded','false')}});
@@ -609,8 +612,24 @@ const chk=$('#chk');CHK.forEach(t=>{const l=document.createElement('label');l.in
 const VERD=['Tick what your site already does.','Lots of easy wins here.','Solid start. Let\'s tighten it.','Nearly there. Details decide rankings.','Strong technical base. Content and authority come next.'];
 chk.addEventListener('change',()=>{const n=$$('input:checked',chk).length;$('#scoreN').textContent=n+'/12';$('#ringFg').style.strokeDashoffset=(326.7*(1-n/12)).toFixed(1);$('#scoreT').textContent=VERD[n===0?0:n<4?1:n<8?2:n<12?3:4];tone(400+n*60,.22,'triangle',.08);FX.pulse=.6});
 const steps=$$('.step'),rail=$('#rail');steps.forEach(()=>rail.appendChild(document.createElement('i')));
-new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const i=steps.indexOf(e.target);steps.forEach((s,k)=>s.classList.toggle('act',k===i));$$('i',rail).forEach((t,k)=>t.classList.toggle('on',k===i));tone(280+i*40,.2,'sine',.05)}}),{threshold:.55}).observe&&steps.forEach(s=>stepIO.observe(s));
-var stepIO;
+let stepIO = null;
+
+function initStepObserver(){
+  if(!('IntersectionObserver' in window)) return;
+
+  stepIO = new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(e.isIntersecting){
+        const i=steps.indexOf(e.target);
+        steps.forEach((s,k)=>s.classList.toggle('act',k===i));
+        $$('i',rail).forEach((t,k)=>t.classList.toggle('on',k===i));
+        tone(280+i*40,.2,'sine',.05);
+      }
+    });
+  },{threshold:.55});
+
+  steps.forEach(s=>stepIO.observe(s));
+}
 const MAIL='hello@pavanp.me';/* EDIT */
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1900)}
 $('#copy').onclick=()=>{try{navigator.clipboard.writeText(MAIL)}catch(e){}toast('Email copied');tone(660,.3)};
@@ -1046,8 +1065,7 @@ addEventListener('pagehide',()=>{G&&G.dispose()});
   await sleep(60);
   if(SAVE){document.body.classList.add('nogl')}else{try{await loadThree();G=initGL()}catch(e){console.warn('3D disabled:',e);document.body.classList.add('nogl');G=null}}
   try{await Promise.race([document.fonts&&document.fonts.ready,sleep(3000)])}catch(e){}
-  stepIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const i=steps.indexOf(e.target);steps.forEach((s,k)=>s.classList.toggle('act',k===i));$$('i',rail).forEach((t,k)=>t.classList.toggle('on',k===i));tone(280+i*40,.2,'sine',.05)}}),{threshold:.55});steps.forEach(s=>stepIO.observe(s));
-  showPage(routeFromHash());if(G)G.fonts();ready=true;
+ initStepObserver();
   function finish(){setTimeout(()=>{pre.classList.add('done');lock('pre',false);measure();armReveals();G&&G.warm();setTimeout(()=>pre.classList.add('gone'),1300);setTimeout(measure,700)},350)}
 })();
 })();
