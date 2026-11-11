@@ -55,6 +55,10 @@
 </script>
 <script type="application/ld+json" id="ldPage">{}</script>
 <script>document.documentElement.className='js';(function(){var t=setTimeout(function(){document.documentElement.className='';var p=document.getElementById('pre');if(p)p.className='gone';if(document.body)document.body.classList.remove('lock')},8000);window.__ppOk=function(){clearTimeout(t)}})();</script>
+<script>
+window.PP={touch:false,noGL:false,scrollK:7,onRoute:[]};
+(function(){var ua=navigator.userAgent||'',t=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)||(navigator.maxTouchPoints>0&&matchMedia('(pointer:coarse)').matches);PP.touch=t;PP.scrollK=t?16:7;if(t)document.documentElement.classList.add('touch')})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -595,7 +599,7 @@ const clamp=(v,a,b)=>Math.min(Math.max(v,a),b),lerp=(a,b,t)=>a+(b-a)*t,sm=(a,b,x
 const damp=(a,b,l,dt)=>a+(b-a)*(1-Math.exp(-l*dt)),sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const safe=(f,n)=>{try{f()}catch(e){console.error('[pp] '+(n||''),e)}};
 const on=(sel,ev,fn)=>{const e=$(sel);if(e)e.addEventListener(ev,fn);return e};
-const RM=matchMedia('(prefers-reduced-motion:reduce)').matches,FINE=matchMedia('(hover:hover) and (pointer:fine)').matches;
+let RM=matchMedia('(prefers-reduced-motion:reduce)').matches,FINE=matchMedia('(hover:hover) and (pointer:fine)').matches;
 const NAV=navigator,CONN=NAV.connection||{},SAVE=!!CONN.saveData,LOW=(NAV.hardwareConcurrency||8)<=4||(NAV.deviceMemory||8)<=4||innerWidth<760;
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const CHARS='!<>-_\\/[]{}=+*^?#$%&@',DYNFAV=true;/* DYNFAV=false keeps your uploaded favicon untouched */
@@ -1419,6 +1423,292 @@ addEventListener('pagehide',()=>{G&&safe(()=>G.dispose(),'dispose')});
   }catch(e){console.error('[pp] boot',e)}
   ready=true;
 })();
+Object.assign(PP,{ROUTES,H2R,MUS,TH,$,$$,on,safe,esc,store,toast,clamp,sleep,themeCbs,setTheme,getTheme:()=>thi,setRM:v=>{RM=v},getRM:()=>RM,getRK:()=>RK,getG:()=>G,navTo,showPage,musStart,musApply,musSave,updSnd,sndToggle,getPlan:()=>PLAN_TEXT,hrefOf});
+})();
+</script>
+<style>
+[hidden]{display:none!important}
+nav.top{padding-right:calc(var(--m) + 210px)}
+.au{min-height:100vh;display:grid;grid-template-columns:1fr minmax(0,520px);gap:var(--m);align-items:center;padding:calc(var(--m)*.9 + 110px) var(--m) 12vh}
+.au-t{font:700 clamp(3.6rem,1rem + 12vw,15rem)/.86 'Space Grotesk';letter-spacing:-.065em;text-transform:uppercase;margin:22px 0 24px}
+.au-b{font:400 11px 'JetBrains Mono';letter-spacing:.14em;color:var(--b);text-transform:uppercase;margin-top:18px}
+.ac{padding:clamp(22px,3vw,40px);border:1px solid var(--line);background:rgba(8,8,10,.86);backdrop-filter:blur(12px);display:grid;gap:28px;align-content:start}
+.ac h3{font:700 var(--t2)/1 'Space Grotesk';letter-spacing:-.05em}
+.ck{display:flex;gap:12px;align-items:center;color:#bdb8b0;font-size:.95rem}.ck input{accent-color:var(--b);width:18px;height:18px;flex:none}
+.eye{position:absolute;right:0;top:20px;font:400 11px 'JetBrains Mono';letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+.ms{min-height:1.5em;font:400 12px/1.5 'JetBrains Mono';letter-spacing:.06em}.ms.er{color:#ff7a6e}.ms.ok{color:#2fd37a}
+.alt{font:400 12px 'JetBrains Mono';letter-spacing:.1em;color:var(--mut)}.alt a{color:var(--b)}
+.pw{height:5px;background:rgba(255,255,255,.1);border-radius:9px;overflow:hidden}.pw i{display:block;height:100%;width:0;background:#ff3d2e;transition:width .3s,background .3s}
+#acctBtn{position:fixed;top:12px;right:calc(var(--m) + 74px);z-index:520;display:flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid rgba(255,255,255,.35);border-radius:99px;font:500 11px 'JetBrains Mono';letter-spacing:.16em;text-transform:uppercase;text-decoration:none;color:#fff;mix-blend-mode:difference}
+#acctBtn i{font-style:normal;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--b));display:grid;place-items:center;font-size:10px}
+#saveBtn{position:fixed;right:calc(var(--m)*.5);bottom:100px;z-index:100;padding:10px 16px;border:1px solid var(--line);border-radius:99px;background:rgba(0,0,0,.6);font:500 10px 'JetBrains Mono';letter-spacing:.16em;text-transform:uppercase}#saveBtn:hover,#saveBtn.on{border-color:var(--b);color:var(--b)}
+.sv{padding:9px 16px;border:1px solid var(--line);border-radius:99px;font:500 10px 'JetBrains Mono';letter-spacing:.16em;text-transform:uppercase;margin-top:6px}.sv.on,.sv:hover{border-color:var(--b);color:var(--b)}
+body[data-rk=explore] #acctBtn,body[data-rk=explore] #saveBtn,body.ingame #acctBtn,body.ingame #saveBtn,body[data-rk=login] #saveBtn,body[data-rk=signup] #saveBtn,body[data-rk=reset] #saveBtn,body[data-rk=account] #saveBtn,body[data-rk=game] #saveBtn{display:none}
+body[data-rk=login] .nextp,body[data-rk=signup] .nextp,body[data-rk=reset] .nextp,body[data-rk=account] .nextp,body[data-rk=settings] .nextp{display:none}
+.stt{display:flex;gap:clamp(24px,5vw,70px);flex-wrap:wrap;margin-bottom:5vh}.stt b{display:block;font:700 var(--t3)/1 'Space Grotesk';letter-spacing:-.05em}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4vh}.tabs button{padding:10px 18px;border:1px solid var(--line);border-radius:99px;font:400 11px 'JetBrains Mono';letter-spacing:.14em;text-transform:uppercase}.tabs button.on{background:linear-gradient(90deg,var(--a),var(--b));border-color:transparent;color:#fff}
+.list li.sl{align-items:center;gap:12px}.list li.sl::before{display:none}.sl>span{flex:1}.sl small{display:block;color:var(--mut)}.sl pre{white-space:pre-wrap;font:400 12px/1.6 'JetBrains Mono';color:#cdc8c0}
+.nt{display:grid;grid-template-columns:280px 1fr;gap:24px}.nl{display:grid;gap:8px;align-content:start}.ni{text-align:left;padding:12px 14px;border:1px solid var(--line)}.ni.on{border-color:var(--b)}.ni small{display:block;color:var(--mut)}.ne{display:grid;gap:12px;align-content:start}
+.setg{display:grid;gap:7vh;max-width:980px}.sg h3{font:700 var(--t2)/1 'Space Grotesk';letter-spacing:-.05em;margin-bottom:10px}
+.sr2{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);cursor:pointer}.sr2 small{display:block;color:var(--mut);font-size:.88rem}.sr2 input[type=range]{width:min(260px,45%);accent-color:var(--b)}
+.sw2{appearance:none;-webkit-appearance:none;width:46px;height:26px;border-radius:99px;background:rgba(255,255,255,.16);position:relative;transition:.3s;flex:none;cursor:pointer}.sw2::after{content:'';position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.3s}.sw2:checked{background:linear-gradient(90deg,var(--a),var(--b))}.sw2:checked::after{transform:translateX(20px)}
+.swr{display:flex;gap:14px;margin:10px 0}.swr button{width:44px;height:44px;border-radius:50%;outline:1px solid rgba(255,255,255,.3);outline-offset:3px}.swr button.on{outline:2px solid #fff}
+.stg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}.stb{padding:16px;border:1px solid var(--line);text-align:left}.stb b{display:block;font:700 1.1rem 'Space Grotesk'}.stb small{color:var(--mut)}.stb.on{border-color:var(--b);background:rgba(255,176,32,.08)}
+.trc{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+/* accessibility classes */
+html.pp-hc{--mut:#d2cdc5;--line:rgba(255,255,255,.34);--veil:rgba(0,0,0,.94)}html.pp-hc .mut,html.pp-hc p,html.pp-hc .list li{color:#ece8e0}
+html.pp-lh body,html.pp-lh p,html.pp-lh li{line-height:2!important}
+html.pp-ls body{letter-spacing:.04em;word-spacing:.14em}
+html.pp-leg,html.pp-leg body,html.pp-leg p,html.pp-leg li,html.pp-leg button,html.pp-leg input,html.pp-leg .lede{font-family:'Atkinson Hyperlegible',Inter,system-ui,sans-serif!important}
+html.pp-ul a:not(.cta):not(.logo){text-decoration:underline!important;text-underline-offset:.2em}
+html.pp-focus :focus-visible{outline:3px solid #fff!important;outline-offset:3px;box-shadow:0 0 0 6px var(--a)}
+html.pp-cur,html.pp-cur *{cursor:auto!important}html.pp-cur #cd,html.pp-cur #cr{display:none!important}
+html.pp-fx .grain,html.pp-fx .scan{display:none}
+html.pp-rm *,html.pp-rm *::before,html.pp-rm *::after{animation:none!important;transition-duration:.01ms!important;transition-delay:0s!important;scroll-behavior:auto!important}
+body.pp-nogl #gl{display:none}body.pp-nogl{background:radial-gradient(ellipse at 50% 30%,#1a0b09,#030304 70%)}
+/* iPhone and iPad touch performance */
+html.touch{-webkit-text-size-adjust:100%;scroll-behavior:auto}
+html.touch .grain,html.touch .scan,html.touch #hudr{display:none}
+html.touch .js .rv{filter:none!important}
+html.touch *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html.touch nav.top,html.touch #menuBtn,html.touch #acctBtn{mix-blend-mode:normal}
+html.touch nav.top{padding-top:calc(16px + env(safe-area-inset-top));background:linear-gradient(180deg,rgba(3,3,4,.9),transparent)}
+html.touch #menuBtn,html.touch #acctBtn{top:calc(12px + env(safe-area-inset-top))}
+html.touch .ui-bl{bottom:calc(12px + env(safe-area-inset-bottom))}html.touch .ui-bl .th,html.touch #vol{display:none}
+html.touch #toTop{bottom:calc(52px + env(safe-area-inset-bottom))}html.touch #saveBtn{bottom:calc(104px + env(safe-area-inset-bottom))}
+html.touch a,html.touch button,html.touch label{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+html.touch #cd,html.touch #cr{display:none!important}html.touch body,html.touch a,html.touch button,html.touch label{cursor:auto!important}
+html.touch .fc,html.touch .tz a,html.touch .tz .card{transform:none!important}
+html.touch #menu,html.touch #cmdList,html.touch .gov{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+html.touch .lp-m div,html.touch .big-mq div{animation-duration:70s}
+@media(max-width:900px){.au{grid-template-columns:1fr;padding-top:calc(var(--m) + 90px)}.nt{grid-template-columns:1fr}#acctBtn{right:calc(var(--m) + 62px)}}
+</style>
+
+<script>
+(()=>{'use strict';
+if(!window.PP||!PP.ROUTES){console.error('[add-on] Hooks missing. Complete Steps 1 to 3 first.');return}
+const {ROUTES,H2R,MUS,$,$$,on,safe,esc,store,toast,clamp}=PP;
+/* ===== CONFIG ===== */
+const CLOUD={url:'',key:''};/* EDIT (optional): Supabase project URL + anon key for real cross-device accounts. See notes below. */
+const cloud=!!(CLOUD.url&&CLOUD.key);
+const PLAYLIST=[/* EDIT: royalty-free tracks you have permission to use, uploaded to your repo: {t:'Title',a:'Artist',src:'/music/track1.mp3',lic:'CC-BY 4.0, source link'} */];
+/* Supabase SQL (run once in the SQL editor):
+create table public.pp_profiles(id uuid primary key references auth.users(id) on delete cascade,data jsonb not null default '{}',updated_at timestamptz default now());
+alter table public.pp_profiles enable row level security;
+create policy "sel" on public.pp_profiles for select using(auth.uid()=id);
+create policy "ins" on public.pp_profiles for insert with check(auth.uid()=id);
+create policy "upd" on public.pp_profiles for update using(auth.uid()=id) with check(auth.uid()=id);
+create policy "del" on public.pp_profiles for delete using(auth.uid()=id);
+Then in Supabase > Authentication > URL Configuration set Site URL to https://pavanp.me */
+
+const DEF={theme:0,font:100,hc:false,lh:false,ls:false,leg:false,ul:false,focus:false,cur:false,rm:null,nogl:false,fx:false,vol:.6,music:false,sfx:true,station:'scroll'};
+const SYS_RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const LS=(k,d)=>{try{const v=store.get(k);return v?JSON.parse(v):d}catch(e){return d}},SV=(k,v)=>store.set(k,JSON.stringify(v));
+const te=new TextEncoder(),b64=u=>btoa(String.fromCharCode.apply(null,new Uint8Array(u))),ub64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0)),rnd=n=>crypto.getRandomValues(new Uint8Array(n));
+async function kdf(pw,salt){if(!(window.crypto&&crypto.subtle))throw new Error('Secure features are unavailable. Open the site over HTTPS.');const k=await crypto.subtle.importKey('raw',te.encode(pw),'PBKDF2',false,['deriveBits']);return b64(await crypto.subtle.deriveBits({name:'PBKDF2',salt,iterations:150000,hash:'SHA-256'},k,256))}
+const same=(a,b)=>{if(a.length!==b.length)return false;let r=0;for(let i=0;i<a.length;i++)r|=a.charCodeAt(i)^b.charCodeAt(i);return r===0};
+const uid=()=>crypto.randomUUID?crypto.randomUUID():[...rnd(16)].map(x=>x.toString(16).padStart(2,'0')).join('');
+const recCode=()=>{const Z='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',b=rnd(16);return [0,4,8,12].map(i=>[...b.slice(i,i+4)].map(x=>Z[x%Z.length]).join('')).join('-')};
+const okMail=e=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e),COMMON=['password','12345678','123456789','qwertyui','11111111','iloveyou','letmein1','password1','admin123'];
+const pwScore=p=>{let s=0;if(p.length>=8)s++;if(p.length>=12)s++;if(/[a-z]/.test(p)&&/[A-Z]/.test(p))s++;if(/\d/.test(p)&&/[^A-Za-z0-9]/.test(p))s++;return COMMON.includes(p.toLowerCase())?0:s};
+const initials=n=>(n||'?').split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();
+const msg=(el,t,ok)=>{if(el){el.textContent=t;el.className='ms '+(ok?'ok':'er')}};
+async function busy(btn,fn){const t=btn.textContent;btn.disabled=true;btn.textContent='Please wait…';try{return await fn()}finally{btn.disabled=false;btn.textContent=t}}
+
+/* ===== AUTH ===== */
+const emptyData=()=>({settings:null,saved:[],notes:[],plans:[]}),U={get:()=>LS('pp-users',{}),set:v=>SV('pp-users',v)},dK=id=>'pp-data-'+id;
+const CF=async(p,o,t)=>{o=o||{};const r=await fetch(CLOUD.url+p,Object.assign({},o,{headers:Object.assign({apikey:CLOUD.key,'Content-Type':'application/json'},t?{Authorization:'Bearer '+t}:{},o.headers||{})}));const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.msg||j.error_description||j.message||j.error||'Request failed');return j};
+let RECOV=null,PENDING=null;
+{const q=new URLSearchParams(location.hash.slice(1)),tk=q.get('access_token'),ty=q.get('type');if(tk){history.replaceState(null,'',location.pathname+(ty==='recovery'?'#/reset':'#/'));if(ty==='recovery')RECOV=tk;else PENDING={tk,rt:q.get('refresh_token'),ex:+q.get('expires_in')||3600}}}
+const A={user:null,tok:null,data:emptyData(),
+ sGet(){try{return JSON.parse(localStorage.getItem('pp-session')||sessionStorage.getItem('pp-session')||'null')}catch(e){return null}},
+ sSet(s,rem){try{localStorage.removeItem('pp-session');sessionStorage.removeItem('pp-session');if(s)(rem?localStorage:sessionStorage).setItem('pp-session',JSON.stringify(s))}catch(e){}},
+ async init(){try{if(cloud&&PENDING){const u=await CF('/auth/v1/user',{},PENDING.tk);await A.cSession({access_token:PENDING.tk,refresh_token:PENDING.rt,expires_in:PENDING.ex,user:u},true);return}
+   const s=A.sGet();if(!s)return;if(cloud)await A.cRestore(s);else{if(s.exp<Date.now())throw 0;const u=Object.values(U.get()).find(x=>x.id===s.id);if(!u)throw 0;A.user=u;A.data=Object.assign(emptyData(),LS(dK(u.id),{}))}}catch(e){A.user=null;A.sSet(null)}},
+ async cRestore(s){let tok=s.access;if(s.exp<Date.now()+60000){const j=await CF('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:JSON.stringify({refresh_token:s.refresh})});tok=j.access_token;s.access=tok;s.refresh=j.refresh_token;s.exp=Date.now()+(j.expires_in||3600)*1000;A.sSet(s,s.remember)}A.tok=tok;A.user={id:s.id,email:s.email,name:s.name,cloud:true};await A.cLoad()},
+ async cSession(j,rem){const u=j.user||{},name=(u.user_metadata&&u.user_metadata.name)||(u.email||'').split('@')[0];A.tok=j.access_token;A.user={id:u.id,email:u.email,name,cloud:true};A.sSet({access:j.access_token,refresh:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000,id:u.id,email:u.email,name,remember:rem},rem);await A.cLoad()},
+ async cLoad(){try{const r=await CF('/rest/v1/pp_profiles?id=eq.'+A.user.id+'&select=data',{},A.tok);A.data=Object.assign(emptyData(),(r[0]&&r[0].data)||{})}catch(e){A.data=emptyData()}},
+ save(){if(!A.user)return;if(cloud){clearTimeout(A._t);A._t=setTimeout(()=>CF('/rest/v1/pp_profiles?on_conflict=id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({id:A.user.id,data:A.data,updated_at:new Date().toISOString()})},A.tok).catch(()=>toast('Could not sync. Check your connection.')),700)}else SV(dK(A.user.id),A.data)},
+ async signupLocal(name,em,pw){const us=U.get();if(us[em])throw new Error('An account with that email already exists. Try logging in.');const salt=rnd(16),rs=rnd(16),code=recCode();us[em]={id:uid(),name,email:em,salt:b64(salt),hash:await kdf(pw,salt),rsalt:b64(rs),rhash:await kdf(code,rs),created:Date.now()};U.set(us);return code},
+ async loginLocal(em,pw,rem){const k='pp-fail-'+em,f=LS(k,{n:0,until:0});if(f.until>Date.now())throw new Error('Too many attempts. Try again in '+Math.ceil((f.until-Date.now())/1000)+' seconds.');
+   const u=U.get()[em];let ok=false;if(u)ok=same(await kdf(pw,ub64(u.salt)),u.hash);else await kdf(pw,rnd(16));
+   if(!ok){f.n++;if(f.n>=5)f.until=Date.now()+30000*Math.pow(2,Math.min(f.n-5,4));SV(k,f);throw new Error('Incorrect email or password.')}
+   SV(k,{n:0,until:0});A.user=u;A.data=Object.assign(emptyData(),LS(dK(u.id),{}));A.sSet({id:u.id,exp:Date.now()+(rem?2592e6:432e5)},rem);return u},
+ async login(em,pw,rem){if(cloud){const j=await CF('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:em,password:pw})});await A.cSession(j,rem);return A.user}return A.loginLocal(em,pw,rem)},
+ async signup(name,em,pw){if(cloud){const j=await CF('/auth/v1/signup',{method:'POST',body:JSON.stringify({email:em,password:pw,data:{name}})});if(j.access_token){await A.cSession(j,true);return{done:true}}return{confirm:true}}const code=await A.signupLocal(name,em,pw);await A.loginLocal(em,pw,true);return{done:true,code}}};
+
+/* ===== SETTINGS ===== */
+let S=Object.assign({},DEF,{music:MUS.on,vol:MUS.vol},LS('pp-settings',{}));
+const persist=()=>{if(A.user){A.data.settings=S;A.save()}else SV('pp-settings',S)};
+function patch(o,user){Object.assign(S,o);persist();apply(user)}
+function apply(user){const h=document.documentElement,c=h.classList;h.style.fontSize=S.font===100?'':S.font+'%';
+ [['hc','pp-hc'],['lh','pp-lh'],['ls','pp-ls'],['leg','pp-leg'],['ul','pp-ul'],['focus','pp-focus'],['cur','pp-cur'],['fx','pp-fx']].forEach(([k,cl])=>c.toggle(cl,!!S[k]));
+ if(S.leg&&!document.getElementById('legfont')){const l=document.createElement('link');l.id='legfont';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap';document.head.appendChild(l)}
+ const rm=S.rm===null?SYS_RM:S.rm;PP.setRM(rm);c.toggle('pp-rm',rm);
+ PP.noGL=!!S.nogl;document.body.classList.toggle('pp-nogl',!!S.nogl);
+ if(PP.getTheme()!==S.theme)PP.setTheme(S.theme);
+ MUS.on=!!S.music;MUS.vol=clamp(S.vol,0,1);if(user){if(MUS.on)PP.musStart();else PP.musApply()}PP.updSnd();PP.musSave();const v=$('#vol');if(v)v.value=MUS.vol;
+ au.volume=MUS.vol;if(au.paused)E.want=S.station;paintStations();if($('#setBody')&&$('#setBody').dataset.b)syncSet()}
+PP.themeCbs.push(t=>{const i=PP.TH.findIndex(x=>x.a===t.a);if(i>=0&&S.theme!==i){S.theme=i;persist()}});
+on('#snd','click',()=>setTimeout(()=>{S.music=MUS.on;persist();syncSet()},60));const vEl=$('#vol');if(vEl)vEl.addEventListener('input',()=>{S.vol=MUS.vol;persist()});
+
+/* ===== MUSIC STATIONS (original, generated live) ===== */
+const mtof=m=>440*Math.pow(2,(m-69)/12),pick=a=>a[Math.random()*a.length|0],PEN=[0,3,5,7,10];
+const E={id:'scroll',want:S.station,step:0,next:0,bus:null,filt:null,pat:null,sg:-1};
+const au=new Audio();au.preload='none';
+function mkBus(){const c=MUS.ctx;if(E.bus)return;E.bus=c.createGain();E.filt=c.createBiquadFilter();E.filt.type='lowpass';E.filt.frequency.value=2400;E.bus.connect(E.filt);E.filt.connect(MUS.master);const s=c.createGain();s.gain.value=.4;E.filt.connect(s);s.connect(MUS.send)}
+function nt(f,t,d,o){o=o||{};const c=MUS.ctx,os=c.createOscillator(),g=c.createGain();os.type=o.type||'triangle';os.frequency.setValueAtTime(f,t);if(o.det)os.detune.value=o.det;let out=os;
+ if(o.cut){const fl=c.createBiquadFilter();fl.type='lowpass';fl.Q.value=o.q||1;fl.frequency.setValueAtTime(o.cut,t);if(o.sweep)fl.frequency.exponentialRampToValueAtTime(Math.max(60,o.sweep),t+d);os.connect(fl);out=fl}
+ g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(o.v||.08,t+(o.att||.01));g.gain.exponentialRampToValueAtTime(.0008,t+d);out.connect(g);g.connect(E.bus);os.start(t);os.stop(t+d+.05)}
+const kk=(t,v)=>{const c=MUS.ctx,o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(42,t+.12);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+.3);o.connect(g);g.connect(MUS.master);o.start(t);o.stop(t+.32)};
+const nz=(t,v,d,hp,lp)=>{const c=MUS.ctx,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=MUS.nb;f.type=hp?'highpass':'lowpass';f.frequency.value=hp||lp||4000;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);s.connect(f);f.connect(g);g.connect(MUS.master);s.start(t,Math.random()*1.5,d+.02)};
+const STS={
+ drift:{n:'Drift',d:'Ambient pads and glassy bells',bpm:56,spb:2,cut:1500,step(i,t){const ch=[[57,60,64],[53,57,60],[55,59,62],[52,55,59]],b=Math.floor(i/16)%4;if(i%16===0){ch[b].forEach((m,k)=>nt(mtof(m),t,10,{att:3,v:.045,cut:1300,det:k*4}));nt(mtof(ch[b][0]-12),t,10,{type:'sine',att:2,v:.07})}
+  if(Math.random()<.3+MUS.inten*.3){const n=ch[b][0]+12+pick(PEN)+(Math.random()<.4?12:0);nt(mtof(n),t,2.6,{type:'sine',v:.05});nt(mtof(n)*2.005,t,1.4,{type:'sine',v:.012})}}},
+ neon:{n:'Neon',d:'Synthwave at 100 BPM',bpm:100,spb:4,cut:3200,step(i,t,sd){const b=Math.floor(i/16)%4,r=[45,41,48,43][b],s=i%16;
+  if(s===0)[0,3,7].forEach((o,k)=>nt(mtof(r+12+o),t,sd*15,{type:'sawtooth',att:.05,v:.03,cut:1800,det:(k-1)*9}));
+  if(s%2===0)nt(mtof(r+[0,0,12,0,0,12,7,0][(s/2)%8]),t,sd*1.8,{type:'sawtooth',v:.09,cut:600,sweep:200,q:4});
+  if(Math.random()<.45)nt(mtof(r+24+pick(PEN)),t,sd*2.5,{type:'square',v:.022,cut:2400});
+  if(s%4===0)kk(t,.5);if(s===4||s===12)nz(t,.22,.18,1800);if(s%2===0)nz(t,.035,.05,8000)}},
+ lofi:{n:'Lo-fi',d:'Dusty keys, soft drums, 76 BPM',bpm:76,spb:4,swing:.35,cut:2200,step(i,t,sd){const ch=[[50,53,57,60],[43,47,50,53],[48,52,55,59],[45,48,52,55]][Math.floor(i/32)%4],s=i%16;
+  if(s===0||s===10)ch.forEach((m,k)=>{const f=mtof(m+12),dt=t+k*.018,det=(Math.random()-.5)*14;nt(f,dt,1.8,{type:'sine',v:.05,det});nt(f*2,dt,.7,{type:'sine',v:.012,det})});
+  if(s===0||s===6||s===8||s===11)nt(mtof(ch[0]-12),t,sd*3,{type:'sine',v:.14});
+  if(s===0||s===7||s===10)kk(t,.38);if(s===4||s===12)nz(t,.14,.16,0,1200);if(s%4===2)nz(t,.03,.04,7000);if(Math.random()<.2)nz(t,.012,.03,6000)}},
+ pulse:{n:'Pulse',d:'Driving techno, 126 BPM',bpm:126,spb:4,cut:6000,step(i,t,sd){const s=i%16;if(s===0&&Math.floor(i/16)%4===0)E.pat=Array.from({length:16},()=>Math.random()<.65?pick([0,0,3,5,7,12,10]):null);if(!E.pat)E.pat=[0,null,3,null,0,7,null,5,0,null,3,12,null,7,5,null];
+  if(s%4===0)kk(t,.62);if(s%4===2)nz(t,.07,.06,7500);if(s===4||s===12)nz(t,.2,.14,2200);
+  const n=E.pat[s];if(n!==null&&n!==undefined)nt(mtof(36+n),t,sd*1.4,{type:'sawtooth',v:.1,cut:400+MUS.inten*2400,sweep:150,q:8});
+  if(s===6||s===14)[0,3,7].forEach(o=>nt(mtof(60+o),t,.2,{type:'square',v:.018,cut:2000}))}},
+ cinema:{n:'Cinema',d:'Slow, huge and dramatic',bpm:54,spb:2,cut:1400,step(i,t,sd){const b=Math.floor(i/16)%4,r=[45,41,43,40][b],s=i%16;
+  if(s===0){nt(mtof(r-12),t,sd*16,{type:'sawtooth',att:2,v:.07,cut:300});nt(mtof(r-24),t,sd*16,{type:'sine',att:1,v:.12});[0,7,12,15].forEach((o,k)=>nt(mtof(r+12+o),t,sd*15,{type:'sawtooth',att:3,v:.025,cut:1100,det:(k-1.5)*7}))}
+  if(s===0||s===8)kk(t,.7);if(Math.random()<.12)nt(mtof(r+24+pick([0,7,12])),t,3.5,{type:'sine',v:.04})}}};
+function switchSt(id){const c=MUS.ctx;if(!c)return;mkBus();E.id=id;E.step=0;E.next=c.currentTime+.15;E.pat=null;const sc=id==='scroll';MUS.hold=!sc;const t=c.currentTime;if(MUS.dG)MUS.dG.gain.setTargetAtTime(sc?.45:0,t,.4);if(MUS.pG)MUS.pG.gain.setTargetAtTime(sc?.15:0,t,.4)}
+setInterval(()=>{const c=MUS.ctx;if(!c)return;if(E.id!==E.want)switchSt(E.want);
+ const g=S.sfx?.9:0;if(E.sg!==g&&MUS.sfx){MUS.sfx.gain.value=g;E.sg=g}
+ if(c.state!=='running'||!MUS.on||!STS[E.id])return;const st=STS[E.id],sd=60/(st.bpm*(1+MUS.inten*.05))/st.spb;
+ while(E.next<c.currentTime+.12){let t=E.next;if(st.swing&&E.step%2)t+=sd*st.swing;safe(()=>st.step(E.step,t,sd),'station');E.next+=sd;E.step++}
+ E.filt.frequency.setTargetAtTime(Math.max(300,st.cut*(.5+MUS.inten*1.2+MUS.pp*.5)),c.currentTime,.2)},30);
+/* your own tracks (real songs you have the rights to) */
+let tracks=PLAYLIST.map(x=>({t:x.t,a:x.a||'',src:x.src})),ti=-1,routed=false;
+function playTrack(i){const k=tracks[i];if(!k)return;ti=i;au.src=k.src;au.volume=MUS.vol;
+ if(!MUS.on){S.music=true;MUS.on=true;PP.updSnd();PP.musSave()}PP.musStart();
+ if(!routed&&MUS.ctx&&(/^blob:/.test(k.src)||k.src.charAt(0)==='/'||k.src.indexOf(location.origin)===0)){try{MUS.ctx.createMediaElementSource(au).connect(MUS.master);routed=true}catch(e){}}
+ E.want='none';au.play().catch(()=>toast('Could not play that file'));paintTracks()}
+au.addEventListener('pause',()=>{E.want=S.station;paintTracks()});au.addEventListener('play',paintTracks);au.addEventListener('ended',()=>{if(tracks.length)playTrack((ti+1)%tracks.length)});
+function paintTracks(){const h=$('#trk');if(!h)return;h.innerHTML=tracks.length?tracks.map((k,i)=>`<button class="stb${i===ti&&!au.paused?' on':''}" data-tr="${i}"><b>${esc(k.t)}</b><small>${esc(k.a||'Your file')}</small></button>`).join(''):'<p class="mut" style="font-size:.9rem">No tracks yet.</p>';$('#trP').hidden=!tracks.length;$('#trPlay').textContent=au.paused?'Play':'Pause';$('#trNow').textContent=ti>=0&&tracks[ti]?tracks[ti].t:''}
+function paintStations(){const h=$('#stg');if(!h)return;const L=[['scroll','Scroll','Adaptive, follows how you scroll']].concat(Object.keys(STS).map(k=>[k,STS[k].n,STS[k].d]),[['none','Off','No generated music']]);h.innerHTML=L.map(x=>`<button class="stb${S.station===x[0]?' on':''}" data-st="${x[0]}"><b>${x[1]}</b><small>${x[2]}</small></button>`).join('')}
+
+/* ===== PAGES ===== */
+const RT={login:['/login','Log in','Log in to your account','Log in to access your saved guides, notes, scope plans and settings on Pavan Patel\'s website.',196,'dorian'],signup:['/signup','Sign up','Create your free account','Create a free account to save pages and guides, keep notes and sync your settings on Pavan Patel\'s website.',220,'minor'],reset:['/reset','Reset password','Reset your password','Reset your password for Pavan Patel\'s website.',196,'minor'],account:['/account','Account','Your account','Your saved pages, notes, plans and profile.',233,'dorian'],settings:['/settings','Settings','Settings: accessibility, music and display','Accessibility, display, motion and music settings for Pavan Patel\'s website.',207.7,'lydian']};
+Object.keys(RT).forEach(k=>{const r=RT[k];ROUTES[k]={h:r[0],n:r[1],t:r[2]+' | Pavan Patel',d:r[3],h1:r[2],note:r[4],mode:r[5]};H2R[r[0]]=k});
+const main=$('#main'),nextp=$('.nextp');
+const mk=(k,html)=>{const d=document.createElement('div');d.className='page';d.dataset.p=k;d.innerHTML=html;main.insertBefore(d,nextp)};
+const fld=(id,name,type,label,ac,extra)=>`<div class="fld"><input id="${id}" name="${name}" type="${type}" placeholder=" " autocomplete="${ac}" required><label for="${id}">${label}</label><i class="ln"></i>${extra||''}</div>`;
+const eye=id=>`<button type="button" class="eye" data-eye="${id}">Show</button>`;
+mk('login',`<section class="au"><div class="au-l"><div class="lab accent">Welcome back</div><h2 class="au-t">Log in.</h2><p class="lede">Pick up where you left off: saved guides, notes, scope plans and your settings.</p><p class="au-b" data-badge></p></div>
+<form class="ac brk" id="fLogin" novalidate>${fld('lEm','email','email','Email','email')}${fld('lPw','password','password','Password','current-password',eye('lPw'))}
+<label class="ck"><input type="checkbox" name="remember" checked> Keep me logged in on this device</label><button class="cta solid" type="submit">Log in →</button><p class="ms" id="mLogin" role="alert"></p><p class="alt"><a href="#/reset">Forgot your password?</a> · <a href="#/signup">Create an account</a></p></form></section>`);
+mk('signup',`<section class="au"><div class="au-l"><div class="lab accent">Join</div><h2 class="au-t">Sign up.</h2><p class="lede">Free. Save pages and guides, keep notes, store scope plans and keep your settings.</p><p class="au-b" data-badge></p></div>
+<div class="ac brk"><form id="fSign" novalidate>${fld('sNm','name','text','Your name','name')}${fld('sEm','email','email','Email','email')}${fld('sPw','password','password','Password (8+ characters)','new-password',eye('sPw'))}<div class="pw"><i id="pwBar"></i></div><p class="ms" id="pwTxt"></p>${fld('sPc','confirm','password','Confirm password','new-password')}
+<label class="ck"><input type="checkbox" name="terms" required> I agree to keep my account details safe and that this is a personal portfolio site.</label><button class="cta solid" type="submit">Create account →</button><p class="ms" id="mSign" role="alert"></p><p class="alt">Already have an account? <a href="#/login">Log in</a></p></form>
+<div id="recov" hidden><h3>Account created.</h3><p class="mut">Save this recovery code somewhere safe. It is the only way to reset your password in local mode and it will not be shown again.</p><pre class="code" id="recCode"></pre><p><button class="cta" id="recCopy">Copy</button><button class="cta" id="recDl">Download .txt</button></p><label class="ck"><input type="checkbox" id="recOk"> I have saved my recovery code</label><button class="cta solid" id="recGo" disabled>Continue to my account →</button></div></div></section>`);
+mk('reset',`<section class="au"><div class="au-l"><div class="lab accent">Locked out?</div><h2 class="au-t">Reset.</h2><p class="lede">Reset your password safely.</p><p class="au-b" data-badge></p></div><div class="ac brk">
+<form id="fResL" hidden novalidate><p class="mut">Enter your email, your recovery code and a new password.</p>${fld('rEm','email','email','Email','email')}${fld('rCd','code','text','Recovery code','off')}${fld('rPw','password','password','New password','new-password',eye('rPw'))}<button class="cta solid" type="submit">Reset password →</button><p class="ms" id="mResL" role="alert"></p></form>
+<form id="fResC" hidden novalidate><p class="mut">We will email you a link to choose a new password.</p>${fld('cEm','email','email','Email','email')}<button class="cta solid" type="submit">Send reset link →</button><p class="ms" id="mResC" role="alert"></p></form>
+<form id="fResN" hidden novalidate><p class="mut">Choose a new password.</p>${fld('nPw','password','password','New password','new-password',eye('nPw'))}<button class="cta solid" type="submit">Save new password →</button><p class="ms" id="mResN" role="alert"></p></form><p class="alt"><a href="#/login">Back to log in</a></p></div></section>`);
+mk('account',`<section class="ph"><div class="lab accent rv">Your account</div><h2 class="ph-t" id="acHi">Account.</h2><p class="lede rv d1" id="acSub"></p></section><section class="sec veil"><div id="acctBody"></div></section>`);
+mk('settings',`<section class="ph"><div class="lab accent rv">Settings</div><h2 class="ph-t">Settings.</h2><p class="lede rv d1">Make the site work for you. Changes apply instantly and are remembered.</p></section><section class="sec veil"><div class="setg" id="setBody"></div></section>`);
+const chip=document.createElement('a');chip.id='acctBtn';document.body.appendChild(chip);
+const saveBtn=document.createElement('button');saveBtn.id='saveBtn';document.body.appendChild(saveBtn);
+function navUpd(){const u=A.user;chip.href=u?'#/account':'#/login';chip.innerHTML=u?`<i>${esc(initials(u.name))}</i><span>${esc(u.name.split(' ')[0])}</span>`:'Log in';chip.setAttribute('aria-label',u?'Open your account':'Log in or sign up')}
+safe(()=>{const mg=$('#mg');['login','signup','account','settings'].forEach((k,i)=>{const a=document.createElement('a');a.href='#'+ROUTES[k].h;a.style.setProperty('--i',20+i);a.innerHTML=`<small>${String(20+i)}</small>${ROUTES[k].n}`;mg.appendChild(a)});
+ const cols=$$('footer>div:not(.cp)'),c=cols[cols.length-1];if(c)c.insertAdjacentHTML('beforeend','<a href="#/settings">Settings</a><a href="#/login">Log in</a><a href="#/signup">Sign up</a>')},'menu');
+
+/* ===== AUTH UI ===== */
+let nextRoute=null;const BADGE=cloud?'Cloud account · syncs across your devices':'Local account · stored on this device only';
+function afterAuth(){if(A.data.settings)S=Object.assign({},DEF,A.data.settings);else{A.data.settings=S;A.save()}apply(true);navUpd();saveUpd()}
+function prepAuth(rk){if(A.user&&rk!=='reset'){PP.navTo('account');return}$$('[data-badge]').forEach(e=>e.textContent=BADGE);
+ if(rk==='reset'){$('#fResL').hidden=!(!cloud);$('#fResC').hidden=!(cloud&&!RECOV);$('#fResN').hidden=!(cloud&&RECOV)}}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-eye]');if(t){const i=$('#'+t.dataset.eye);i.type=i.type==='password'?'text':'password';t.textContent=i.type==='password'?'Show':'Hide'}});
+on('#sPw','input',e=>{const s=pwScore(e.target.value),c=['#ff3d2e','#ff3d2e','#ffb020','#9be15d','#2fd37a'];$('#pwBar').style.width=(s*25)+'%';$('#pwBar').style.background=c[s];$('#pwTxt').textContent=e.target.value?['Too weak','Weak','Okay','Good','Strong'][s]:'';$('#pwTxt').className='ms'});
+on('#fLogin','submit',async e=>{e.preventDefault();const f=e.target,out=$('#mLogin'),em=f.email.value.trim().toLowerCase(),pw=f.password.value;if(!okMail(em)||!pw)return msg(out,'Enter your email and password.');
+ try{await busy($('button[type=submit]',f),()=>A.login(em,pw,f.remember.checked));f.reset();msg(out,'');afterAuth();toast('Welcome back, '+A.user.name.split(' ')[0]);const n=nextRoute||'account';nextRoute=null;PP.navTo(n)}catch(err){msg(out,err.message)}});
+on('#fSign','submit',async e=>{e.preventDefault();const f=e.target,out=$('#mSign'),nm=f.name.value.trim(),em=f.email.value.trim().toLowerCase(),pw=f.password.value;
+ if(nm.length<2)return msg(out,'Please enter your name.');if(!okMail(em))return msg(out,'Enter a valid email address.');if(pwScore(pw)<2||pw.length<8)return msg(out,'Use at least 8 characters and avoid common passwords.');if(pw!==f.confirm.value)return msg(out,'Passwords do not match.');if(!f.terms.checked)return msg(out,'Please tick the box to continue.');
+ try{const r=await busy($('button[type=submit]',f),()=>A.signup(nm,em,pw));f.reset();if(r.confirm)return msg(out,'Check your email to confirm your account, then log in.',true);afterAuth();if(r.code){f.hidden=true;$('#recov').hidden=false;$('#recCode').textContent=r.code}else{toast('Account created');PP.navTo('account')}}catch(err){msg(out,err.message)}});
+on('#recCopy','click',()=>{try{navigator.clipboard.writeText($('#recCode').textContent)}catch(e){}toast('Recovery code copied')});
+on('#recDl','click',()=>{const b=new Blob(['pavanp.me recovery code\n'+$('#recCode').textContent+'\nKeep this private.'],{type:'text/plain'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='pavanp-recovery-code.txt';a.click()});
+on('#recOk','change',e=>{$('#recGo').disabled=!e.target.checked});on('#recGo','click',()=>{$('#recov').hidden=true;$('#fSign').hidden=false;PP.navTo('account')});
+on('#fResL','submit',async e=>{e.preventDefault();const f=e.target,out=$('#mResL'),em=f.email.value.trim().toLowerCase(),code=f.code.value.trim().toUpperCase(),pw=f.password.value;if(!okMail(em)||!code||pw.length<8)return msg(out,'Fill in every field. The new password needs 8+ characters.');
+ try{await busy($('button[type=submit]',f),async()=>{const us=U.get(),u=us[em];if(!u||!same(await kdf(code,ub64(u.rsalt)),u.rhash))throw new Error('That email and recovery code do not match.');const s=rnd(16),rs=rnd(16),nc=recCode();u.salt=b64(s);u.hash=await kdf(pw,s);u.rsalt=b64(rs);u.rhash=await kdf(nc,rs);U.set(us);SV('pp-fail-'+em,{n:0,until:0});msg(out,'Password changed. Your NEW recovery code is '+nc+'. Save it, then log in.',true)});f.reset()}catch(err){msg(out,err.message)}});
+on('#fResC','submit',async e=>{e.preventDefault();const em=e.target.email.value.trim().toLowerCase(),out=$('#mResC');if(!okMail(em))return msg(out,'Enter a valid email address.');try{await CF('/auth/v1/recover',{method:'POST',body:JSON.stringify({email:em})});msg(out,'If that email has an account, a reset link is on its way.',true)}catch(err){msg(out,err.message)}});
+on('#fResN','submit',async e=>{e.preventDefault();const pw=e.target.password.value,out=$('#mResN');if(pw.length<8)return msg(out,'Use at least 8 characters.');try{await CF('/auth/v1/user',{method:'PUT',body:JSON.stringify({password:pw})},RECOV);RECOV=null;msg(out,'Password updated. You can log in now.',true)}catch(err){msg(out,err.message)}});
+async function logout(){try{if(cloud&&A.tok)await CF('/auth/v1/logout',{method:'POST'},A.tok)}catch(e){}A.user=null;A.tok=null;A.data=emptyData();A.sSet(null);S=Object.assign({},DEF,{music:MUS.on,vol:MUS.vol},LS('pp-settings',{}));apply(true);navUpd();saveUpd();toast('Logged out');PP.navTo('home')}
+
+/* ===== SAVED CONTENT ===== */
+const isSaved=id=>A.user&&A.data.saved.some(x=>x.id===id);
+function toggleSave(id,title,href,type){if(!A.user){nextRoute=PP.getRK();toast('Log in to save things');PP.navTo('login');return}const i=A.data.saved.findIndex(x=>x.id===id);if(i>=0){A.data.saved.splice(i,1);toast('Removed')}else{A.data.saved.unshift({id,title,href,type,ts:Date.now()});toast('Saved to your account')}A.save();saveUpd()}
+function saveUpd(){const rk=PP.getRK(),id='page:'+rk;saveBtn.className=isSaved(id)?'on':'';saveBtn.textContent=isSaved(id)?'★ Saved':'☆ Save page';$$('.sv').forEach(b=>{const s=isSaved(b.dataset.sv);b.classList.toggle('on',s);b.textContent=s?'★ Saved':'☆ Save guide'})}
+saveBtn.onclick=()=>{const rk=PP.getRK();toggleSave('page:'+rk,ROUTES[rk].n,'#'+ROUTES[rk].h,'Page')};
+function decorate(rk){if(rk==='guides')$$('.gd').forEach(a=>{if($('.sv',a))return;const id='guide:'+a.id.replace('gd-',''),b=document.createElement('button');b.className='sv';b.dataset.sv=id;b.dataset.t=$('h3',a).textContent;a.lastElementChild.appendChild(b)});
+ if(rk==='plan'&&!$('#plSave')){const b=document.createElement('button');b.className='cta';b.id='plSave';b.textContent='Save this plan';$('#plSend').after(b)}}
+document.addEventListener('click',e=>{const s=e.target.closest&&e.target.closest('.sv');if(s)toggleSave(s.dataset.sv,s.dataset.t,'#/guides','Guide');
+ if(e.target.id==='plSave'){if(!A.user){nextRoute='plan';toast('Log in to save plans');PP.navTo('login');return}A.data.plans.unshift({id:uid(),text:PP.getPlan(),ts:Date.now()});A.save();toast('Plan saved')}});
+
+/* ===== ACCOUNT PAGE ===== */
+let tab='saved',noteId=null;
+const dt=t=>new Date(t).toLocaleDateString('en-AU');
+function renderAccount(){const h=$('#acctBody');if(!A.user){$('#acHi').textContent='Account.';$('#acSub').textContent='Log in to see your saved items.';h.innerHTML=`<div class="ac brk" style="max-width:560px"><h3>You are not logged in</h3><p class="mut">Log in or create a free account to save pages, keep notes and keep your settings.</p><p><a class="cta solid" href="#/login">Log in</a><a class="cta" href="#/signup">Sign up</a></p></div>`;return}
+ const d=A.data;$('#acHi').textContent='Hi, '+A.user.name.split(' ')[0]+'.';$('#acSub').textContent=A.user.email+' · '+(A.user.cloud?'Cloud account':'Local account on this device');
+ const tabs=[['saved','Saved ('+d.saved.length+')'],['notes','Notes ('+d.notes.length+')'],['plans','Plans ('+d.plans.length+')'],['profile','Profile'],['data','Data']];let b='';
+ if(tab==='saved')b=d.saved.length?`<ul class="list">${d.saved.map((s,i)=>`<li class="sl"><span><b>${esc(s.title)}</b><small>${esc(s.type)} · ${dt(s.ts)}</small></span><a class="cta" href="${esc(s.href)}">Open</a><button class="cta" data-ds="${i}">Remove</button></li>`).join('')}</ul>`:'<p class="mut">Nothing saved yet. Use "Save page" on any page or the save buttons on guides.</p>';
+ if(tab==='notes'){const n=d.notes.find(x=>x.id===noteId);b=`<div class="nt"><div class="nl"><button class="cta solid" data-nn>New note</button>${d.notes.map(x=>`<button class="ni${n&&x.id===n.id?' on':''}" data-nid="${x.id}"><b>${esc(x.title||'Untitled')}</b><small>${dt(x.ts)}</small></button>`).join('')}</div><div class="ne">${n?`<input class="fi" id="nTitle" value="${esc(n.title)}" placeholder="Title" aria-label="Note title"><textarea class="fi" id="nBody" rows="12" aria-label="Note text">${esc(n.body)}</textarea><div><span class="rd" id="nSt">Saved</span> <button class="cta" data-dn>Delete note</button></div>`:'<p class="mut">Select or create a note. Notes save automatically.</p>'}</div></div>`}
+ if(tab==='plans')b=d.plans.length?`<ul class="list">${d.plans.map((p,i)=>`<li class="sl"><span><pre>${esc(p.text)}</pre><small>${dt(p.ts)}</small></span><button class="cta" data-cp="${i}">Copy</button><button class="cta" data-dp="${i}">Delete</button></li>`).join('')}</ul>`:'<p class="mut">No saved plans. Build one on the <a href="#/plan" style="color:var(--b)">Plan page</a> and press "Save this plan".</p>';
+ if(tab==='profile')b=`<div class="two" style="gap:5vh"><form class="ac" id="fName"><h3>Name</h3>${fld('pN','name','text','Display name','name')}<button class="cta solid" type="submit">Save name</button><p class="ms" id="mName"></p></form><form class="ac" id="fPass"><h3>Password</h3>${A.user.cloud?'':fld('pC','current','password','Current password','current-password')}${fld('pP','password','password','New password','new-password')}<button class="cta solid" type="submit">Change password</button><p class="ms" id="mPass"></p></form></div><p style="margin-top:4vh"><button class="cta" data-lo>Log out</button><a class="cta" href="#/settings">Settings</a></p>`;
+ if(tab==='data')b=`<div class="ac" style="max-width:640px"><h3>Your data</h3><p class="mut">Download everything saved in your account, restore it later, or delete the account.</p><p><button class="cta" data-ex>Export JSON</button><label class="cta">Import JSON<input type="file" id="imp" accept="application/json" hidden></label></p><div class="fld"><input id="delC" placeholder=" " aria-label="Type DELETE"><label for="delC">Type DELETE to enable</label><i class="ln"></i></div><button class="cta" data-del style="border-color:#ff3d2e;color:#ff7a6e">Delete my account</button><p class="ms" id="mDel"></p></div>`;
+ h.innerHTML=`<div class="stt rv in"><div><b>${d.saved.length}</b><span class="lab mut">Saved</span></div><div><b>${d.notes.length}</b><span class="lab mut">Notes</span></div><div><b>${d.plans.length}</b><span class="lab mut">Plans</span></div></div><div class="tabs">${tabs.map(t=>`<button data-tab="${t[0]}" class="${tab===t[0]?'on':''}">${t[1]}</button>`).join('')}</div>${b}`;
+ if(tab==='profile'){const n=$('#pN');if(n)n.value=A.user.name}}
+let nt1=0;const B=()=>$('#acctBody');
+document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.closest('#acctBody *');if(!t)return;const g=a=>{const x=e.target.closest('['+a+']');return x?x.getAttribute(a):null},d=A.data;let v;
+ if((v=g('data-tab'))){tab=v;renderAccount()}else if((v=g('data-ds'))!==null){d.saved.splice(+v,1);A.save();saveUpd();renderAccount()}
+ else if(g('data-nn')!==null){const n={id:uid(),title:'',body:'',ts:Date.now()};d.notes.unshift(n);noteId=n.id;A.save();renderAccount()}else if((v=g('data-nid'))){noteId=v;renderAccount()}
+ else if(g('data-dn')!==null){if(confirm('Delete this note?')){d.notes=d.notes.filter(x=>x.id!==noteId);noteId=null;A.save();renderAccount()}}
+ else if((v=g('data-cp'))!==null){try{navigator.clipboard.writeText(d.plans[+v].text)}catch(x){}toast('Plan copied')}else if((v=g('data-dp'))!==null){d.plans.splice(+v,1);A.save();renderAccount()}
+ else if(g('data-lo')!==null)logout();
+ else if(g('data-ex')!==null){const b=new Blob([JSON.stringify({exported:new Date().toISOString(),user:{name:A.user.name,email:A.user.email},data:d},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='pavanp-me-data.json';a.click()}
+ else if(g('data-del')!==null){const out=$('#mDel');if(($('#delC').value||'').trim()!=='DELETE')return msg(out,'Type DELETE in the box first.');try{if(cloud){await CF('/rest/v1/pp_profiles?id=eq.'+A.user.id,{method:'DELETE'},A.tok)}else{const us=U.get();delete us[A.user.email];U.set(us);store.set(dK(A.user.id),'')}await logout();toast(cloud?'Data deleted. Remove the login itself in Supabase if needed.':'Account deleted')}catch(err){msg(out,err.message)}}});
+document.addEventListener('input',e=>{if(e.target.id!=='nTitle'&&e.target.id!=='nBody')return;const n=A.data.notes.find(x=>x.id===noteId);if(!n)return;n.title=$('#nTitle').value.slice(0,120);n.body=$('#nBody').value.slice(0,20000);n.ts=Date.now();$('#nSt').textContent='Saving…';clearTimeout(nt1);nt1=setTimeout(()=>{A.save();const s=$('#nSt');if(s)s.textContent='Saved'},600)});
+document.addEventListener('submit',async e=>{if(e.target.id==='fName'){e.preventDefault();const nm=e.target.name.value.trim(),out=$('#mName');if(nm.length<2)return msg(out,'Enter a name.');try{if(cloud)await CF('/auth/v1/user',{method:'PUT',body:JSON.stringify({data:{name:nm}})},A.tok);else{const us=U.get();us[A.user.email].name=nm;U.set(us)}A.user.name=nm;navUpd();msg(out,'Name saved.',true);$('#acHi').textContent='Hi, '+nm.split(' ')[0]+'.'}catch(err){msg(out,err.message)}}
+ if(e.target.id==='fPass'){e.preventDefault();const f=e.target,out=$('#mPass'),np=f.password.value;if(np.length<8||pwScore(np)<2)return msg(out,'Use 8+ characters and avoid common passwords.');try{await busy($('button',f),async()=>{if(cloud)await CF('/auth/v1/user',{method:'PUT',body:JSON.stringify({password:np})},A.tok);else{const us=U.get(),u=us[A.user.email];if(!same(await kdf(f.current.value,ub64(u.salt)),u.hash))throw new Error('Current password is incorrect.');const s=rnd(16);u.salt=b64(s);u.hash=await kdf(np,s);U.set(us)}});f.reset();msg(out,'Password changed.',true)}catch(err){msg(out,err.message)}}});
+document.addEventListener('change',e=>{if(e.target.id!=='imp')return;const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result),x=j.data||{},c=(a,m)=>Array.isArray(a)?a.slice(0,m):[];const sv=c(x.saved,500).map(s=>({id:String(s.id).slice(0,80),title:String(s.title).slice(0,200),href:/^#\//.test(s.href)?s.href:'#/',type:String(s.type).slice(0,20),ts:+s.ts||Date.now()})),nts=c(x.notes,500).map(n=>({id:String(n.id||uid()),title:String(n.title||'').slice(0,120),body:String(n.body||'').slice(0,20000),ts:+n.ts||Date.now()})),pl=c(x.plans,200).map(p=>({id:String(p.id||uid()),text:String(p.text||'').slice(0,4000),ts:+p.ts||Date.now()}));
+ A.data.saved=sv.concat(A.data.saved.filter(a=>!sv.some(b=>b.id===a.id)));A.data.notes=nts.concat(A.data.notes);A.data.plans=pl.concat(A.data.plans);A.save();renderAccount();toast('Imported')}catch(err){toast('That file could not be read')}};r.readAsText(f)});
+
+/* ===== SETTINGS PAGE ===== */
+const sw=(k,t,d)=>`<label class="sr2"><span><b>${t}</b><small>${d}</small></span><input class="sw2" type="checkbox" role="switch" data-k="${k}"></label>`;
+function buildSet(){const h=$('#setBody');h.dataset.b=1;h.innerHTML=`<div class="sg"><h3>Colour theme</h3><div class="swr" id="setTh"></div></div>
+<div class="sg"><h3>Text and reading</h3><label class="sr2"><span><b>Text size</b><small id="fontV"></small></span><input type="range" min="85" max="150" step="5" data-k="font" aria-label="Text size"></label>${sw('hc','High contrast','Stronger text colour and borders')}${sw('lh','Extra line spacing','Easier to follow long text')}${sw('ls','Extra letter and word spacing','Helpful for dyslexia and low vision')}${sw('leg','Easy-read font','Atkinson Hyperlegible, designed for low vision')}${sw('ul','Underline links','Makes links obvious without relying on colour')}${sw('focus','Strong focus outlines','Bolder outline for keyboard users')}${sw('cur','Use the normal mouse cursor','Turns off the custom cursor')}</div>
+<div class="sg"><h3>Motion and effects</h3>${sw('rm','Reduce motion','Stops animation, parallax and long transitions')}${sw('nogl','Turn off the 3D background','Saves battery and shows a simple gradient')}${sw('fx','Hide film grain and scanlines','A cleaner picture')}</div>
+<div class="sg"><h3>Sound and music</h3>${sw('music','Sound on','Generated music that reacts to how you scroll')}${sw('sfx','Interface sounds','Clicks, chimes and game effects')}<label class="sr2"><span><b>Volume</b><small id="volV"></small></span><input type="range" min="0" max="1" step="0.05" data-k="vol" aria-label="Volume"></label>
+<div class="lab mut" style="margin:24px 0 10px">Station (original music, generated live)</div><div class="stg" id="stg"></div>
+<div class="lab mut" style="margin:28px 0 10px">Your own songs</div><p class="mut" style="font-size:.9rem;max-width:64ch">I cannot include commercial songs. Add audio files you own or have a licence for, such as royalty-free tracks with attribution, or put them in a /music folder and list them in PLAYLIST. Files added here stay on this device.</p><div class="stg" id="trk"></div>
+<div class="trc"><label class="cta">Add audio files<input type="file" id="trF" accept="audio/*" multiple hidden></label><input class="fi" id="trU" placeholder="https://… direct link to an audio file" aria-label="Audio link" style="max-width:340px"><button class="cta" id="trA">Add link</button></div>
+<div class="trc" id="trP" hidden><button class="cta" id="trPrev">Prev</button><button class="cta solid" id="trPlay">Play</button><button class="cta" id="trNext">Next</button><span class="rd" id="trNow"></span></div></div>
+<div class="sg"><h3>Your settings</h3><p class="mut" id="setWho"></p><div class="trc"><button class="cta" id="setExp">Export settings</button><button class="cta" id="setRst">Reset all settings</button></div></div>`;
+ PP.TH.forEach((t,i)=>{const b=document.createElement('button');b.style.background=`linear-gradient(135deg,${t.a},${t.b})`;b.setAttribute('aria-label','Theme '+(i+1));b.onclick=()=>patch({theme:i},true);$('#setTh').appendChild(b)});
+ h.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;patch({[k]:e.target.type==='checkbox'?e.target.checked:+e.target.value},true)});
+ h.addEventListener('click',e=>{const s=e.target.closest('[data-st]'),t=e.target.closest('[data-tr]');if(s)patch({station:s.dataset.st,music:true},true);if(t)playTrack(+t.dataset.tr)});
+ $('#trF').onchange=e=>{[...e.target.files].forEach(f=>tracks.push({t:f.name.replace(/\.[^.]+$/,''),a:'',src:URL.createObjectURL(f)}));paintTracks()};
+ $('#trA').onclick=()=>{const u=$('#trU').value.trim();if(!/^https?:\/\//i.test(u))return toast('Enter a link starting with https://');tracks.push({t:u.split('/').pop().split('?')[0]||'Track',a:'Web link',src:u});$('#trU').value='';paintTracks()};
+ $('#trPlay').onclick=()=>{if(ti<0)playTrack(0);else if(au.paused){E.want='none';au.play()}else au.pause();paintTracks()};$('#trPrev').onclick=()=>playTrack((ti-1+tracks.length)%tracks.length);$('#trNext').onclick=()=>playTrack((ti+1)%tracks.length);
+ $('#setRst').onclick=()=>{if(confirm('Reset all settings?'))patch(Object.assign({},DEF,{music:MUS.on,vol:MUS.vol}),true)};
+ $('#setExp').onclick=()=>{const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='pavanp-me-settings.json';a.click()}}
+function syncSet(){$$('#setBody [data-k]').forEach(el=>{const k=el.dataset.k;if(el.type==='checkbox')el.checked=k==='rm'?(S.rm===null?SYS_RM:S.rm):!!S[k];else el.value=S[k]});$$('#setTh button').forEach((b,i)=>b.classList.toggle('on',i===S.theme));const f=$('#fontV'),v=$('#volV');if(f)f.textContent=S.font+'%';if(v)v.textContent=Math.round(S.vol*100)+'%';const w=$('#setWho');if(w)w.textContent=A.user?'Signed in: these settings are saved to your account.':'Saved on this device. Log in to keep them with your account.';paintStations();paintTracks()}
+function renderSet(){if(!$('#setBody').dataset.b)buildSet();syncSet()}
+
+/* ===== ROUTE HOOK + START ===== */
+PP.onRoute.push(rk=>{const rb=$('meta[name=robots]');if(rb)rb.content=['login','signup','reset','account'].includes(rk)?'noindex,nofollow':'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1';
+ if(rk==='login'||rk==='signup'||rk==='reset')prepAuth(rk);if(rk==='account')renderAccount();if(rk==='settings')renderSet();decorate(rk);saveUpd()});
+apply(false);navUpd();
+A.init().then(()=>{if(A.user)afterAuth();else{apply(false);navUpd()}const rk=PP.getRK();if(rk==='account')renderAccount();if(rk==='login'||rk==='signup')prepAuth(rk)}).catch(()=>{apply(false);navUpd()});
 })();
 </script>
 </body>
