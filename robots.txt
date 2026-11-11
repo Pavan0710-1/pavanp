@@ -1,4 +1,10 @@
+# General search engine crawlers
 User-agent: *
 Allow: /
 
+# ChatGPT Search crawler
+User-agent: OAI-SearchBot
+Allow: /
+
+# Sitemap
 Sitemap: https://pavanp.me/sitemap.xml
