@@ -157,7 +157,7 @@ function build() {
     const code = e.code;
     if (code === 'Escape') { capturing = null; refresh(); return; }
     // physical WASD, Ctrl, Shift, Space stay reserved for movement/aim/jump
-        if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space', 'ShiftLeft', 'ShiftRight',
+        if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyM', 'Space', 'ShiftLeft', 'ShiftRight',
           'ControlLeft', 'ControlRight'].includes(code)) return;
         if (!/^Key[A-Z]$|^Digit[0-9]$|^F[0-9]{1,2}$|^Tab$/.test(code)) return;
     // set: this physical code now produces the logical action
@@ -197,7 +197,7 @@ function refresh() {
     section('KEY BINDINGS') +
     BINDABLE.map((b) => bindRow(b)).join('') +
     '<div style="font:600 10px Consolas,monospace;color:#9fb2c8;margin-top:8px;letter-spacing:.05em">' +
-    'Click a key, then press the new key. Esc cancels. WASD / Shift / Ctrl / Space are fixed.</div>';
+    'Click a key, then press the new key. Esc cancels. WASD / Shift / Ctrl / Space / M are fixed.</div>';
 
   body.querySelectorAll('[data-toggle]').forEach((cb) => {
     cb.onchange = () => { s[cb.dataset.toggle] = cb.checked; onChange(cb.dataset.toggle); };

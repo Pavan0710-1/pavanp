@@ -233,7 +233,6 @@ import { initPhotoBounty, updatePhotoBounty, photoBountySave } from './photoboun
 
 // Point the game's single save key at the active slot before anything reads it.
 await bootActiveSlot();
-await bootActiveSlot();
 const loadingStage=async(label,completed)=>{window.dispatchEvent(new CustomEvent('open-city-loading',{detail:{label,completed}}));await new Promise(resolve=>requestAnimationFrame(resolve));};
 await loadingStage('Save selected; preparing renderer',1);
 
