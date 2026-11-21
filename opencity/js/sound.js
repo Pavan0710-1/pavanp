@@ -2,20 +2,38 @@
 let ctx = null;
 let master = null;
 let noiseBuf = null;
+let muted = false;
+let masterLevel = 0.5;
 
 export function initSound() {
-  if (ctx) { ctx.resume(); return; }
+  if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return true; }
   const AC = window.AudioContext || window.webkitAudioContext;
-  if (!AC) return;
+  if (!AC) return false;
   ctx = new AC();
   master = ctx.createGain();
-  master.gain.value = 0.5;
+  master.gain.value = muted ? 0 : masterLevel;
   master.connect(ctx.destination);
 
   noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 1.5, ctx.sampleRate);
   const data = noiseBuf.getChannelData(0);
-  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+  // Colored, no-DC noise source: only used as an input to short/filtered effects.
+  let last = 0;
+  for (let i = 0; i < data.length; i++) {
+    const white = Math.random() * 2 - 1;
+    last = last * 0.96 + white * 0.04;
+    data[i] = last * 2.2;
+  }
+  if (ctx.state === 'suspended') ctx.resume();
+  return true;
 }
+
+export function toggleMute() {
+  muted = !muted;
+  if (ctx && master) master.gain.setTargetAtTime(muted ? 0 : masterLevel, ctx.currentTime, 0.025);
+  return muted;
+}
+
+export function isMuted() { return muted; }
 
 function noiseShot({ dur, freq, q = 1, gain, type = 'lowpass' }) {
   if (!ctx) return;
@@ -64,39 +82,73 @@ export function sfxExplosion() {
   o.stop(ctx.currentTime + 0.65);
 }
 
-export function sfxCrash(strength) {
+export function sfxCrash(strength = 1) {
   if (!ctx) return;
-  noiseShot({ dur: 0.25, freq: 500, gain: Math.min(0.5, strength * 0.04) });
+  const o = ctx.createOscillator();
+  o.type = 'sine';
+  o.frequency.setValueAtTime(90, ctx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.16);
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(Math.min(0.55, 0.12 + strength * 0.025), ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.24);
+  o.connect(g).connect(master);
+  o.start();
+  o.stop(ctx.currentTime + 0.26);
 }
 
 export function sfxPickup() {
   if (!ctx) return;
   const o = ctx.createOscillator();
-  o.type = 'square';
+  o.type = 'triangle';
   o.frequency.setValueAtTime(660, ctx.currentTime);
   o.frequency.setValueAtTime(990, ctx.currentTime + 0.07);
   const g = ctx.createGain();
-  g.gain.setValueAtTime(0.12, ctx.currentTime);
+  g.gain.setValueAtTime(0.0001, ctx.currentTime);
+  g.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 0.01);
   g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
   o.connect(g).connect(master);
   o.start();
   o.stop(ctx.currentTime + 0.2);
 }
 
-// two-tone car horn (vehiclefx.js)
+export function sfxCash() {
+  if (!ctx) return;
+  for (const [i, freq] of [[0, 880], [1, 1320]]) {
+    const o = ctx.createOscillator();
+    o.type = 'sine';
+    o.frequency.value = freq;
+    const g = ctx.createGain();
+    const t = ctx.currentTime + i * 0.09;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(0.14, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.24);
+    o.connect(g).connect(master);
+    o.start(t);
+    o.stop(t + 0.26);
+  }
+}
+
+// two-tone car horn (400 Hz + 500 Hz), softly low-pass filtered
 export function sfxHorn() {
   if (!ctx) return;
-  for (const [freq, delay] of [[440, 0], [554, 0]]) {
+  const bus = ctx.createGain();
+  bus.gain.value = 0.08;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 800;
+  filter.Q.value = 0.7;
+  bus.connect(filter).connect(master);
+  for (const freq of [400, 500]) {
     const o = ctx.createOscillator();
     o.type = 'sawtooth';
     o.frequency.value = freq;
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0.12, ctx.currentTime + delay);
-    g.gain.setValueAtTime(0.12, ctx.currentTime + delay + 0.28);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.4);
-    o.connect(g).connect(master);
-    o.start(ctx.currentTime + delay);
-    o.stop(ctx.currentTime + delay + 0.45);
+    o.connect(bus);
+    bus.gain.setValueAtTime(0.0001, ctx.currentTime);
+    bus.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.025);
+    bus.gain.setValueAtTime(0.08, ctx.currentTime + 0.32);
+    bus.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.48);
+    o.start();
+    o.stop(ctx.currentTime + 0.5);
   }
 }
 
@@ -237,247 +289,75 @@ function makeLoop(build) {
 }
 
 export const engine = makeLoop(() => {
-  const o = ctx.createOscillator();
-  o.type = 'sawtooth';
-  o.frequency.value = 55;
-  const f = ctx.createBiquadFilter();
-  f.type = 'lowpass';
-  f.frequency.value = 320;
+  const o1 = ctx.createOscillator();
+  const o2 = ctx.createOscillator();
+  o1.type = 'triangle';
+  o2.type = 'sine';
+  o1.frequency.value = 48;
+  o2.frequency.value = 52;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 180;
+  filter.Q.value = 0.5;
   const g = ctx.createGain();
-  g.gain.value = 0.07;
-  o.connect(f).connect(g).connect(master);
-  o.start();
-  return { o, f, g, stoppables: [o] };
+  g.gain.setValueAtTime(0.0001, ctx.currentTime);
+  g.gain.setTargetAtTime(0.07, ctx.currentTime, 0.12);
+  o1.connect(filter);
+  o2.connect(filter);
+  filter.connect(g).connect(master);
+  o1.start();
+  o2.start();
+  return { o1, o2, filter, g, stoppables: [o1, o2] };
 });
 
 export function setEngine(speed) {
   if (!engine.nodes || !ctx) return;
-  engine.nodes.o.frequency.setTargetAtTime(50 + speed * 4.5, ctx.currentTime, 0.05);
-  engine.nodes.f.frequency.setTargetAtTime(280 + speed * 14, ctx.currentTime, 0.05);
+  const s = Math.max(0, Math.min(1, speed / 38));
+  const base = 48 + s * 112;
+  engine.nodes.o1.frequency.setTargetAtTime(base, ctx.currentTime, 0.055);
+  engine.nodes.o2.frequency.setTargetAtTime(base * 1.08, ctx.currentTime, 0.055);
+  engine.nodes.filter.frequency.setTargetAtTime(180 + s * 770, ctx.currentTime, 0.08);
+  engine.nodes.g.gain.setTargetAtTime(0.018 + s * 0.095, ctx.currentTime, 0.09);
 }
 
-export const rotor = makeLoop(() => {
+export const tireScreech = makeLoop(() => {
   const src = ctx.createBufferSource();
   src.buffer = noiseBuf;
   src.loop = true;
-  const f = ctx.createBiquadFilter();
-  f.type = 'lowpass';
-  f.frequency.value = 180;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 1100;
+  filter.Q.value = 1.2;
   const g = ctx.createGain();
   g.gain.value = 0;
-  // 13 Hz chop
-  const lfo = ctx.createOscillator();
-  lfo.type = 'square';
-  lfo.frequency.value = 13;
-  const lfoGain = ctx.createGain();
-  lfoGain.gain.value = 0.16;
-  lfo.connect(lfoGain).connect(g.gain);
-  src.connect(f).connect(g).connect(master);
+  src.connect(filter).connect(g).connect(master);
   src.start();
-  lfo.start();
-  return { src, g, stoppables: [src, lfo] };
+  return { g, stoppables: [src] };
 });
 
-// steady rain hiss, volume follows storm intensity
-export const rainAmb = makeLoop(() => {
-  const src = ctx.createBufferSource();
-  src.buffer = noiseBuf;
-  src.loop = true;
-  const f = ctx.createBiquadFilter();
-  f.type = 'highpass';
-  f.frequency.value = 1500;
-  const g = ctx.createGain();
-  g.gain.value = 0;
-  src.connect(f).connect(g).connect(master);
-  src.start();
-  return { src, g, stoppables: [src] };
-});
-
-export function setRain(vol) {
-  if (!rainAmb.nodes || !ctx) return;
-  rainAmb.nodes.g.gain.setTargetAtTime(vol * 0.13, ctx.currentTime, 0.6);
+export function setTireScreech(active) {
+  if (!tireScreech.nodes || !ctx) return;
+  tireScreech.nodes.g.gain.setTargetAtTime(active ? 0.16 : 0, ctx.currentTime, 0.055);
 }
 
 export const siren = makeLoop(() => {
   const o = ctx.createOscillator();
-  o.type = 'triangle';
-  o.frequency.value = 520;
-  const lfo = ctx.createOscillator();
-  lfo.type = 'square';
-  lfo.frequency.value = 0.85;
-  const lfoGain = ctx.createGain();
-  lfoGain.gain.value = 110;
-  lfo.connect(lfoGain).connect(o.frequency);
+  o.type = 'sine';
+  o.frequency.value = 650;
   const g = ctx.createGain();
-  g.gain.value = 0;
+  g.gain.value = 0.0001;
   o.connect(g).connect(master);
   o.start();
-  lfo.start();
-  return { o, g, stoppables: [o, lfo] };
+  return { o, g, stoppables: [o] };
 });
 
-// volume 0..1 based on distance to nearest cop
-export function setSiren(vol) {
+// wantedStars 0..5; smooth oscillation and clean fade when wanted is cleared
+export function setSiren(wantedStars, proximity = 1) {
   if (!siren.nodes || !ctx) return;
-  siren.nodes.g.gain.setTargetAtTime(vol * 0.08, ctx.currentTime, 0.15);
-}
-
-// ---------- car radio (procedural stations) ----------
-
-export const RADIO_STATIONS = ['RADIO OFF', 'LOFI 88.1', 'DRIVE FM', 'BASS 103', 'DESI 96.3', 'NITE JAZZ'];
-let radioNodes = null;
-
-function stopRadio() {
-  if (!radioNodes) return;
-  for (const n of radioNodes) { try { n.stop(); } catch {} }
-  radioNodes = null;
-}
-
-// Each station is a small self-running synth patch: oscillators + LFOs, no
-// scheduling needed, it just grooves forever until stopped.
-export function setRadioStation(i) {
-  stopRadio();
-  if (!ctx || i <= 0) return;
-  const stops = [];
-  const bus = ctx.createGain();
-  bus.gain.value = 0.05;
-  bus.connect(master);
-
-  const osc = (type, freq) => {
-    const o = ctx.createOscillator();
-    o.type = type;
-    o.frequency.value = freq;
-    stops.push(o);
-    return o;
-  };
-
-  if (i === 1) {
-    // LOFI: two warm detuned sines drifting through a slow filter
-    const f = ctx.createBiquadFilter();
-    f.type = 'lowpass';
-    f.frequency.value = 900;
-    const a = osc('sine', 220);
-    const b = osc('sine', 220 * 1.5 + 1.5);
-    const lfo = osc('sine', 0.11);
-    const lfoG = ctx.createGain();
-    lfoG.gain.value = 70;
-    lfo.connect(lfoG).connect(a.frequency);
-    a.connect(f); b.connect(f); f.connect(bus);
-    a.start(); b.start(); lfo.start();
-  } else if (i === 2) {
-    // DRIVE FM: synthwave saw pad, filter sweeping, hat tick on top
-    const f = ctx.createBiquadFilter();
-    f.type = 'lowpass';
-    f.frequency.value = 600;
-    for (const fr of [110, 165, 220]) { const o = osc('sawtooth', fr); o.connect(f); o.start(); }
-    const sweep = osc('sine', 0.25);
-    const sweepG = ctx.createGain();
-    sweepG.gain.value = 380;
-    sweep.connect(sweepG).connect(f.frequency);
-    sweep.start();
-    f.connect(bus);
-    const hat = ctx.createBufferSource();
-    hat.buffer = noiseBuf;
-    hat.loop = true;
-    const hf = ctx.createBiquadFilter();
-    hf.type = 'highpass';
-    hf.frequency.value = 6000;
-    const hg = ctx.createGain();
-    hg.gain.value = 0;
-    const tick = osc('square', 4);
-    const tickG = ctx.createGain();
-    tickG.gain.value = 0.35;
-    tick.connect(tickG).connect(hg.gain);
-    hat.connect(hf).connect(hg).connect(bus);
-    hat.start(); tick.start();
-    stops.push(hat);
-  } else if (i === 3) {
-    // BASS 103: sub sine + square bass hopping between two notes
-    const sub = osc('sine', 55);
-    sub.connect(bus);
-    sub.start();
-    const b = osc('square', 110);
-    const bg = ctx.createGain();
-    bg.gain.value = 0.4;
-    const hop = osc('square', 1.1);
-    const hopG = ctx.createGain();
-    hopG.gain.value = 27; // 110 <-> 137.5-ish
-    hop.connect(hopG).connect(b.frequency);
-    const bf = ctx.createBiquadFilter();
-    bf.type = 'lowpass';
-    bf.frequency.value = 500;
-    b.connect(bg).connect(bf).connect(bus);
-    b.start(); hop.start();
-  } else if (i === 4) {
-    // DESI 96.3: droning fifth under a fast melodic arp, dholak-ish tick
-    const drone = osc('sawtooth', 146.8); // D3
-    const dg = ctx.createGain();
-    dg.gain.value = 0.35;
-    const df = ctx.createBiquadFilter();
-    df.type = 'lowpass';
-    df.frequency.value = 700;
-    drone.connect(dg).connect(df).connect(bus);
-    drone.start();
-    const lead = osc('square', 293.7);
-    const lg = ctx.createGain();
-    lg.gain.value = 0.22;
-    const arp = osc('sawtooth', 2.4); // fast ornament wobble
-    const arpG = ctx.createGain();
-    arpG.gain.value = 55;
-    arp.connect(arpG).connect(lead.frequency);
-    const lf = ctx.createBiquadFilter();
-    lf.type = 'bandpass';
-    lf.frequency.value = 900;
-    lead.connect(lg).connect(lf).connect(bus);
-    lead.start(); arp.start();
-    const perc = ctx.createBufferSource();
-    perc.buffer = noiseBuf;
-    perc.loop = true;
-    const pf = ctx.createBiquadFilter();
-    pf.type = 'bandpass';
-    pf.frequency.value = 300;
-    const pg = ctx.createGain();
-    pg.gain.value = 0;
-    const beat = osc('square', 3.2); // dha-dhin tick
-    const beatG = ctx.createGain();
-    beatG.gain.value = 0.5;
-    beat.connect(beatG).connect(pg.gain);
-    perc.connect(pf).connect(pg).connect(bus);
-    perc.start(); beat.start();
-    stops.push(perc);
-  } else {
-    // NITE JAZZ: soft triangle seventh chord drifting, brushed hat
-    const jf = ctx.createBiquadFilter();
-    jf.type = 'lowpass';
-    jf.frequency.value = 1100;
-    for (const fr of [174.6, 220, 261.6, 329.6]) { // Fmaj7-ish
-      const o = osc('triangle', fr);
-      const og = ctx.createGain();
-      og.gain.value = 0.22;
-      o.connect(og).connect(jf);
-      o.start();
-    }
-    const drift = osc('sine', 0.07);
-    const driftG = ctx.createGain();
-    driftG.gain.value = 5;
-    for (const stopped of stops) { if (stopped.frequency) drift.connect(driftG).connect(stopped.frequency); }
-    drift.start();
-    jf.connect(bus);
-    const brush = ctx.createBufferSource();
-    brush.buffer = noiseBuf;
-    brush.loop = true;
-    const bhf = ctx.createBiquadFilter();
-    bhf.type = 'highpass';
-    bhf.frequency.value = 7000;
-    const bhg = ctx.createGain();
-    bhg.gain.value = 0;
-    const swing = osc('sine', 1.6);
-    const swingG = ctx.createGain();
-    swingG.gain.value = 0.1;
-    swing.connect(swingG).connect(bhg.gain);
-    brush.connect(bhf).connect(bhg).connect(bus);
-    brush.start(); swing.start();
-    stops.push(brush);
-  }
-  radioNodes = stops;
+  const t = ctx.currentTime;
+  const phase = t % 1.2;
+  const targetHz = phase < 0.6 ? 650 : 850;
+  siren.nodes.o.frequency.setTargetAtTime(targetHz, t, 0.07);
+  const level = wantedStars > 0 ? Math.min(0.11, (0.035 + wantedStars * 0.012) * proximity) : 0.0001;
+  siren.nodes.g.gain.setTargetAtTime(level, t, wantedStars > 0 ? 0.12 : 0.45);
 }
