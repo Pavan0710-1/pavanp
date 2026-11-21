@@ -983,6 +983,7 @@ addEventListener('keyup',e=>{const k=e.key.toLowerCase();EX.keys[k]=false;EX.key
 function onFound(msg,n){const d=$('#disc');d.textContent=msg;d.classList.add('show');clearTimeout(d._t);d._t=setTimeout(()=>d.classList.remove('show'),4600);$('#xs').textContent=n+' / 5';[523,659,784].forEach((f,i)=>setTimeout(()=>tone(f,.5,'sine',.1,1.01),i*110));if(n===5)setTimeout(()=>{d.textContent='All signals found. That is how I think about every website.';d.classList.add('show');FX.pulse=1.5},4800)}
 function addRipple(x,y,a){if(!G||RM)return;G.rip[G.ripI++%8].set(x,y,G.time,a)}
 addEventListener('pointermove',e=>{if(e.pointerType==='touch'&&(EX.joy.x||EX.joy.y))return;m.x=e.clientX/innerWidth*2-1;m.y=-(e.clientY/innerHeight*2-1);m.cx=e.clientX;m.cy=e.clientY;if(GAME.run||BS.run)return;
+ if(FINE){const cd=$('#cd'),cr=$('#cr');if(cd)cd.style.transform=`translate(${e.clientX}px,${e.clientY}px)`;if(cr)cr.style.transform=`translate(${e.clientX}px,${e.clientY}px)`}
  if(FINE&&Math.hypot(e.clientX-m.lx,e.clientY-m.ly)>150){m.lx=e.clientX;m.ly=e.clientY;addRipple(e.clientX/innerWidth,1-e.clientY/innerHeight,.32)}
  if(RK==='explore'&&EX.drag){EX.yaw-=(e.clientX-EX.lx)*.0035;EX.pitch=clamp(EX.pitch-(e.clientY-EX.ly)*.0035,-1.45,1.45);EX.lx=e.clientX;EX.ly=e.clientY}});
 addEventListener('pointerdown',e=>{if(GAME.run||BS.run)return;addRipple(e.clientX/innerWidth,1-e.clientY/innerHeight,1);FX.pulse=Math.max(FX.pulse,.8);FX.flash=1;tone(e.clientY<innerHeight/2?740:520,.35);if(RK==='explore'){EX.drag=true;EX.lx=e.clientX;EX.ly=e.clientY}});addEventListener('pointerup',()=>{EX.drag=false});
@@ -1252,7 +1253,7 @@ function tick(now){requestAnimationFrame(tick);try{
  let hp=0,mp=0,hr=0,wp=0,ep=0,lpR=0;
  if(RK==='home'&&L.hero&&L.man){hp=prog(L.hero);mp=prog(L.man);const after=L.man.t+L.man.h-L.vh;hr=clamp((SC.sy-after)/Math.max(1,L.docH-L.vh-after),0,1);const e=sm(0,1,hp);
   EL.bwT.style.transform=`translate3d(0,${(-e*62).toFixed(2)}vh,0) scale(${1+e*.1})`;EL.bwB.style.transform=`translate3d(0,${(e*62).toFixed(2)}vh,0) scale(${1+e*.1})`;EL.bwT.parentElement.style.opacity=1-sm(.7,.95,hp);const hf=1-sm(0,.22,hp);EL.hTL.style.opacity=hf;EL.hBL.style.opacity=hf;EL.hBR.style.opacity=hf;
-  lpR=Math.max(0,75*sm(0,.22,mp)-75*sm(.82,1,mp));EL.lp.style.clipPath=`circle(${lpR.toFixed(2)}% at 50% 50%)`;if(mp>0&&mp<1){const k=sm(.2,.78,mp)*MW.length;MW.forEach((w,i)=>{w.style.opacity=(.16+.84*clamp(k-i,0,1)).toFixed(3)});EL.mfp.textContent=String(Math.round(sm(.2,.78,mp)*100)).padStart(3,'0')}}
+  lpR=Math.max(0,75*sm(0,.22,mp)-75*sm(.82,1,mp));EL.lp.style.clipPath=`circle(${lpR.toFixed(2)}% at 50% 50%)`;const manifestoScore=clamp(sm(.2,.78,mp)*100,0,100);EL.mfp.textContent=String(Math.round(manifestoScore)).padStart(3,'0');if(mp>0&&mp<1){const k=sm(.2,.78,mp)*MW.length;MW.forEach((w,i)=>{w.style.opacity=(.16+.84*clamp(k-i,0,1)).toFixed(3)})}}
  if(RK==='work'&&L.work){wp=prog(L.work);const after=L.work.t+L.work.h-L.vh;ep=clamp((SC.sy-after)/Math.max(1,L.docH-L.vh-after),0,1);if(wp>0&&wp<1)workUI(wp);else wki.style.opacity=0}
  if(!RM&&!PP.touch&&PD.length){const sk=clamp(SC.vel*-.004,-8,8).toFixed(2);for(let i=0;i<PD.length;i++)PD[i].style.transform=`skewX(${sk}deg)`}
  MUS.pp=pp;const vn=clamp(Math.abs(SC.vel)/2500,0,1);MUS.inten=damp(MUS.inten,clamp(.14+vn*.8+Math.max(GAME.inten,BS.inten)*.5+(RK==='explore'?.15:0),0,1),2,dt);
@@ -1266,7 +1267,7 @@ requestAnimationFrame(tick);addEventListener('pagehide',()=>{G&&safe(()=>G.dispo
 /* ================= BOOT ================= */
 (async function boot(){
  const n=$('#pre .n'),l=$('#pre .l'),pre=$('#pre'),st=$('#pst');let finished=false;
- function finish(){if(finished)return;finished=true;n.textContent='100';l.style.width='100%';st.textContent='Ready';setTimeout(()=>{PP.ok&&PP.ok();pre.classList.add('done');lock('pre',false);safe(measure,'measure');safe(armReveals,'reveals');G&&G.warm();setTimeout(()=>pre.classList.add('gone'),850);setTimeout(measure,700)},100)}
+ function finish(){if(finished)return;finished=true;l.style.width='100%';st.textContent='Ready';const started=performance.now();const count=now=>{const p=clamp((now-started)/650,0,1);n.textContent=String(Math.round(p*100)).padStart(3,'0');if(p<1)requestAnimationFrame(count)};requestAnimationFrame(count);setTimeout(()=>{PP.ok&&PP.ok();pre.classList.add('done');lock('pre',false);safe(measure,'measure');safe(armReveals,'reveals');G&&G.warm();setTimeout(()=>pre.classList.add('gone'),850);setTimeout(measure,700)},100)}
  try{
   await sleep(60);
   safe(initWidgets,'widgets');safe(bindSteps,'steps');apply(false);navUpd();
@@ -1284,7 +1285,6 @@ requestAnimationFrame(tick);addEventListener('pagehide',()=>{G&&safe(()=>G.dispo
  }catch(e){console.error('[pp] boot',e)}
  finish();
  window.PPHost={navTo,sndToggle,toast,openPalette:()=>cmdOpen(true),nextTheme:()=>setTheme(ST.theme+1,1)};
-})();
 })();
 })();
 </script>
