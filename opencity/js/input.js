@@ -3,6 +3,8 @@
 //
 // Typed WASD letters take priority; physical WASD positions are the fallback
 // for other alphabets. Never activate opposite directions for one remapped key.
+import { initSound, toggleMute } from './sound.js';
+
 export const keys = Object.create(null);
 export const pressed = Object.create(null);
 export const pressedModifiers = Object.create(null);
@@ -88,6 +90,14 @@ export function namesFor(e) {
 }
 
 export function initInput() {
+  window.addEventListener('pointerdown', initSound, { passive: true });
+  window.addEventListener('keydown', (e) => {
+    if (e.target?.matches?.('input, textarea, select, [contenteditable="true"]')) return;
+    const muteKey = e.code === 'KeyM' || e.key?.toLowerCase() === 'm' || e.keyCode === 77;
+    if (!muteKey || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+    initSound();
+    toggleMute();
+  }, true);
   window.addEventListener('wheel', e => {
     if (!document.pointerLockElement || e.ctrlKey || !e.deltaY) return;
     e.preventDefault();
@@ -96,6 +106,7 @@ export function initInput() {
   window.addEventListener('keydown', (e) => {
     const names = applyRemap(namesFor(e));
     if (e.target?.matches?.('input, textarea, select, [contenteditable="true"]')) return;
+    initSound();
     // Reserve gameplay keys only while playing; menus and text fields keep
     // normal browser keyboard behavior. OS shortcuts remain outside our control.
     const playing = !!document.pointerLockElement;
