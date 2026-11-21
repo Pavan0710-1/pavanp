@@ -18,7 +18,7 @@ const BINDABLE = [
   { logical: 'KeyT', label: 'Trampoline', def: 'KeyT' },
   { logical: 'KeyR', label: 'Car radio', def: 'KeyR' },
   { logical: 'KeyZ', label: 'Sic REX', def: 'KeyZ' },
-  { logical: 'KeyM', label: 'Map', def: 'KeyM' },
+  { logical: 'Tab', label: 'Map', def: 'Tab' },
   { logical: 'KeyL', label: 'Legend board', def: 'KeyL' },
   { logical: 'KeyG', label: 'Screenshot', def: 'KeyG' },
   { logical: 'KeyO', label: 'Instant replay', def: 'KeyO' },
@@ -45,6 +45,7 @@ export function initAccessibility(w, h) {
   hooks = h || {};
   const s = world.settings;
   s.binds = s.binds || {};
+  for (const physical in s.binds) if (s.binds[physical] === 'KeyM') s.binds[physical] = 'Tab';
   s.mapPalette = s.mapPalette || 'default';
   if (s.aimAssist === undefined) s.aimAssist = false;
   s.hudScale = Number.isFinite(s.hudScale) ? Math.max(.7,Math.min(1.5,s.hudScale)) : 1;
@@ -156,9 +157,9 @@ function build() {
     const code = e.code;
     if (code === 'Escape') { capturing = null; refresh(); return; }
     // physical WASD, Ctrl, Shift, Space stay reserved for movement/aim/jump
-    if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space', 'ShiftLeft', 'ShiftRight',
-         'ControlLeft', 'ControlRight', 'Tab'].includes(code)) return;
-    if (!/^Key[A-Z]$|^Digit[0-9]$|^F[0-9]{1,2}$/.test(code)) return;
+        if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space', 'ShiftLeft', 'ShiftRight',
+          'ControlLeft', 'ControlRight'].includes(code)) return;
+        if (!/^Key[A-Z]$|^Digit[0-9]$|^F[0-9]{1,2}$|^Tab$/.test(code)) return;
     // set: this physical code now produces the logical action
     const binds = world.settings.binds;
     // clear any other physical key that was mapped to this action

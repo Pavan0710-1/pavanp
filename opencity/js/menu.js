@@ -194,18 +194,18 @@ export function initMenu(h) {
   mapEl.setAttribute('role', 'dialog');
   mapEl.setAttribute('aria-modal', 'true');
   mapEl.setAttribute('aria-label', 'City map');
-  bindDialogKeys(mapEl, () => hooks.onCloseMap?.(), true);
+  bindDialogKeys(mapEl, () => hooks.onCloseMap?.());
   mapEl.style.cssText =
     'position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:safe center;' +
     'flex-direction:column;overflow:auto;padding:12px;box-sizing:border-box;background:radial-gradient(ellipse at center,rgba(22,52,79,.5),rgba(6,11,18,.95));';
   const tip = document.createElement('div');
-  tip.textContent = 'CLICK A DESTINATION · ARROWS + ENTER FOR KEYBOARD · M TO CLOSE';
+  tip.textContent = 'CLICK A DESTINATION · ARROWS + ENTER FOR KEYBOARD · ESC TO CLOSE';
   tip.style.cssText = 'max-width:90vw;text-align:center;line-height:1.5;color:#55e6ff;font:800 12px Consolas,ui-monospace,monospace;letter-spacing:.24em;margin-bottom:10px;';
   mapCanvas = document.createElement('canvas');
   mapCanvas.width = 640;
   mapCanvas.height = 640;
   mapCanvas.tabIndex = 0;
-  mapCanvas.setAttribute('aria-label', 'City map. Use arrow keys to choose a waypoint, then Enter to set it. Press M to close.');
+  mapCanvas.setAttribute('aria-label', 'City map. Use arrow keys to choose a waypoint, then Enter to set it. Press Escape to close.');
   mapCanvas.style.cssText = 'width:min(76vmin,640px);height:min(76vmin,640px);flex-shrink:0;border:1px solid rgba(85,230,255,0.4);cursor:crosshair;' +
     'clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);';
   mapCanvas.addEventListener('pointerdown', (e) => {
@@ -246,7 +246,7 @@ export function initMenu(h) {
   mapEl.append(tip, mapCanvas, filters, legend);
   if (hooks.onCloseMap) {
     const close = document.createElement('button');
-    close.textContent = 'CLOSE MAP [M / ESC]';
+    close.textContent = 'CLOSE MAP [ESC]';
     close.style.cssText = BTN + 'width:220px;margin:8px auto 0;padding:8px;flex-shrink:0';
     close.onclick = () => hooks.onCloseMap();
     mapEl.appendChild(close);
@@ -255,9 +255,9 @@ export function initMenu(h) {
   return { menuEl, mapEl };
 }
 
-function bindDialogKeys(dialog, close, map = false) {
+function bindDialogKeys(dialog, close) {
   dialog.addEventListener('keydown', event => {
-    if (event.code === 'Escape' || (map && event.code === 'KeyM' && !event.ctrlKey && !event.metaKey && !event.altKey)) {
+    if (event.code === 'Escape') {
       event.preventDefault(); event.stopPropagation(); if (!event.repeat) close();
       return;
     }

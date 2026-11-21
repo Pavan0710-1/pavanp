@@ -269,7 +269,7 @@ export function initTouch() {
     const col = n % 2, rowN = (n / 2) | 0;
     return `right:${16 + col * 52}px;top:${168 + rowN * 50}px;width:44px;height:44px;`;
   };
-  button('MAP', trayCell(0) + 'font-size:11px;', () => trayTap('KeyM'), null, 'tray');
+  button('MAP', trayCell(0) + 'font-size:11px;', () => trayTap('Tab'), null, 'tray');
   button('II',  trayCell(1), () => trayTap('KeyP'), null, 'tray');           // pause
   button('📸',  trayCell(2) + 'font-size:17px;', () => trayTap('KeyG'), null, 'tray');
   button('🎬',  trayCell(3) + 'font-size:15px;', () => trayTap('KeyO'), null, 'tray'); // replay

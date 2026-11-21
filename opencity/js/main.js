@@ -26,6 +26,7 @@ import { updatePolice, addCrime, copDie, clearCops } from './police.js';
 import { makeHeli, physStepHeli, spinRotors, explodeHeli, updateFallingHeli, updatePoliceHelis } from './heli.js';
 import { initEffects, addTracer, addExplosion, addFlash, addSmoke, addSparks, addSkid, updateEffects } from './effects.js';
 import { initHUD, updateHUD, setHint, showBanner, hideBanner, showToast, showNews } from './hud.js';
+import { initSound, sfxShot, sfxCrash, sfxPickup, sfxWeb, sfxMissionPass, engine, setEngine, siren, setSiren, setMasterVolume, setRadioStation, RADIO_STATIONS } from './sound.js';
 import { createSkyDome, applyDayNight, DAY_START } from './daynight.js';
 import { initMissions, updateMissions, failMission, mission } from './missions.js';
 import { initWeather, updateWeather } from './weather.js';
@@ -2075,7 +2076,6 @@ function enterHeli(h) {
   player.mesh.visible = false;
   setHint(null);
   camYaw = h.heading;
-  rotor.start();
   showToast('SPACE = UP, SHIFT = DOWN');
 }
 
@@ -2099,7 +2099,6 @@ function exitHeli() {
   player.heading = h.heading;
   player.inHeli = null;
   camYaw = h.heading;
-  rotor.stop();
 }
 
 // ---------- XP, levels & skills ----------
@@ -2771,7 +2770,6 @@ function bailOut() {
   player.glide = false;
   player.mesh.visible = true;
   player.inHeli = null;
-  rotor.stop();
   h.dead = true; // no pilot — she's going down
   world.slowmoT = 0.7;
   addStyle(25);
@@ -3232,7 +3230,6 @@ function triggerOver(text, color) {
   if (player.inPlane) { player.inPlane = null; player.mesh.visible = true; }
   resetChaos(world);
   engine.stop();
-  rotor.stop();
   setRadioStation(0);
   world.style = 0;
   world.slowmoT = 1.1; // brief slow motion as you go down
@@ -3368,10 +3365,6 @@ function applySuitColors(colors) {
 function beginPlay(lockPointer=true) {
   startEl.style.display = 'none';
   initSound();
-  siren.start();
-  rainAmb.start();
-  cityHum.start();
-  chase.start();
   applySettings();
   if (gameState === 'start') {
     gameState = 'play';
@@ -3415,6 +3408,10 @@ document.addEventListener('pointerlockchange', () => {
 const clock = new THREE.Clock();
 
 function updateSiren() {
+  if (world.wanted <= 0) {
+    siren.stop();
+    return;
+  }
   let nearest = Infinity;
   const focus = player.inHeli ? player.inHeli.pos : player.inCar ? player.inCar.pos : player.pos;
   for (const cop of world.cops) {
@@ -3422,7 +3419,13 @@ function updateSiren() {
     const d = Math.hypot(cop.pos.x - focus.x, cop.pos.z - focus.z);
     if (d < nearest) nearest = d;
   }
-  setSiren(nearest === Infinity ? 0 : Math.max(0, 1 - nearest / 140));
+  const proximity = nearest === Infinity ? 0 : Math.max(0, 1 - nearest / 140);
+  if (proximity === 0) {
+    siren.stop();
+    return;
+  }
+  siren.start();
+  setSiren(world.wanted, proximity);
 }
 
 const heliHooks = { onShot: () => sfxShot('mg') };
@@ -3885,13 +3888,7 @@ function update(dt) {
     }
   }
 
-  // ambience follows the clock
-  const hum = world.clock > 6.5 && world.clock < 21.5 ? 1 : 0.55;
-  if (hum !== world._hum) { world._hum = hum; setHum(hum); }
   if (player.inCar || player.inHeli || player.inBoat || player.swim || web.attached || web.zip) chuteMesh.visible = false;
-
-  // chase music swells with the heat
-  if (world.wanted !== world._chase) { world._chase = world.wanted; setChase(world.wanted / 5); }
 
   // NPC speech bubbles: project into screen space for the HUD
   for (let i = world.barks.length - 1; i >= 0; i--) {
@@ -3926,7 +3923,7 @@ function update(dt) {
 
   // pause / big map / screenshot / legend board / instant replay
   if (pressed['KeyP']) pauseGame();
-  if (pressed['KeyM']) openBigMap();
+  if (pressed.Tab) openBigMap();
   // O is also a letter in 14 cheat codes; stand down mid-word.
   if (pressed['KeyO'] && !replayActive() && !typingCheat()) openReplay();
   if (pressed['KeyL']) {
@@ -4016,7 +4013,7 @@ function animate() {
     updateReplay(dt, { keys, pressed, mouse });
   } else if (gameState === 'map') {
     drawBigMap(world);
-    if (pressed['KeyM'] || pressed['Escape']) closeBigMap();
+    if (pressed['Escape']) closeBigMap();
   } else if (gameState === 'pause' || gameState === 'cards') {
     // frozen — the menu / card table overlay handles everything
   } else {
