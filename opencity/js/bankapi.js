@@ -1,0 +1,113 @@
+// Client bridge to the Open City bank server (/api/bank). When the server is
+// reachable and the player has linked an account, the bank overlay uses the
+// real balance; otherwise banking.js falls back to its local-only balance.
+//
+// The API base is the same origin in production (the server serves the game),
+// and can be overridden with ?bankapi=<url> for local testing against 3099.
+
+import { runtime } from './runtime.js';
+import { canWriteSave } from './saveslots.js';
+let pendingWrites=0;
+export function pendingOnlineWrites(){return pendingWrites;}
+function requireWrite(){if(!canWriteSave())throw Error('Online changes are unavailable while saving is locked or during memory replay.');}
+
+const enabled = runtime.profile.services?.bank !== false;
+const params = new URLSearchParams(location.search);
+// A shared URL must never redirect stored bearer credentials to another host.
+let override = '';
+if (enabled && ['localhost', '127.0.0.1'].includes(location.hostname) && params.get('bankapi')) {
+  const candidate = new URL(params.get('bankapi'), location.origin);
+  if (['localhost', '127.0.0.1'].includes(candidate.hostname) && ['http:', 'https:'].includes(candidate.protocol))
+    override = candidate.origin;
+}
+const BASE = override + '/api/bank';
+const LS_KEY = runtime.profile.services?.bankCredentialKey || 'opencity-bank-cred-v1';
+
+let cred = null;   // { account_no, handle, token }
+try { if (enabled) cred = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch {}
+
+let online = false;
+
+async function call(path, { method = 'GET', body, auth = true } = {}) {
+  if (!enabled) throw new Error('Online banking is unavailable in this build');
+  const mutating=method.toUpperCase()!=='GET';
+  if(mutating){requireWrite();pendingWrites++;}
+  try{
+  const headers = { 'Content-Type': 'application/json' };
+  if (auth && cred?.token) headers.Authorization = 'Bearer ' + cred.token;
+  const res = await fetch(BASE + path, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(10000),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw Object.assign(new Error(data.error || res.statusText), { status: res.status, data });
+  return data;
+  }finally{if(mutating)pendingWrites--;}
+}
+
+export function isLinked() { return !!cred?.token; }
+export function isOnline() { return online; }
+export function accountNo() { return cred?.account_no || null; }
+export function handle() { return cred?.handle || null; }
+
+// Generic authed request against the same origin as the bank API, for sibling
+// services that share the bank's bearer token (e.g. /api/save). `path` is the
+// full path from the origin, e.g. '/api/save/0'.
+export async function apiCall(path, { method = 'GET', body } = {}) {
+  if (!enabled) throw new Error('Online services are unavailable in this build');
+  const mutating=method.toUpperCase()!=='GET';
+  if(mutating){requireWrite();pendingWrites++;}
+  try{
+  const headers = { 'Content-Type': 'application/json' };
+  if (cred?.token) headers.Authorization = 'Bearer ' + cred.token;
+  const res = await fetch((override || '') + path, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(12000),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw Object.assign(new Error(data.error || res.statusText), { status: res.status, data });
+  return data;
+  }finally{if(mutating)pendingWrites--;}
+}
+
+function persist() {
+  requireWrite();
+  try { localStorage.setItem(LS_KEY, JSON.stringify(cred)); } catch {}
+}
+
+// Ping the server; returns true if the bank API is up.
+export async function probe() {
+  if (!enabled) return false;
+  try {
+    const r = await fetch(BASE.replace('/api/bank', '/health'), { signal: AbortSignal.timeout(5000) });
+    const j = await r.json();
+    online = !!j.bank;
+  } catch { online = false; }
+  return online;
+}
+
+export async function register(name) {
+  const r = await call('/register', { method: 'POST', auth: false, body: { handle: name } });
+  cred = { account_no: r.account_no, handle: r.handle, token: r.token };
+  persist();
+  return r;               // { account_no, handle, token, balance }
+}
+
+export async function login(name, token) {
+  const r = await call('/login', { method: 'POST', auth: false, body: { handle: name, token } });
+  cred = { account_no: r.account_no, handle: r.handle, token };
+  persist();
+  return r;               // { account_no, balance }
+}
+
+export function unlink() { requireWrite(); cred = null; try { localStorage.removeItem(LS_KEY); } catch {} }
+
+export async function getAccount()      { return call('/account'); }
+export async function history(limit = 20) { return call(`/history?limit=${limit}`); }
+export async function deposit(amount, note)  { return call('/deposit',  { method: 'POST', body: { amount, note } }); }
+export async function withdraw(amount, note) { return call('/withdraw', { method: 'POST', body: { amount, note } }); }
+export async function transfer(to, amount, note) { return call('/transfer', { method: 'POST', body: { to, amount, note } }); }

@@ -1,0 +1,426 @@
+import * as THREE from 'three';
+import { createCharacter, animateWalk, randomOutfit } from './characters.js';
+import { makeVehicle, randomCarColor } from './car.js';
+import { resolveCircle, roadCenter, blockStart, HALF, ROAD, BLOCK, N } from './city.js';
+import { addCrime } from './police.js';
+import { addSparks, addSmoke } from './effects.js';
+import { sfxCrash } from './sound.js';
+import { showNews } from './hud.js';
+import { trafficFlow } from './mayor.js';
+
+const _v = new THREE.Vector3();
+const NORMALIZE_EPSILON_SQ = 1e-8;
+
+function normalizeXZ(vector) {
+  const lengthSq = vector.x * vector.x + vector.z * vector.z;
+  if (!Number.isFinite(lengthSq) || lengthSq <= NORMALIZE_EPSILON_SQ) return vector.set(1, 0, 0);
+  const inverseLength = 1 / Math.sqrt(Math.max(lengthSq, NORMALIZE_EPSILON_SQ));
+  return vector.set(vector.x * inverseLength, 0, vector.z * inverseLength);
+}
+
+function rectCorners(r) {
+  return [
+    new THREE.Vector3(r.x0, 0, r.z0),
+    new THREE.Vector3(r.x1, 0, r.z0),
+    new THREE.Vector3(r.x1, 0, r.z1),
+    new THREE.Vector3(r.x0, 0, r.z1),
+  ];
+}
+
+// Let traffic already on a closed road leave; keep approaching vehicles and
+// pedestrians outside the marshalled race route.
+function insideStoryRoad(world,x,z){
+  return (world.campaignRoadClosures||[]).some(({a,b,width})=>{
+    const dx=b.x-a.x,dz=b.z-a.z,length=dx*dx+dz*dz;
+    const u=length?Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/length)):0;
+    return Math.hypot(x-a.x-u*dx,z-a.z-u*dz)<(width||10)/2;
+  });
+}
+function enterStoryRoad(world,pos,x,z){return !insideStoryRoad(world,pos.x,pos.z)&&insideStoryRoad(world,x,z);}
+function movePed(world,p,direction,distance){
+  if(!enterStoryRoad(world,p.pos,p.pos.x+direction.x*distance,p.pos.z+direction.z*distance))p.pos.addScaledVector(direction,distance);
+}
+
+// ---------------- Pedestrians ----------------
+
+export function spawnPeds(scene, city, count, focus = null) {
+  const peds = [];
+  for (let i = 0; i < count; i++) {
+    const ch = createCharacter(randomOutfit());
+    scene.add(ch.group);
+    const p = {
+      ch,
+      mesh: ch.group,
+      pos: ch.group.position,
+      heading: Math.random() * Math.PI * 2,
+      animT: Math.random() * 6,
+      dead: false,
+      deadT: 0,
+      corners: null,
+      target: 0,
+      cw: Math.random() < 0.5 ? 1 : -1,
+    };
+    placePedOnBlock(p, city, focus);
+    peds.push(p);
+  }
+  return peds;
+}
+
+function placePedOnBlock(p, city, focus = null) {
+  let rect;
+  if (focus && city.pedRects.length) {
+    // Pick a nearby sidewalk block so a small low-tier crowd is still present
+    // around the player instead of being diluted across the full 776m city.
+    const nearby = city.pedRects.filter(r => {
+      const x = Math.max(r.x0, Math.min(r.x1, focus.x));
+      const z = Math.max(r.z0, Math.min(r.z1, focus.z));
+      return (x - focus.x) ** 2 + (z - focus.z) ** 2 < 32 ** 2;
+    });
+    const rects = nearby.length ? nearby : city.pedRects;
+    rect = rects[(Math.random() * rects.length) | 0];
+  } else {
+    rect = city.pedRects[(Math.random() * city.pedRects.length) | 0];
+  }
+  p.corners = rectCorners(rect);
+  if (focus) {
+    let best = Infinity, edge = 0, along = 0;
+    for (let i = 0; i < 4; i++) {
+      const a = p.corners[i], b = p.corners[(i + 1) % 4];
+      const dx = b.x - a.x, dz = b.z - a.z;
+      const lenSq = dx * dx + dz * dz;
+      const t = Math.max(0, Math.min(1, ((focus.x - a.x) * dx + (focus.z - a.z) * dz) / lenSq));
+      const x = a.x + dx * t, z = a.z + dz * t;
+      const distSq = (x - focus.x) ** 2 + (z - focus.z) ** 2;
+      if (distSq < best) { best = distSq; edge = i; along = t; }
+    }
+    p.target = edge;
+    p.pos.set(
+      p.corners[edge].x + (p.corners[(edge + 1) % 4].x - p.corners[edge].x) * Math.max(0, Math.min(1, along + (Math.random() - .5) * .3)),
+      0,
+      p.corners[edge].z + (p.corners[(edge + 1) % 4].z - p.corners[edge].z) * Math.max(0, Math.min(1, along + (Math.random() - .5) * .3))
+    );
+  } else {
+    p.target = (Math.random() * 4) | 0;
+  }
+  const a = p.corners[p.target];
+  const b = p.corners[(p.target + 1) % 4];
+  if (!focus) p.pos.set(a.x + (b.x - a.x) * Math.random(), 0, a.z + (b.z - a.z) * Math.random());
+}
+
+// Beyond this range a pedestrian just slides along its sidewalk loop with no
+// limb animation, no facial detail and no per-collider push — it's a few
+// pixels tall and the saved work (a ~21-mesh matrix cascade + resolveCircle
+// over 480 colliders, times every distant ped) is most of the crowd cost.
+const PED_ANIM_RANGE = 55;
+const PED_HIDE_RANGE = 115;
+
+export function updatePeds(world, dt) {
+  const { peds, player, city } = world;
+  const pcar = player.inCar;
+  const focus = pcar ? pcar.pos : (player.inHeli ? player.inHeli.pos : player.pos);
+  const pedCap = world.activity?.pedCap ?? Infinity;
+  const animRange = world.activity?.pedAnimationRadius ?? (world.settings?.lowGfx ? 26 : PED_ANIM_RANGE);
+
+  // fewer people out at night
+  const night = world.clock >= 22 || world.clock < 6;
+
+  let ambientIndex = 0;
+  for (const p of peds) {
+    if (ambientIndex++ >= pedCap) {
+      p.sleeping = true;
+      if (world.activity) world.activity.visible(p.mesh, false);
+      else p.mesh.visible = false;
+      continue;
+    }
+    const distSq = (p.pos.x - focus.x) ** 2 + (p.pos.z - focus.z) ** 2;
+    if (world.activity && !world.activity.active(p)) {
+      if (world.settings?.lowGfx && !p.dead && !(p.webT > 0) && distSq > (world.activity.radius + 30) ** 2) {
+        placePedOnBlock(p, city, focus);
+        p.fleeing = false;
+        p.wasAnimated = false;
+        p.mesh.rotation.z = 0;
+        p.mesh.position.y = 0;
+      }
+      continue;
+    }
+    const far = distSq > animRange * animRange || (world.activity && !world.activity.shouldAnimate(p.mesh,p.pos));
+    const hidden = !world.activity && distSq > PED_HIDE_RANGE * PED_HIDE_RANGE;
+    if (p.mesh.visible === hidden) p.mesh.visible = !hidden;
+    if (hidden && !p.dead && !(p.webT > 0)) {
+      // keep it drifting so the crowd isn't frozen when you turn back
+      if (!p.fleeing && p.corners) {
+        const tgt = p.corners[p.target];
+        _v.subVectors(tgt, p.pos); _v.y = 0;
+        if (_v.length() < 0.8) p.target = (p.target + p.cw + 4) % 4;
+        else { normalizeXZ(_v); movePed(world,p,_v,1.7*dt); p.mesh.position.y = 0; }
+      }
+      continue;
+    }
+    p.far = far;
+
+    if (p.dead) {
+      p.deadT += dt;
+      if (p.deadT > (night ? 55 : 20)) {
+        // respawn somewhere else as a fresh citizen
+        p.dead = false;
+        p.deadT = 0;
+        p.webT = 0;
+        if (p.webWrap) p.webWrap.visible = false;
+        p.mesh.rotation.z = 0;
+        p.mesh.position.y = 0;
+        placePedOnBlock(p, city, world.settings?.lowGfx ? focus : null);
+      }
+      continue;
+    }
+
+    // wrapped in webbing: stuck in place until it wears off
+    if (p.webT > 0) {
+      p.webT -= dt;
+      if (p.webT <= 0 && p.webWrap) p.webWrap.visible = false;
+      continue;
+    }
+
+    // threat: fast player car nearby, or recent gunfire
+    let threat = null;
+    if (pcar && pcar.vel.lengthSq() > 30 && p.pos.distanceTo(pcar.pos) < 11) threat = pcar.pos;
+    if (!threat && world.lastShot && world.time - world.lastShot.t < 4 && p.pos.distanceTo(world.lastShot.pos) < 26) {
+      threat = world.lastShot.pos;
+    }
+    // npcmemory.js: a ped who has seen you be violent flees on sight (no gun
+    // needed). `p.mem` is set by that module; 'friendly' peds are handled there.
+    if (!threat && p.mem === 'afraid' && !p.far && p.pos.distanceTo(player.pos) < 12) {
+      threat = player.pos;
+    }
+
+    let speed;
+    if (threat) {
+      if (!p.fleeing && Math.random() < 0.35) {
+        const YELLS = ['AAAAH!', "HE'S GOT WEBS!", 'RUN!!', 'CALL THE COPS!', 'NOT TODAY!'];
+        world.bark?.(p.pos, YELLS[(Math.random() * YELLS.length) | 0]);
+      }
+      p.fleeing = true;
+      speed = 5.4;
+      _v.subVectors(p.pos, threat);
+      _v.y = 0;
+      if (_v.lengthSq() < 0.01) _v.set(1, 0, 0);
+      normalizeXZ(_v);
+      p.heading = Math.atan2(_v.x, _v.z);
+      movePed(world,p,_v,speed*dt);
+      if (!p.far) resolveCircle(p.pos, 0.4, city.colliders);
+      const B = HALF - 2;
+      p.pos.x = Math.max(-B, Math.min(B, p.pos.x));
+      p.pos.z = Math.max(-B, Math.min(B, p.pos.z));
+    } else {
+      p.fleeing = false;
+      // stroll around the block sidewalk loop
+      speed = 1.7;
+      const tgt = p.corners[p.target];
+      _v.subVectors(tgt, p.pos);
+      _v.y = 0;
+      const d = _v.length();
+      if (d < 0.8) {
+        p.target = (p.target + p.cw + 4) % 4;
+      } else {
+        normalizeXZ(_v);
+        p.heading = Math.atan2(_v.x, _v.z);
+        movePed(world,p,_v,speed*dt);
+        if (!p.far) resolveCircle(p.pos, 0.4, city.colliders);
+      }
+    }
+
+    p.mesh.rotation.y = p.heading;
+    if (p.far) {
+      // distant: no limb animation, no ground push — just glide
+      if (p.wasAnimated) { p.mesh.position.y = 0; p.mesh.rotation.z = 0; p.wasAnimated = false; }
+    } else {
+      p.animT += speed * dt * 2.3;
+      animateWalk(p.ch, p.animT, threat ? 0.95 : 0.55);
+      p.wasAnimated = true;
+    }
+
+    // run over by the player's car or a cop car
+    if (pcar && !pcar.dead && pcar.vel.lengthSq() > 25 && p.pos.distanceTo(pcar.pos) < 1.9) {
+      killPed(world, p, true);
+      continue;
+    }
+    for (const cop of world.cops) {
+      if (!cop.dead && cop.vel.lengthSq() > 25 && p.pos.distanceTo(cop.pos) < 1.9) {
+        killPed(world, p, false);
+        break;
+      }
+    }
+  }
+}
+
+export function killPed(world, p, byPlayer) {
+  if (p.dead) return;
+  p.dead = true;
+  p.deadT = 0;
+  p.mesh.rotation.z = Math.PI / 2;
+  p.mesh.position.y = 0.25;
+  if (byPlayer) addCrime(world, 1);
+}
+
+// ---------------- Traffic ----------------
+
+export function spawnTraffic(scene, city, count) {
+  const traffic = [];
+  for (let i = 0; i < count; i++) {
+    const vertical = Math.random() < 0.5;
+    const road = roadCenter((Math.random() * (N + 1)) | 0);
+    const sign = Math.random() < 0.5 ? 1 : -1;
+    let x, z, fx, fz;
+    if (vertical) {
+      fx = 0; fz = sign;
+      x = road + sign * 4; // right-hand lane
+      z = (Math.random() * 2 - 1) * (HALF - 20);
+    } else {
+      fx = sign; fz = 0;
+      z = road - sign * 4;
+      x = (Math.random() * 2 - 1) * (HALF - 20);
+    }
+    const heading = Math.atan2(fx, fz);
+    const v = makeVehicle(scene, x, z, heading, randomCarColor());
+    v.ai = { fx, fz, speed: 0, cruise: 8 + Math.random() * 5 };
+    v.ambientTraffic = true;
+    traffic.push(v);
+  }
+  return traffic;
+}
+
+export function updateTraffic(world, dt) {
+  const { traffic, player } = world;
+  const pcar = player.inCar;
+
+  // every now and then two cars pile into each other on their own
+  world.accidentT = (world.accidentT ?? 40) - dt;
+  if (world.accidentT <= 0) {
+    world.accidentT = 45 + Math.random() * 45;
+    const focus = pcar ? pcar.pos : player.pos;
+    outer:
+    for (const a of traffic) {
+      if (a.dead || !a.ai || a.pos.distanceTo(focus) > 90) continue;
+      for (const b of traffic) {
+        if (b === a || b.dead || !b.ai) continue;
+        if (a.pos.distanceTo(b.pos) < 12) {
+          disableTraffic(a);
+          disableTraffic(b);
+          a.health -= 30;
+          b.health -= 30;
+          const mid = a.pos.clone().lerp(b.pos, 0.5).setY(0.7);
+          addSparks(mid, 14);
+          addSmoke(mid.clone().setY(1), 1);
+          sfxCrash(12);
+          world.lastShot = { pos: mid, t: world.time }; // bystanders scatter
+          showNews('two-car pile-up snarls traffic');
+          break outer;
+        }
+      }
+    }
+  }
+
+  // rush hours crawl, late night flows fast — and the mayor's traffic policy
+  // throttles the whole grid
+  const hour = world.clock ?? 12;
+  const policy = trafficFlow(world);
+  const flow = ((hour >= 8 && hour < 10) || (hour >= 17 && hour < 19) ? 0.65
+    : hour >= 22 || hour < 5 ? 1.35 : 1) / policy;
+
+  const focus = pcar ? pcar.pos : (player.inHeli ? player.inHeli.pos : player.pos);
+  const AVOID_RANGE_SQ = 120 * 120; // beyond this, cars just cruise their lane
+  const trafficCap = world.activity?.trafficCap ?? Infinity;
+  let ambientIndex = 0;
+
+  for (const t of traffic) {
+    if (t.ambientTraffic && ambientIndex++ >= trafficCap) {
+      t.sleeping = true;
+      if (world.activity) world.activity.visible(t.mesh, false);
+      else t.mesh.visible = false;
+      continue;
+    }
+    if (world.activity && !world.activity.active(t)) continue;
+    if (t.dead || !t.ai) continue;
+    if (t.webT > 0) { // webbed to the road
+      t.webT -= dt;
+      t.vel.set(0, 0, 0);
+      continue;
+    }
+    const ai = t.ai;
+    const nearPlayer = (t.pos.x - focus.x) ** 2 + (t.pos.z - focus.z) ** 2 < AVOID_RANGE_SQ;
+
+    // brake if something is ahead — only worth the O(n) scan near the player
+    const px = t.pos.x + ai.fx * 8;
+    const pz = t.pos.z + ai.fz * 8;
+    let blocked = enterStoryRoad(world,t.pos,px,pz);
+    const near = (o) => {
+      const dx = o.pos.x - px;
+      const dz = o.pos.z - pz;
+      return dx * dx + dz * dz < 22;
+    };
+    if (pcar && near(pcar)) blocked = true;
+    if (!blocked && !pcar && near(player)) blocked = true;
+    if (!blocked && nearPlayer) {
+      for (const o of traffic) {
+        if (o === t) continue;
+        if (near(o)) { blocked = true; break; }
+      }
+      if (!blocked) {
+        for (const o of world.parked) if (near(o)) { blocked = true; break; }
+      }
+      if (!blocked) {
+        for (const o of world.cops) if (!o.dead && near(o)) { blocked = true; break; }
+      }
+    }
+
+    const target = blocked ? 0 : ai.cruise * flow;
+    ai.speed += Math.max(-14 * dt, Math.min(8 * dt, target - ai.speed));
+    if (ai.speed < 0.05 && blocked) ai.speed = 0;
+
+    t.pos.x += ai.fx * ai.speed * dt;
+    t.pos.z += ai.fz * ai.speed * dt;
+    t.vel.set(ai.fx * ai.speed, 0, ai.fz * ai.speed);
+
+    // wrap around the city
+    const W = HALF - 8;
+    if (ai.fz !== 0 && Math.abs(t.pos.z) > W) t.pos.z = -Math.sign(t.pos.z) * W;
+    if (ai.fx !== 0 && Math.abs(t.pos.x) > W) t.pos.x = -Math.sign(t.pos.x) * W;
+
+    // wheel spin only reads at conversational distance
+    if (nearPlayer) {
+      const spin = (ai.speed * dt) / 0.36;
+      for (const w of t.wheels) w.rotation.x += spin;
+    }
+  }
+}
+
+// Disable a traffic car after a heavy hit: it stops driving and becomes an obstacle.
+export function disableTraffic(t) {
+  t.ai = null;
+  t.vel.set(0, 0, 0);
+}
+
+// ---------------- Parked cars ----------------
+
+export function spawnParked(scene, count) {
+  const parked = [];
+  for (let i = 0; i < count; i++) {
+    const vertical = Math.random() < 0.5;
+    const road = roadCenter((Math.random() * (N + 1)) | 0);
+    const block = (Math.random() * N) | 0;
+    const along = blockStart(block) + 6 + Math.random() * (BLOCK - 12);
+    const side = Math.random() < 0.5 ? 1 : -1;
+    const off = road + side * (ROAD / 2 - 2.4);
+    let x, z, heading;
+    if (vertical) {
+      x = off; z = along;
+      heading = side > 0 ? 0 : Math.PI;
+    } else {
+      x = along; z = off;
+      heading = side > 0 ? Math.PI / 2 : -Math.PI / 2;
+    }
+    // every fourth parked vehicle is a motorbike — quick and nimble
+    const bike = i % 4 === 3;
+    parked.push(makeVehicle(scene, x, z, heading, bike ? '#23262d' : randomCarColor(), bike ? { bike: true } : {}));
+  }
+  return parked;
+}

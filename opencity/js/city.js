@@ -1,0 +1,516 @@
+import * as THREE from 'three';
+import { seededRandom, buildRoadDetails, createDistrictManager } from './district.js';
+import { asphaltPBR } from './textures.js';
+
+// City layout: N x N blocks separated by roads, surrounded by a perimeter road.
+export const BLOCK = 60;
+export const ROAD = 16;
+export const N = 10; // 10x10 grid — a bigger metropolis (was 8x8)
+export const CITY = N * BLOCK + (N + 1) * ROAD; // 776 metres
+export const HALF = CITY / 2;
+
+export const roadCenter = (i) => -HALF + ROAD / 2 + i * (BLOCK + ROAD);
+export const blockStart = (i) => -HALF + ROAD + i * (BLOCK + ROAD);
+
+function geometryDimension(value, fallback = 1) {
+  if (!Number.isFinite(value)) return fallback;
+  return Math.max(0.001, Math.min(10000, value));
+}
+
+// Building facades: a wall map + an emissive map (lit windows only, used at night).
+function windowTextures(base) {
+  const c = document.createElement('canvas');
+  c.width = 256; c.height = 512;
+  const g = c.getContext('2d');
+  const e = document.createElement('canvas');
+  e.width = 256; e.height = 512;
+  const ge = e.getContext('2d');
+
+  g.fillStyle = base;
+  g.fillRect(0, 0, 256, 512);
+  ge.fillStyle = '#000';
+  ge.fillRect(0, 0, 256, 512);
+
+  // concrete weathering
+  for (let i = 0; i < 700; i++) {
+    g.fillStyle = `rgba(${Math.random() < 0.5 ? '255,255,255' : '0,0,0'},${Math.random() * 0.05})`;
+    g.fillRect(Math.random() * 256, Math.random() * 512, 3, 3);
+  }
+
+  const office = Math.random() < 0.5;
+  const glassTints = ['#5a7186', '#516478', '#62798e', '#46586a', '#6a8298'];
+
+  if (office) {
+    // glass ribbon floors
+    for (let y = 14; y < 492; y += 26) {
+      g.fillStyle = 'rgba(0,0,0,0.35)';
+      g.fillRect(8, y - 2, 240, 20); // recess
+      for (let x = 10; x < 244; x += 20) {
+        // day look is always glass; warm light comes from the emissive map at night
+        g.fillStyle = glassTints[(Math.random() * glassTints.length) | 0];
+        g.fillRect(x, y, 17, 16);
+        if (Math.random() < 0.42) { ge.fillStyle = '#e8a23a'; ge.fillRect(x, y, 17, 16); }
+      }
+      // floor slab line
+      g.fillStyle = 'rgba(0,0,0,0.3)';
+      g.fillRect(0, y + 19, 256, 3);
+    }
+  } else {
+    // apartment punched windows
+    for (let y = 16; y < 490; y += 30) {
+      for (let x = 14; x < 236; x += 26) {
+        g.fillStyle = 'rgba(0,0,0,0.4)';
+        g.fillRect(x - 2, y - 2, 20, 24); // frame shadow
+        g.fillStyle = glassTints[(Math.random() * glassTints.length) | 0];
+        g.fillRect(x, y, 16, 20);
+        if (Math.random() < 0.42) { ge.fillStyle = '#e8a23a'; ge.fillRect(x, y, 16, 20); }
+        // sill
+        g.fillStyle = 'rgba(255,255,255,0.12)';
+        g.fillRect(x - 2, y + 20, 20, 2);
+      }
+    }
+  }
+
+  // parapet band at the top
+  g.fillStyle = 'rgba(0,0,0,0.28)';
+  g.fillRect(0, 0, 256, 8);
+
+  // street grime at the bottom
+  const grime = g.createLinearGradient(0, 512, 0, 430);
+  grime.addColorStop(0, 'rgba(10,10,8,0.4)');
+  grime.addColorStop(1, 'rgba(10,10,8,0)');
+  g.fillStyle = grime;
+  g.fillRect(0, 430, 256, 82);
+
+  const map = new THREE.CanvasTexture(c);
+  map.colorSpace = THREE.SRGBColorSpace;
+  const emissive = new THREE.CanvasTexture(e);
+  emissive.colorSpace = THREE.SRGBColorSpace;
+  return { map, emissive };
+}
+
+// Road surface is now a procedural PBR set - see asphaltPBR() in textures.js.
+
+function billboardTexture() {
+  const words = ['VICE 24H', 'CLUCKIN', 'OPEN CITY', 'SPRUNK', 'LIQUOR', 'MOTEL', 'CASINO', 'BURGER'];
+  const colors = ['#ff3d6e', '#3dd2ff', '#ffd23d', '#7dff5a', '#ff7a3d', '#c95aff'];
+  const c = document.createElement('canvas');
+  c.width = 256; c.height = 96;
+  const g = c.getContext('2d');
+  g.fillStyle = '#0a0a10';
+  g.fillRect(0, 0, 256, 96);
+  const col = colors[(Math.random() * colors.length) | 0];
+  g.strokeStyle = col;
+  g.lineWidth = 5;
+  g.strokeRect(6, 6, 244, 84);
+  g.fillStyle = col;
+  g.font = 'bold 38px Arial';
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.fillText(words[(Math.random() * words.length) | 0], 128, 50);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+function helipadTexture() {
+  const c = document.createElement('canvas');
+  c.width = 128; c.height = 128;
+  const g = c.getContext('2d');
+  g.fillStyle = '#2a2c30';
+  g.fillRect(0, 0, 128, 128);
+  g.strokeStyle = '#e8c84a';
+  g.lineWidth = 6;
+  g.beginPath();
+  g.arc(64, 64, 50, 0, Math.PI * 2);
+  g.stroke();
+  g.fillStyle = '#e8c84a';
+  g.font = 'bold 64px Arial';
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.fillText('H', 64, 68);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+export function buildCity(scene, { authoredLots = [] } = {}) {
+  const reservedLots = new Set(authoredLots.map(lot => `${lot[0]}:${lot[1]}`));
+  const buildings = [];
+  const walks = [];
+  const colliders = [];   // {x0,z0,x1,z1,h}
+  const pedRects = [];
+  const roadXs = [];
+  const roadZs = [];
+  const helipads = [];
+  const windowMats = []; // facade materials, dimmed/lit by the day/night cycle
+
+  // scrubland beyond the city
+  const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(CITY * 3, CITY * 3),
+    new THREE.MeshLambertMaterial({ color: 0x49583a })
+  );
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -0.05;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  // asphalt base slab
+  const slab = new THREE.Mesh(
+    new THREE.PlaneGeometry(CITY, CITY),
+    new THREE.MeshLambertMaterial({ color: 0x303035 })
+  );
+  slab.rotation.x = -Math.PI / 2;
+  slab.receiveShadow = true;
+  scene.add(slab);
+
+  // roads. One procedural asphalt PBR set (colour + normal + roughness) drives
+  // every segment; all segments are ROAD x CITY planes with the same UV scale,
+  // so a single shared material per orientation is enough. Materials are kept
+  // in `roadMats` so the weather code can wet them down (drop roughness, lift
+  // reflections) during and after rain. The normal map means real asphalt grain
+  // now catches the low sun and the wet-road reflections.
+  const roadMats = [];
+  const asphalt = asphaltPBR({ size: 256, anisotropy: 8 });
+  const repY = CITY / ROAD;
+  for (const t of [asphalt.map, asphalt.normalMap, asphalt.roughnessMap]) {
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(3, repY * 0.5);
+  }
+  const roadGeo = new THREE.PlaneGeometry(ROAD, CITY);
+  roadGeo.rotateX(-Math.PI / 2);
+  const makeRoadMat = () => {
+    const m = new THREE.MeshStandardMaterial({
+      map: asphalt.map, normalMap: asphalt.normalMap, roughnessMap: asphalt.roughnessMap,
+      roughness: 1, metalness: 0, envMapIntensity: .35,
+    });
+    m.normalScale.set(0.8, 0.8);
+    m.userData.dryRoughness = 1;
+    roadMats.push(m);
+    return m;
+  };
+  const roadMatV = makeRoadMat();
+  const roadMatH = makeRoadMat();
+  for (let i = 0; i <= N; i++) {
+    const cx = roadCenter(i);
+    roadXs.push(cx);
+    roadZs.push(cx);
+
+    const v = new THREE.Mesh(roadGeo, roadMatV);
+    v.position.set(cx, 0.04, 0);
+    v.receiveShadow = true;
+    scene.add(v);
+
+    const h = new THREE.Mesh(roadGeo, roadMatH);
+    h.position.set(0, 0.08, cx);
+    h.rotation.y = Math.PI / 2;
+    h.receiveShadow = true;
+    scene.add(h);
+  }
+
+  // gritty desaturated building palette, windows glow at dusk
+  const winSets = ['#6e747c', '#7a7264', '#5e6a76', '#80775f', '#697078', '#746c5e'].map(windowTextures);
+  const roofMat = new THREE.MeshLambertMaterial({ color: 0x46474e });
+  const roofPropMat = new THREE.MeshLambertMaterial({ color: 0x55565c });
+  const sidewalkMat = new THREE.MeshLambertMaterial({ color: 0x77787c });
+  const grassMat = new THREE.MeshLambertMaterial({ color: 0x46613a });
+  const trunkMat = new THREE.MeshLambertMaterial({ color: 0x5a4128 });
+  const leafMat = new THREE.MeshLambertMaterial({ color: 0x35602a });
+  const trunkGeo = new THREE.CylinderGeometry(0.22, 0.3, 1.6, 6);
+  const leafGeo = new THREE.ConeGeometry(1.7, 3.6, 8);
+  const acGeo = new THREE.BoxGeometry(2.2, 1.4, 2.2);
+  const antennaGeo = new THREE.CylinderGeometry(0.08, 0.08, 7, 4);
+
+  function addTree(x, z) {
+    if (!Number.isFinite(x) || !Number.isFinite(z)) return;
+    const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+    trunk.position.set(x, 0.8, z);
+    trunk.castShadow = true;
+    scene.add(trunk);
+    const leaf = new THREE.Mesh(leafGeo, leafMat);
+    leaf.position.set(x, 3.2, z);
+    leaf.castShadow = true;
+    scene.add(leaf);
+    colliders.push({ x0: x - 0.5, z0: z - 0.5, x1: x + 0.5, z1: z + 0.5, h: 5 });
+  }
+
+  const padTex = helipadTexture();
+  let parkCount = 0;
+
+  for (let bi = 0; bi < N; bi++) {
+    for (let bj = 0; bj < N; bj++) {
+      // Per-block randomness is independent of texture creation and other systems.
+      const random = seededRandom(17623 + bi * N + bj);
+      const sx = blockStart(bi);
+      const sz = blockStart(bj);
+      const cx = sx + BLOCK / 2;
+      const cz = sz + BLOCK / 2;
+      const isPark = (bi + bj * N) % 11 === 4;
+
+      const walk = new THREE.Mesh(new THREE.BoxGeometry(BLOCK, 0.24, BLOCK), sidewalkMat);
+      walk.position.set(cx, 0.12, cz);
+      walk.receiveShadow = true;
+      scene.add(walk);
+      walks.push({ bi, bj, x: cx, z: cz, mesh: walk, authored: reservedLots.has(`${bi}:${bj}`) });
+
+      pedRects.push({ x0: sx + 2, z0: sz + 2, x1: sx + BLOCK - 2, z1: sz + BLOCK - 2 });
+
+      if (reservedLots.has(`${bi}:${bj}`)) continue;
+
+      // Landmarks own these lots; do not generate apartment towers through them.
+      if ((bi === 2 && bj === 7) || (bi === 7 && bj === 2) || (bi === 5 && bj === 5)) continue;
+
+      if (isPark) {
+        const hasPad = parkCount < 2;
+        parkCount++;
+        const grass = new THREE.Mesh(new THREE.BoxGeometry(BLOCK - 10, 0.2, BLOCK - 10), grassMat);
+        grass.position.set(cx, 0.26, cz);
+        grass.receiveShadow = true;
+        scene.add(grass);
+
+        if (hasPad) {
+          const pad = new THREE.Mesh(
+            new THREE.CylinderGeometry(7.5, 7.5, 0.3, 24),
+            new THREE.MeshLambertMaterial({ map: padTex })
+          );
+          pad.position.set(cx, 0.42, cz);
+          scene.add(pad);
+          helipads.push(new THREE.Vector3(cx, 0.6, cz));
+        }
+
+        for (let t = 0; t < 7; t++) {
+          const tx = cx + (random() - 0.5) * (BLOCK - 20);
+          const tz = cz + (random() - 0.5) * (BLOCK - 20);
+          if (hasPad && Math.abs(tx - cx) < 11 && Math.abs(tz - cz) < 11) continue;
+          addTree(tx, tz);
+        }
+        continue;
+      }
+
+      for (let li = 0; li < 2; li++) {
+        for (let lj = 0; lj < 2; lj++) {
+          const lotX = sx + 5 + li * 25 + 12.5;
+          const lotZ = sz + 5 + lj * 25 + 12.5;
+          const w = geometryDimension(17 + random() * 6);
+          const d = geometryDimension(17 + random() * 6);
+          const hgt = geometryDimension(12 + Math.floor(random() * 9) * 6);
+          const set = winSets[(random() * winSets.length) | 0];
+          const sideMat = new THREE.MeshStandardMaterial({
+            map: set.map,
+            emissive: 0xffffff,
+            emissiveMap: set.emissive,
+            emissiveIntensity: 0.06,
+            roughness: 0.92,
+            metalness: 0.0,
+          });
+          windowMats.push(sideMat);
+          const geo = new THREE.BoxGeometry(w, hgt, d);
+          // Four walls share one material, as do the roof and underside. Keep
+          // their UVs/normals intact but draw two groups instead of six faces.
+          // The material slots remain compatible with streamed facade swaps.
+          const indices = Array.from(geo.index.array);
+          geo.setIndex([...indices.slice(0, 12), ...indices.slice(24), ...indices.slice(12, 24)]);
+          geo.clearGroups();
+          geo.addGroup(0, 24, 0);
+          geo.addGroup(24, 12, 2);
+          const b = new THREE.Mesh(geo, [sideMat, sideMat, roofMat, roofMat, sideMat, sideMat]);
+          b.position.set(lotX, hgt / 2 + 0.2, lotZ);
+          b.castShadow = true;
+          b.receiveShadow = true;
+          scene.add(b);
+          buildings.push({ bi, bj, li, lj, x: lotX, z: lotZ, w, d, h: hgt, mesh: b });
+          colliders.push({ x0: lotX - w / 2, z0: lotZ - d / 2, x1: lotX + w / 2, z1: lotZ + d / 2, h: hgt + 0.5 });
+
+          // rooftop clutter: AC units + antennas
+          const top = hgt + 0.2;
+          if (random() < 0.7) {
+            const ac = new THREE.Mesh(acGeo, roofPropMat);
+            ac.position.set(lotX + (random() - 0.5) * (w - 5), top + 0.7, lotZ + (random() - 0.5) * (d - 5));
+            ac.castShadow = true;
+            scene.add(ac);
+          }
+          if (random() < 0.35) {
+            const ant = new THREE.Mesh(antennaGeo, roofPropMat);
+            ant.position.set(lotX + (random() - 0.5) * (w - 6), top + 3.5, lotZ + (random() - 0.5) * (d - 6));
+            scene.add(ant);
+          }
+          // glowing billboard on some tall buildings, facing the road
+          if (hgt >= 30 && random() < 0.3) {
+            const bb = new THREE.Mesh(
+              new THREE.PlaneGeometry(11, 4.2),
+              new THREE.MeshBasicMaterial({ map: billboardTexture() })
+            );
+            const face = (random() * 4) | 0;
+            const y = hgt - 4;
+            if (face === 0) { bb.position.set(lotX, y, lotZ + d / 2 + 0.15); }
+            else if (face === 1) { bb.position.set(lotX, y, lotZ - d / 2 - 0.15); bb.rotation.y = Math.PI; }
+            else if (face === 2) { bb.position.set(lotX + w / 2 + 0.15, y, lotZ); bb.rotation.y = Math.PI / 2; }
+            else { bb.position.set(lotX - w / 2 - 0.15, y, lotZ); bb.rotation.y = -Math.PI / 2; }
+            scene.add(bb);
+          }
+        }
+      }
+    }
+  }
+
+  // street lamps at intersections (warm sodium glow)
+  const poleGeo = new THREE.CylinderGeometry(0.12, 0.12, 5.4, 6);
+  const poleMat = new THREE.MeshLambertMaterial({ color: 0x2c2c32 });
+  const bulbGeo = new THREE.SphereGeometry(0.32, 8, 6);
+  const bulbMat = new THREE.MeshLambertMaterial({ color: 0xffd9a0, emissive: 0xcc8b35 });
+  const glowGeo = new THREE.CircleGeometry(4.5, 16);
+  glowGeo.rotateX(-Math.PI / 2);
+  const glowMat = new THREE.MeshBasicMaterial({ color: 0xffb850, transparent: true, opacity: 0.04, depthWrite: false });
+  for (let i = 0; i <= N; i += 2) {
+    for (let j = 0; j <= N; j += 2) {
+      const x = roadCenter(i) + ROAD / 2 + 1.2;
+      const z = roadCenter(j) + ROAD / 2 + 1.2;
+      const pole = new THREE.Mesh(poleGeo, poleMat);
+      pole.position.set(x, 2.7, z);
+      pole.castShadow = true;
+      scene.add(pole);
+      const bulb = new THREE.Mesh(bulbGeo, bulbMat);
+      bulb.position.set(x, 5.5, z);
+      scene.add(bulb);
+      const glow = new THREE.Mesh(glowGeo, glowMat);
+      glow.position.set(x, 0.3, z);
+      scene.add(glow);
+    }
+  }
+
+  const mid = Math.floor(N / 2);
+  const spawn = new THREE.Vector3(roadCenter(mid), 0, roadCenter(mid));
+
+  const city = { colliders, pedRects, roadXs, roadZs, spawn, helipads, windowMats, lampGlowMat: glowMat, bulbMat, buildings, walks, roadMats };
+  city.roads = buildRoadDetails(scene, { roadXs, roadZs, roadWidth: ROAD, blockSize: BLOCK, surfaceMap: asphalt.map });
+  city.authoredLots = [...reservedLots];
+  // Authored lots have their own paving and facades; the procedural streamer
+  // must not add kerbs or furniture through those reserved footprints.
+  city.district = createDistrictManager(scene, { ...city, walks: walks.filter(w => !w.authored) });
+  return city;
+}
+
+// --- broad phase --------------------------------------------------------------
+// The collider list is ~500 static AABBs. Scanning all of them for every
+// vehicle and the player, every frame, was a measurable slice of frame time.
+// Bucket them into a uniform grid once; callers then test only the handful of
+// colliders in the cells they overlap. The grid is keyed to the array itself
+// and its length, so roadblocks / district detail colliders being spliced in
+// or out transparently trigger a rebuild.
+const GRID_CELL = 24;              // metres — a touch wider than the widest lot
+const _gridCache = new WeakMap();  // colliders[] -> { len, cells: Map }
+export function invalidateColliderGrid(colliders) { _gridCache.delete(colliders); }
+
+function cellKey(ix, iz) { return ix * 100000 + iz; }
+
+function buildGrid(colliders) {
+  const cells = new Map();
+  const dynamic = [];
+  for (let i = 0; i < colliders.length; i++) {
+    const c = colliders[i];
+    if (c.dynamic) { dynamic.push(c); continue; }
+    const x0 = Math.floor(c.x0 / GRID_CELL), x1 = Math.floor(c.x1 / GRID_CELL);
+    const z0 = Math.floor(c.z0 / GRID_CELL), z1 = Math.floor(c.z1 / GRID_CELL);
+    for (let ix = x0; ix <= x1; ix++) {
+      for (let iz = z0; iz <= z1; iz++) {
+        const k = cellKey(ix, iz);
+        let bucket = cells.get(k);
+        if (!bucket) cells.set(k, bucket = []);
+        bucket.push(c);
+      }
+    }
+  }
+  return { len: colliders.length, cells, dynamic };
+}
+
+// Colliders whose cells the circle (pos, r) touches. Falls back to the full
+// list for out-of-bounds probes (rare — helicopters far past the edge).
+function nearbyColliders(pos, r, colliders) {
+  let grid = _gridCache.get(colliders);
+  if (!grid || grid.len !== colliders.length) {
+    grid = buildGrid(colliders);
+    _gridCache.set(colliders, grid);
+  }
+  const x0 = Math.floor((pos.x - r) / GRID_CELL), x1 = Math.floor((pos.x + r) / GRID_CELL);
+  const z0 = Math.floor((pos.z - r) / GRID_CELL), z1 = Math.floor((pos.z + r) / GRID_CELL);
+  if (x1 - x0 > 6 || z1 - z0 > 6) return colliders; // huge radius: just scan all
+  const seen = new Set();
+  const out = grid.dynamic.slice();
+  for (let ix = x0; ix <= x1; ix++) {
+    for (let iz = z0; iz <= z1; iz++) {
+      const bucket = grid.cells.get(cellKey(ix, iz));
+      if (!bucket) continue;
+      for (const c of bucket) {
+        if (seen.has(c)) continue;
+        seen.add(c);
+        out.push(c);
+      }
+    }
+  }
+  return out;
+}
+
+// Push a circle (pos, r) out of every AABB collider it overlaps.
+// Pass maxY to ignore colliders shorter than the entity's altitude (helicopters).
+export function resolveCircle(pos, r, colliders, maxY = -Infinity, height = 1.8) {
+  const feet = Number.isFinite(maxY) ? maxY : (Number.isFinite(pos.y) ? pos.y : 0);
+  const head = feet + Math.max(0, height);
+  let hit = null;
+  for (const c of nearbyColliders(pos, r, colliders)) {
+    if (maxY > (c.h ?? Infinity)) continue;
+    if (c.y0 != null && head <= c.y0 + .001) continue;
+    // Authored low paving remains a traversable step, not an invisible wall.
+    if (c.step && (c.roofY ?? c.h) <= feet + .35) continue;
+    const cx = Math.max(c.x0, Math.min(pos.x, c.x1));
+    const cz = Math.max(c.z0, Math.min(pos.z, c.z1));
+    let dx = pos.x - cx;
+    let dz = pos.z - cz;
+    const d2 = dx * dx + dz * dz;
+    if (d2 >= r * r) continue;
+    let d = Math.sqrt(d2);
+    if (d < 1e-4) {
+      const px = Math.min(pos.x - c.x0, c.x1 - pos.x) + r;
+      const pz = Math.min(pos.z - c.z0, c.z1 - pos.z) + r;
+      if (px < pz) {
+        const sign = (pos.x - c.x0 < c.x1 - pos.x) ? -1 : 1;
+        pos.x += sign * px;
+        hit = { nx: sign, nz: 0 };
+      } else {
+        const sign = (pos.z - c.z0 < c.z1 - pos.z) ? -1 : 1;
+        pos.z += sign * pz;
+        hit = { nx: 0, nz: sign };
+      }
+    } else {
+      const nx = dx / d;
+      const nz = dz / d;
+      pos.x += nx * (r - d);
+      pos.z += nz * (r - d);
+      hit = { nx, nz };
+    }
+  }
+  return hit;
+}
+
+// Highest walkable surface under a point: rooftops of colliders whose footprint
+// contains the point and whose top is at or just below the probe height, else
+// street level. Pass probeY = the height BEFORE this frame's fall so a fast
+// drop can never skip straight through a roof — buildings are solid brick.
+export function groundHeight(pos, colliders, pad = 0.1, probeY = pos.y) {
+  let g = 0;
+  for (const c of nearbyColliders(pos, pad + 0.5, colliders)) {
+    if (pos.x < c.x0 - pad || pos.x > c.x1 + pad || pos.z < c.z0 - pad || pos.z > c.z1 + pad) continue;
+    if (c.walkable === false) continue;
+    const top = c.roofY ?? ((c.h ?? 0) - 0.3); // legacy collider tops sit 0.3 above the visible roof
+    if (top > g && probeY >= top - 0.5) g = top;
+  }
+  return g;
+}
+
+// True if a point is inside any collider that reaches above the point's height.
+export function pointBlocked(pos, colliders, pad = 0.3) {
+  for (const c of nearbyColliders(pos, pad + 0.5, colliders)) {
+    if (pos.y > (c.h ?? Infinity) || (c.y0 != null && pos.y < c.y0)) continue;
+    if (pos.x > c.x0 - pad && pos.x < c.x1 + pad && pos.z > c.z0 - pad && pos.z < c.z1 + pad) return true;
+  }
+  return false;
+}

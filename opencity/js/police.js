@@ -1,0 +1,485 @@
+import { updateCharacterAnimation, disposeCharacterAsset } from './gltfChar.js';
+import * as THREE from 'three';
+import { equipCharacter, poseWeapon, enemyShot } from './combat-view.js';
+import { makeVehicle, physStep, separateCars, darkenCar } from './car.js';
+import { addExplosion, addTracer, addFlash, addSparks, addSmoke } from './effects.js';
+import { roadCenter, N, resolveCircle } from './city.js';
+import { segmentClear, outsideCamera, dispatchDue, selectRoadSpawn, selectAirSpawn, createRoadNetwork, planRoadRoute } from './pursuitNavigation.js';
+import { createCharacter, animateWalk } from './characters.js';
+import { showNews } from './hud.js';
+import { policeHeat, policeExtra } from './mayor.js';
+
+export function addCrime(world, n, { witnessed = false } = {}) {
+  // an undercover shift carries a badge (copcareer.js)
+  if (world.onDuty) return;
+  // witness system: a petty crime from zero heat can go unreported if
+  // nobody's around to see it — half the time, luck holds
+  if (!witnessed && world.wanted === 0 && n <= 2 && world.peds) {
+    let seen = false;
+    const p = world.player.pos;
+    for (const ped of world.peds) {
+      if (!ped.pos) continue;
+      if (Math.hypot(ped.pos.x - p.x, ped.pos.z - p.z) < 25) { seen = true; break; }
+    }
+    if (!seen && Math.random() < 0.5) {
+      world.crimeDodged = (world.crimeDodged || 0) + 1;
+      showNews('a crime technically occurs; the city collectively didn\'t see it');
+      return;
+    }
+  }
+  world.wanted = Math.min(5, world.wanted + n);
+  world.wantedTimer = 0;
+}
+
+function wrapAngle(a) {
+  while (a > Math.PI) a -= Math.PI * 2;
+  while (a < -Math.PI) a += Math.PI * 2;
+  return a;
+}
+
+function focusPos(world) {
+  const p = world.player;
+  return p.inCar?.pos || p.inHeli?.pos || p.inPlane?.pos || p.inBoat?.pos || p.pos;
+}
+
+const ROADS = Array.from({ length: N + 1 }, (_, i) => roadCenter(i));
+
+function hiddenPoint(world, point, radius = 4) {
+  world.camera?.updateMatrixWorld();
+  return outsideCamera(point, world.camera, radius);
+}
+
+function roadSpawn(world, min = 85) {
+  return selectRoadSpawn({ target: focusPos(world), roads: ROADS, colliders: world.city.colliders,
+    vehicles: [...world.cops, ...world.parked, ...world.traffic, world.player.inCar].filter(Boolean),
+    hidden: (point, radius) => hiddenPoint(world, point, radius), min, max: min + 100 });
+}
+
+function roadNetwork(world) {
+  return world.pursuitRoads ||= createRoadNetwork(ROADS, world.city.colliders);
+}
+
+function retreatPoint(world, position, focus) {
+  return roadNetwork(world).nodes.reduce((best, node) => {
+    const score = p => Math.hypot(p.x - focus.x, p.z - focus.z) - .15 * Math.hypot(p.x - position.x, p.z - position.z);
+    return !best || score(node) > score(best) ? node : best;
+  }, null);
+}
+
+function roadAim(world, cop, destination, dt) {
+  const direct = Math.hypot(cop.pos.x - destination.x, cop.pos.z - destination.z) < 27
+    && (destination.y || 0) < 8
+    && segmentClear({ x: cop.pos.x, y: 1.5, z: cop.pos.z }, { x: destination.x, y: 1.5, z: destination.z }, world.city.colliders, 2.2);
+  if (direct) { cop.route = []; return destination; }
+  cop.routeT = (cop.routeT || 0) - dt;
+  const moved = !cop.routeFocus || Math.hypot(destination.x - cop.routeFocus.x, destination.z - cop.routeFocus.z) > 18;
+  if (!cop.route?.length || (cop.routeT <= 0 && moved)) {
+    cop.route = planRoadRoute(cop.pos, destination, roadNetwork(world), world.city.colliders);
+    cop.routeFocus = { x: destination.x, z: destination.z }; cop.routeT = 1.5;
+  }
+  while (cop.route.length && Math.hypot(cop.route[0].x - cop.pos.x, cop.route[0].z - cop.pos.z) < 6) cop.route.shift();
+  return cop.route[0] || null;
+}
+
+function spawnCop(world) {
+  const point = roadSpawn(world);
+  if (!point) return false;
+  const cop = makeVehicle(world.scene, point.x, point.z, point.heading, '#f2f2f2', { police: true });
+  cop.stuckT = 0;
+  cop.reverseT = 0;
+  cop.flashT = 0;
+  cop.deadT = 0;
+  world.cops.push(cop);
+  return true;
+}
+
+// SWAT van: an armored cop that unloads a fire team when it corners you.
+function spawnSwatVan(world) {
+  const point = roadSpawn(world, 100);
+  if (!point) return false;
+  const van = makeVehicle(world.scene, point.x, point.z, point.heading, '#1a2438', { police: true, health: 250 });
+  const top = new THREE.Mesh(
+    new THREE.BoxGeometry(2.1, 1.1, 3.6),
+    new THREE.MeshStandardMaterial({ color: 0x1a2438, metalness: 0.5, roughness: 0.5 })
+  );
+  top.position.set(0, 1.6, -0.4);
+  van.mesh.add(top);
+  van.van = true;
+  van.unloaded = false;
+  van.stuckT = 0;
+  van.reverseT = 0;
+  van.flashT = 0;
+  van.deadT = 0;
+  world.cops.push(van);
+  showNews('SWAT unit dispatched downtown');
+  return true;
+}
+
+function unloadSwat(world, van) {
+  van.unloaded = true;
+  for (let i = 0; i < 4; i++) {
+    const ch = createCharacter({ shirt: '#20293d', pants: '#141a28', skin: '#c98e63', asset: 'officer', animationManaged: true });
+    equipCharacter(ch, 1);
+    world.scene.add(ch.group);
+    const a = (i / 4) * Math.PI * 2;
+    ch.group.position.set(van.pos.x + Math.sin(a) * 3, 0, van.pos.z + Math.cos(a) * 3);
+    const officer = {
+      ch,
+      mesh: ch.group,
+      pos: ch.group.position,
+      heading: 0,
+      animT: Math.random() * 5,
+      dead: false,
+      deadT: 0,
+      shootT: 1 + Math.random(),
+    };
+    officer.target = {
+      pos: officer.pos, aimY: 1.1, r: 0.9,
+      get dead() { return officer.dead; },
+      hit(w) { killSwat(w, officer); },
+    };
+    world.targets.push(officer.target);
+    world.swat.push(officer);
+  }
+}
+
+function killSwat(world, o) {
+  if (o.dead) return;
+  o.dead = true;
+  o.deadT = 0;
+  o.mesh.rotation.z = Math.PI / 2;
+  o.mesh.position.y = 0.25;
+  addCrime(world, 1);
+}
+
+function removeSwat(world, i) {
+  const o = world.swat[i];
+  world.scene.remove(o.mesh);
+  disposeCharacterAsset(o.ch);
+  const ti = world.targets.indexOf(o.target);
+  if (ti >= 0) world.targets.splice(ti, 1);
+  world.swat.splice(i, 1);
+}
+
+const _sv = new THREE.Vector3();
+
+function updateSwat(world, dt) {
+  const player = world.player;
+  const focus = focusPos(world);
+  const onFoot = !player.inCar && !player.inHeli;
+
+  for (let i = world.swat.length - 1; i >= 0; i--) {
+    const o = world.swat[i];
+    if (o.dead) {
+      o.deadT += dt;
+      if (o.deadT > 14) removeSwat(world, i);
+      continue;
+    }
+    if (world.wanted < 4) {
+      if (!o.retreatPos) o.retreatPos = retreatPoint(world, o.pos, focus);
+      const aim = roadAim(world, o, o.retreatPos, dt);
+      if (aim) {
+        o.heading = Math.atan2(aim.x - o.pos.x, aim.z - o.pos.z); o.mesh.rotation.y = o.heading;
+        _sv.set(Math.sin(o.heading), 0, Math.cos(o.heading)); o.pos.addScaledVector(_sv, 3.5 * dt);
+        resolveCircle(o.pos, .4, world.city.colliders); o.animT += dt * 6; animateWalk(o.ch, o.animT, .7);
+      }
+      poseWeapon(o.ch, false);
+      updateCharacterAnimation(o.ch, dt, {speed: aim ? 3.5 : 0, grounded: true});
+      if (Math.hypot(focus.x - o.pos.x, focus.z - o.pos.z) > 65 && hiddenPoint(world, { x: o.pos.x, y: 1.1, z: o.pos.z }, 2)) removeSwat(world, i);
+      continue;
+    }
+    o.retreatPos = null;
+    const d = Math.hypot(focus.x - o.pos.x, focus.z - o.pos.z);
+    o.heading = Math.atan2(focus.x - o.pos.x, focus.z - o.pos.z);
+    o.mesh.rotation.y = o.heading;
+    if (d > 9) { // advance
+      _sv.set(Math.sin(o.heading), 0, Math.cos(o.heading));
+      o.pos.addScaledVector(_sv, 3.2 * dt);
+      resolveCircle(o.pos, 0.4, world.city.colliders);
+      o.animT += dt * 6;
+      animateWalk(o.ch, o.animT, 0.7);
+    }
+    o.ch.rArm.rotation.x = -Math.PI / 2; // rifle up
+    poseWeapon(o.ch, true);
+    updateCharacterAnimation(o.ch, dt, {speed: d > 9 ? 3.2 : 0, grounded: true});
+    o.shootT -= dt;
+    if (o.shootT <= 0 && d < 32 && onFoot && player.pos.y < 10) {
+      o.shootT = 1.6 + Math.random() * 0.6;
+      const aim = player.pos.clone();
+      aim.y += 1.1 + (Math.random() - 0.5) * 0.6;
+      const clearShot = enemyShot(o.ch, aim, world.city, addTracer, addFlash);
+      if (clearShot && Math.random() < 0.55 && !(player.dodgeT > 0)) player.health -= 6;
+    }
+  }
+}
+
+// ---------------- attack drones (2+ stars) ----------------
+
+function spawnDrone(world) {
+  const focus = focusPos(world);
+  const point = selectAirSpawn({ target: focus, colliders: world.city.colliders, aircraft: world.drones,
+    hidden: (p, r) => hiddenPoint(world, p, r), min: 80, max: 115, altitude: 30, radius: 2 });
+  if (!point) return false;
+  const mesh = new THREE.Group();
+  const body = new THREE.Mesh(
+    new THREE.OctahedronGeometry(0.55),
+    new THREE.MeshStandardMaterial({ color: 0x181c24, metalness: 0.7, roughness: 0.3 })
+  );
+  mesh.add(body);
+  const eye = new THREE.Mesh(
+    new THREE.SphereGeometry(0.16, 8, 6),
+    new THREE.MeshLambertMaterial({ color: 0xff3030, emissive: 0xcc1010 })
+  );
+  eye.position.y = -0.2;
+  mesh.add(eye);
+  mesh.position.set(point.x, point.y, point.z);
+  world.scene.add(mesh);
+  const drone = {
+    mesh,
+    pos: mesh.position,
+    vel: new THREE.Vector3(),
+    dead: false,
+    falling: false,
+    orbitA: Math.random() * Math.PI * 2,
+    shootT: 2,
+  };
+  drone.target = {
+    pos: drone.pos, aimY: 0, r: 1.0, webbable: true,
+    get dead() { return drone.dead; },
+    hit(w) { killDrone(w, drone); },
+    web() { drone.falling = true; }, // webbed rotors: it drops
+  };
+  world.targets.push(drone.target);
+  world.drones.push(drone);
+}
+
+function killDrone(world, drone) {
+  if (drone.dead) return;
+  drone.dead = true;
+  addFlash(drone.pos.clone(), 0xffaa50, 1.2);
+  addSparks(drone.pos.clone(), 14);
+  addSmoke(drone.pos.clone(), 1);
+}
+
+function removeDrone(world, i) {
+  const d = world.drones[i];
+  world.scene.remove(d.mesh);
+  const ti = world.targets.indexOf(d.target);
+  if (ti >= 0) world.targets.splice(ti, 1);
+  world.drones.splice(i, 1);
+}
+
+function updateDrones(world, dt) {
+  const player = world.player;
+  const focus = focusPos(world);
+  const desired = world.wanted >= 2 ? Math.min(2, world.wanted - 1) : 0;
+  const alive = world.drones.filter((d) => !d.dead && !d.falling).length;
+  if (dispatchDue(world.policeDispatch ||= {}, 'drone', dt, alive < desired, 5)) spawnDrone(world);
+
+  for (let i = world.drones.length - 1; i >= 0; i--) {
+    const d = world.drones[i];
+    if (d.dead) { removeDrone(world, i); continue; }
+
+    if (d.falling) { // webbed out of the sky
+      d.vel.y -= 22 * dt;
+      d.pos.addScaledVector(d.vel, dt);
+      d.mesh.rotation.x += 6 * dt;
+      if (d.pos.y <= 0.4) killDrone(world, d);
+      continue;
+    }
+    if (world.wanted < 2) {
+      _sv.subVectors(d.pos, focus).setY(0); if (_sv.lengthSq() < 1) _sv.set(1, 0, 0);
+      _sv.normalize(); d.pos.addScaledVector(_sv, dt * 18); d.pos.y += dt * 4;
+      if (d.pos.distanceTo(focus) > 110 && hiddenPoint(world, d.pos, 2)) removeDrone(world, i);
+      continue;
+    }
+
+    d.orbitA += dt * 0.7;
+    _sv.set(
+      focus.x + Math.sin(d.orbitA) * 11 - d.pos.x,
+      focus.y + 9 - d.pos.y,
+      focus.z + Math.cos(d.orbitA) * 11 - d.pos.z
+    );
+    const dist = _sv.length();
+    _sv.normalize();
+    d.vel.lerp(_sv.multiplyScalar(Math.min(16, dist * 1.4)), Math.min(1, 2.2 * dt));
+    d.pos.addScaledVector(d.vel, dt);
+    d.mesh.rotation.y += 4 * dt;
+
+    d.shootT -= dt;
+    const dp = d.pos.distanceTo(focus);
+    if (d.shootT <= 0 && dp < 26) {
+      d.shootT = 2.3;
+      const aim = focus.clone();
+      aim.y += 1;
+      aim.x += (Math.random() - 0.5) * 2.5;
+      aim.z += (Math.random() - 0.5) * 2.5;
+      addTracer(d.pos.clone(), aim);
+      addFlash(aim, 0xff6a50, 0.2);
+      if (Math.random() < 0.45) {
+        if (player.inCar) player.inCar.health -= 4;
+        else if (!player.inHeli && !(player.dodgeT > 0)) player.health -= 5;
+      }
+    }
+  }
+}
+
+export function updatePolice(world, dt) {
+  const player = world.player;
+
+  // wanted level decay — the mayor's police stance stretches or shrinks it,
+  // and MARTIAL adds bodies; prestige stars make the whole force meaner
+  const stance = { heat: policeHeat(world), extra: policeExtra(world) };
+  if (world.wanted > 0) {
+    world.wantedTimer += dt;
+    if (world.wantedTimer > (world.perks?.decay ?? 24) * stance.heat) {
+      world.wanted--;
+      world.wantedTimer = 0;
+    }
+  }
+
+  // Reinforcements arrive over time. A failed safe-spawn search is deferred.
+  const timers = world.policeDispatch ||= {};
+  const desired = world.wanted === 0 ? 0
+    : Math.min(8, world.wanted + 1 + stance.extra + (world.prestige | 0));
+  const alive = world.cops.filter(c => !c.dead && !c.van).length;
+  if (dispatchDue(timers, 'car', dt, alive < desired, 3)) spawnCop(world);
+  const vanDesired = world.wanted >= 5 ? 2 : world.wanted >= 4 ? 1 : 0;
+  const vansAlive = world.cops.filter(c => !c.dead && c.van).length;
+  if (dispatchDue(timers, 'van', dt, vansAlive < vanDesired, 8)) spawnSwatVan(world);
+  let patrols = 0, vans = 0;
+  for (const cop of world.cops) {
+    if (cop.dead) continue;
+    const leaving = cop.van ? ++vans > vanDesired : ++patrols > desired;
+    if (leaving !== !!cop.leaving) { cop.route = []; cop.retreatPos = null; }
+    cop.leaving = leaving;
+  }
+
+  const targetPos = focusPos(world);
+  const onFoot = !player.inCar && !player.inHeli && !player.inPlane;
+  let copNearOnFoot = false;
+
+  for (let i = world.cops.length - 1; i >= 0; i--) {
+    const cop = world.cops[i];
+
+    if (cop.dead) {
+      cop.deadT += dt;
+      if (cop.deadT > 9) {
+        world.scene.remove(cop.mesh);
+        world.cops.splice(i, 1);
+      }
+      continue;
+    }
+
+    // webbed to the road: no driving, no arrests
+    if (cop.webT > 0) {
+      cop.webT -= dt;
+      cop.vel.set(0, 0, 0);
+      continue;
+    }
+
+    // flashing lightbar
+    cop.flashT += dt;
+    if (cop.lightbar) {
+      const phase = Math.floor(cop.flashT * 6) % 2 === 0;
+      cop.lightbar.red.visible = phase;
+      cop.lightbar.blue.visible = !phase;
+    }
+
+    const dx = targetPos.x - cop.pos.x;
+    const dz = targetPos.z - cop.pos.z;
+    const dist = Math.hypot(dx, dz);
+    if (cop.leaving && dist > 115 && hiddenPoint(world, { x: cop.pos.x, y: 1.5, z: cop.pos.z }, 4)) {
+      world.scene.remove(cop.mesh); world.cops.splice(i, 1); continue;
+    }
+    if (cop.leaving && !cop.retreatPos) cop.retreatPos = retreatPoint(world, cop.pos, targetPos);
+    const destination = cop.leaving ? cop.retreatPos : targetPos;
+    const aim = roadAim(world, cop, destination, dt);
+    const err = aim ? wrapAngle(Math.atan2(aim.x - cop.pos.x, aim.z - cop.pos.z) - cop.heading) : 0;
+    const sp = cop.vel.length();
+    const toTurn = aim ? Math.hypot(aim.x - cop.pos.x, aim.z - cop.pos.z) : 0;
+    const next = cop.route?.[1];
+    const turnAhead = next && toTurn < 20 && Math.abs(wrapAngle(Math.atan2(next.x - aim.x, next.z - aim.z) - cop.heading)) > .55;
+    const cruise = !aim ? 0 : Math.abs(err) > .65 || turnAhead ? 7 : cop.leaving ? 17 : 22 + world.wanted;
+    const ctl = {
+      steer: Math.max(-1, Math.min(1, err * 2.5)),
+      throttle: sp > cruise + 1 ? -1 : aim ? 1 : 0,
+      handbrake: false,
+    };
+    if (!cop.leaving && onFoot && dist < 12) ctl.throttle = dist < 7 ? (sp > .5 ? -1 : 0) : .35;
+
+    // unstick: reverse for a moment when wedged against a wall
+    if (cop.reverseT > 0) {
+      cop.reverseT -= dt;
+      ctl.throttle = -1;
+      ctl.steer = -ctl.steer;
+    } else if (aim && sp < 1.2 && dist > 8) {
+      cop.stuckT += dt;
+      if (cop.stuckT > 1.4) {
+        cop.reverseT = 1.1;
+        cop.stuckT = 0;
+      }
+    } else {
+      cop.stuckT = 0;
+    }
+
+    physStep(cop, ctl, dt, world.city.colliders);
+
+    // SWAT van deploys its fire team once it corners you
+    if (!cop.leaving && cop.van && !cop.unloaded && dist < 24 && sp < 4) unloadSwat(world, cop);
+
+    // smash through traffic and parked cars
+    for (const o of world.traffic) if (!o.dead) separateCars(cop, o, false);
+    for (const o of world.parked) separateCars(cop, o, false);
+
+    if (cop.health <= 0) {
+      copDie(world, cop);
+      continue;
+    }
+
+    if (!cop.leaving && player.inCar && !player.inCar.dead) {
+      // ramming the player's car
+      const imp = separateCars(cop, player.inCar, false);
+      if (imp > 4) {
+        player.inCar.health -= imp * 1.6;
+        cop.health -= imp * 1.1;
+        if (cop.health <= 0) copDie(world, cop);
+      }
+    } else if (!cop.leaving && onFoot) {
+      // running the player over
+      if (dist < 2.3 && sp > 7) {
+        player.health -= 35;
+        player.vel.x += cop.vel.x * 0.6;
+        player.vel.z += cop.vel.z * 0.6;
+      }
+      // arrest: cop stopped right next to the player
+      if (world.wanted > 0 && dist < 6 && sp < 3) copNearOnFoot = true;
+    }
+  }
+
+  // busted timer
+  if (copNearOnFoot) {
+    world.bustedT += dt;
+    if (world.bustedT > (world.perks?.busted ?? 1.6)) world.busted = true;
+  } else {
+    world.bustedT = Math.max(0, world.bustedT - dt * 2);
+  }
+
+  updateSwat(world, dt);
+  updateDrones(world, dt);
+}
+
+export function copDie(world, cop) {
+  if (cop.dead) return;
+  cop.dead = true;
+  cop.deadT = 0;
+  cop.vel.set(0, 0, 0);
+  addExplosion(cop.pos);
+  darkenCar(cop);
+  addCrime(world, 1);
+}
+
+export function clearCops(world) {
+  for (const cop of world.cops) world.scene.remove(cop.mesh);
+  world.cops = [];
+}

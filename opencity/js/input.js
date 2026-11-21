@@ -1,0 +1,244 @@
+// Keyboard + mouse input. `keys` is held state, `pressed` is true only on the
+// frame the key went down (cleared by endFrame).
+//
+// Typed WASD letters take priority; physical WASD positions are the fallback
+// for other alphabets. Never activate opposite directions for one remapped key.
+export const keys = Object.create(null);
+export const pressed = Object.create(null);
+export const pressedModifiers = Object.create(null);
+export const mouse = { dx: 0, dy: 0, down: false, rdown: false, wheel: 0 };
+
+const GAME_KEYS = new Set(['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyS', 'KeyD']);
+const sources = new Map();
+const keyboardHeld = new Map();
+
+// ---------------- key rebinding ----------------
+// `remap` maps a PHYSICAL key name (what the keyboard produced) to a LOGICAL
+// game key name (what the game systems check). Empty by default = identity.
+// accessibility.js loads/saves this; every game module keeps checking the same
+// logical names (`keys.KeyE`, `pressed.KeyM`, ...) and stays untouched.
+export const remap = Object.create(null);
+
+export function setRemap(table) {
+  for (const k in remap) delete remap[k];
+  if (table) for (const k in table) if (table[k] && table[k] !== k) remap[k] = table[k];
+}
+
+function applyRemap(names) {
+  if (!names.length) return names;
+  let changed = false;
+  const out = names.map((n) => {
+    const to = remap[n];
+    if (to && to !== n) { changed = true; return to; }
+    return n;
+  });
+  return changed ? [...new Set(out)] : names;
+}
+
+// Independent owners: releasing a joystick/gamepad must not release a keyboard.
+export function setInputKey(source, name, down) {
+  let held = sources.get(source);
+  if (!held) { held = new Set(); sources.set(source, held); }
+  if (down) held.add(name); else held.delete(name);
+  let active = false;
+  for (const owner of sources.values()) if (owner.has(name)) { active = true; break; }
+  if (active && !keys[name]) {
+    pressed[name] = true;
+    pressedModifiers[name] = { shift: !!(keys.ShiftLeft || keys.ShiftRight) };
+  }
+  keys[name] = active;
+}
+
+export function clearInput() {
+  sources.clear(); keyboardHeld.clear();
+  for (const k in keys) keys[k] = false;
+  for (const k in pressed) delete pressed[k];
+  for (const k in pressedModifiers) delete pressedModifiers[k];
+  mouse.down = mouse.rdown = false;
+  mouse.dx = mouse.dy = mouse.wheel = 0;
+}
+
+export function namesFor(e) {
+  // A remapped D on the physical A key must not activate both opposites.
+  const letter = e.key?.toLowerCase();
+  if (['w', 'a', 's', 'd'].includes(letter)) return ['Key' + letter.toUpperCase()];
+  if (['KeyW', 'KeyA', 'KeyS', 'KeyD'].includes(e.code)) return [e.code];
+  const names = [];
+  if (e.code) names.push(e.code);
+  if (e.key) {
+    if (e.key === ' ') names.push('Space');
+    else if (e.key.length === 1) {
+      const c = e.key.toLowerCase();
+      if (c >= 'a' && c <= 'z') names.push('Key' + c.toUpperCase());
+      else if (c >= '0' && c <= '9') names.push('Digit' + c);
+    } else {
+      names.push(e.key); // 'Shift', 'ArrowLeft', ...
+      if (e.key === 'Shift') names.push('ShiftLeft');
+    }
+  }
+  // Some embedded browsers, virtual keyboards, and older automation drivers
+  // omit `code`/`key` and only expose the legacy numeric keyCode/which value.
+  const legacy = e.keyCode || e.which;
+  if (!names.length) {
+    if (legacy >= 65 && legacy <= 90) names.push('Key' + String.fromCharCode(legacy));
+    else if (legacy === 32) names.push('Space');
+    else if (legacy >= 37 && legacy <= 40) names.push(['ArrowLeft','ArrowUp','ArrowRight','ArrowDown'][legacy - 37]);
+  }
+  return [...new Set(names)];
+}
+
+export function initInput() {
+  window.addEventListener('wheel', e => {
+    if (!document.pointerLockElement || e.ctrlKey || !e.deltaY) return;
+    e.preventDefault();
+    mouse.wheel = Math.sign(e.deltaY);
+  }, { passive: false });
+  window.addEventListener('keydown', (e) => {
+    const names = applyRemap(namesFor(e));
+    if (e.target?.matches?.('input, textarea, select, [contenteditable="true"]')) return;
+    // Reserve gameplay keys only while playing; menus and text fields keep
+    // normal browser keyboard behavior. OS shortcuts remain outside our control.
+    const playing = !!document.pointerLockElement;
+    if (playing && (names.some(n => /^(Key[A-Z]|Digit[0-9]|Space|Tab|ShiftLeft|ShiftRight|Arrow.*|F[1-9]|F1[0-2])$/.test(n)))) e.preventDefault();
+    else if (!e.ctrlKey && !e.metaKey && !e.altKey && names.some(n => GAME_KEYS.has(n) || n === 'F2')) e.preventDefault();
+    const id = e.code || String(e.keyCode || e.which || e.key);
+    // Ctrl is aim during gameplay. Outside gameplay, browser chords stay out
+    // of the game; Alt/Meta chords never activate gameplay actions.
+    if (e.metaKey || e.altKey || (!playing && e.ctrlKey)) return;
+    // After blur/unlock, require a fresh press instead of resuming a held key.
+    if (e.repeat) return;
+    if (!keyboardHeld.has(id)) keyboardHeld.set(id, names);
+    for (const n of keyboardHeld.get(id)) setInputKey('keyboard:' + id, n, true);
+  });
+  window.addEventListener('keyup', (e) => {
+    const id = e.code || String(e.keyCode || e.which || e.key);
+    for (const n of keyboardHeld.get(id) || applyRemap(namesFor(e))) setInputKey('keyboard:' + id, n, false);
+    keyboardHeld.delete(id);
+  });
+  // Browsers occasionally report one wild movement event (a pointer-lock
+  // re-entry, a window focus change, a known Chrome glitch) that would snap the
+  // camera half way round. A huge jump straight out of a still or slow mouse is
+  // dropped; real fast flicks build up over several events and still pass.
+  let lastMove = 0;
+  window.addEventListener('mousemove', (e) => {
+    if (!document.pointerLockElement) return;
+    const size = Math.abs(e.movementX) + Math.abs(e.movementY);
+    const spike = size > 400 && lastMove < 60;
+    lastMove = size;
+    if (spike) return;
+    mouse.dx += e.movementX; mouse.dy += e.movementY;
+  });
+  window.addEventListener('mousedown', (e) => {
+    if (e.button === 0) mouse.down = true;
+    if (e.button === 2) mouse.rdown = true;
+  });
+  window.addEventListener('mouseup', (e) => {
+    if (e.button === 0) mouse.down = false;
+    if (e.button === 2) mouse.rdown = false;
+  });
+  // right mouse is the web-shooter — keep the browser menu out of the way
+  window.addEventListener('contextmenu', (e) => e.preventDefault());
+  window.addEventListener('blur', clearInput);
+  document.addEventListener('pointerlockchange', () => { if (!document.pointerLockElement) clearInput(); });
+  window.addEventListener('pagehide', clearInput);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) clearInput(); });
+  // The visible WASD controls also work as hold buttons, not just indicators.
+  for (const letter of ['w', 'a', 's', 'd']) {
+    const button = document.getElementById('k-' + letter);
+    if (!button) continue;
+    const name = 'Key' + letter.toUpperCase();
+    button.addEventListener('pointerdown', e => {
+      e.preventDefault(); e.stopPropagation(); button.setPointerCapture(e.pointerId);
+      setInputKey('hud:' + letter, name, true);
+    });
+    for (const event of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(event, e => {
+      e.preventDefault(); e.stopPropagation(); setInputKey('hud:' + letter, name, false);
+    });
+  }
+}
+
+// Capture the mouse for looking around. With raw input the browser skips the
+// operating system's pointer acceleration, so the camera turns by the same
+// amount for the same hand movement however fast you move: it tracks like a
+// real head turn. Browsers without raw input fall back to a normal lock.
+export function captureMouse(el, raw = true) {
+  if (!el?.requestPointerLock) return;
+  const plain = () => { try { el.requestPointerLock()?.catch?.(() => {}); } catch { /* not allowed right now */ } };
+  if (!raw) { plain(); return; }
+  try {
+    const request = el.requestPointerLock({ unadjustedMovement: true });
+    request?.catch?.((err) => { if (err?.name === 'NotSupportedError') plain(); });
+  } catch { plain(); }
+}
+
+export function endFrame() {
+  for (const k in pressed) delete pressed[k];
+  for (const k in pressedModifiers) delete pressedModifiers[k];
+  mouse.dx = 0;
+  mouse.dy = 0;
+  mouse.wheel = 0;
+}
+
+// ---------------- gamepad ----------------
+// Polled once per frame; maps onto the same keys/pressed/mouse the keyboard
+// uses, so every game system gets controller support for free.
+// Left stick move · right stick camera · A jump/up · B sprint/down · X enter
+// Y web-attack · LB radio · RB/LT web-swing · RT shoot
+
+let gpPrev = Object.create(null);
+let gpFire = false;
+let gpWeb = false;
+let gpActive = false; // ignore pads until a real button press — RGB software
+                      // and some drivers register phantom gamepads whose idle
+                      // axes rest at -1, which would hold a movement key forever
+
+export function pollGamepad(dt = 1 / 60) {
+  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+  let gp = null;
+  for (const p of pads) if (p && p.connected) { gp = p; break; }
+  if (!gp) {
+    for (const k in gpPrev) setInputKey('gamepad', k, false);
+    gpPrev = Object.create(null); gpActive = false;
+    if (gpFire) mouse.down = false;
+    if (gpWeb) mouse.rdown = false;
+    gpFire = gpWeb = false;
+    return;
+  }
+
+  if (!gpActive) {
+    for (const b of gp.buttons) {
+      if (b && b.pressed) { gpActive = true; break; }
+    }
+    if (!gpActive) return;
+  }
+
+  const cur = Object.create(null);
+  const ax = (i) => gp.axes[i] || 0;
+  if (ax(1) < -0.35) cur['KeyW'] = true;
+  if (ax(1) > 0.35) cur['KeyS'] = true;
+  if (ax(0) < -0.35) cur['KeyA'] = true;
+  if (ax(0) > 0.35) cur['KeyD'] = true;
+  // right stick turns the camera at a steady rate per second, so it feels the
+  // same at 30 fps as at 144 (same speed as before at 60 fps)
+  const step = Math.min(dt, 0.1) * 60;
+  if (Math.abs(ax(2)) > 0.2) mouse.dx += ax(2) * 16 * step;
+  if (Math.abs(ax(3)) > 0.2) mouse.dy += ax(3) * 16 * step;
+
+  const btn = (i) => !!(gp.buttons[i] && gp.buttons[i].pressed);
+  if (btn(0)) cur['Space'] = true;
+  if (btn(1)) cur['ShiftLeft'] = true;
+  if (btn(2)) cur['KeyE'] = true;
+  if (btn(3)) cur['KeyQ'] = true;
+  if (btn(4)) cur['KeyR'] = true;
+
+  const fire = btn(7);
+  if (fire !== gpFire) { mouse.down = fire; gpFire = fire; }
+  const webBtn = btn(5) || btn(6);
+  if (webBtn !== gpWeb) { mouse.rdown = webBtn; gpWeb = webBtn; }
+
+  for (const k in cur) {
+    setInputKey('gamepad', k, true);
+  }
+  for (const k in gpPrev) if (!cur[k]) setInputKey('gamepad', k, false);
+  gpPrev = cur;
+}

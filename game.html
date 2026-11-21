@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Neon Drive — CyberCity 2099</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: #070814; font-family: 'Segoe UI', sans-serif; color: #fff; }
+    #hud {
+      position: absolute; top: 15px; left: 15px; background: rgba(10, 12, 28, 0.85);
+      border: 1px solid #00f5d4; padding: 12px 16px; border-radius: 8px; line-height: 1.5;
+    }
+    #tuning-menu {
+      display: none; position: absolute; top: 50%; right: 25px; transform: translateY(-50%);
+      background: rgba(10, 12, 28, 0.94); border: 2px solid #f72585; padding: 20px;
+      border-radius: 12px; width: 240px; box-shadow: 0 0 25px rgba(247, 37, 133, 0.45);
+    }
+    #tuning-menu h3 { margin: 0 0 12px; color: #00f5d4; }
+    #tuning-menu label { display: block; margin: 10px 0 4px; font-size: 13px; }
+    #tuning-menu input, #tuning-menu button { width: 100%; margin-bottom: 8px; }
+    #tuning-menu button {
+      background: #f72585; color: #fff; border: none; padding: 10px;
+      border-radius: 6px; font-weight: bold; cursor: pointer;
+    }
+    #speed-gauge { position:absolute; right:24px; bottom:24px; min-width:180px; text-align:right; }
+    #speed-gauge b { font-size:42px; line-height:1; color:#00f5d4; }
+    #mouse-help { position:absolute; bottom:24px; left:24px; color:#cbd5e1; font-size:12px; background:rgba(10,12,28,.72); padding:8px 10px; border-radius:8px; }
+  </style>
+</head>
+<body>
+  <div id="hud">
+    <div id="status">Loading CyberCity 2099...</div>
+    <div><b>W A S D</b> / <b>Arrows</b>: Drive | <b>R</b>: Reset | <b>T</b>: Tuning</div>
+    <div id="coords" style="color:#00f5d4; font-size:13px;">Pos: X: 0, Y: 0, Z: 0</div>
+  </div>
+
+  <div id="tuning-menu">
+    <h3>⚡ CYBER TUNING SHOP</h3>
+    <label>Top Speed: <span id="spd-val">1.2</span></label>
+    <input type="range" id="spd-slider" min="0.8" max="2.8" step="0.1" value="1.2" />
+    <label>Drift / Turn Grip: <span id="turn-val">0.04</span></label>
+    <input type="range" id="turn-slider" min="0.02" max="0.08" step="0.005" value="0.04" />
+    <label>Neon Body Color:</label>
+    <input type="color" id="color-picker" value="#00f5d4" />
+    <button onclick="document.getElementById('tuning-menu').style.display='none'">Close</button>
+  </div>
+
+  <div id="speed-gauge">
+    <b>Speed: 0</b> <span style="font-size:12px; color:#cbd5e1;">m/s</span>
+  </div>
+  <div id="mouse-help">Press <b>ESC</b> to unlock mouse</div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+    const statusEl = document.getElementById('status');
+    const coordsEl = document.getElementById('coords');
+    const speedGaugeEl = document.getElementById('speed-gauge').querySelector('b');
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x070814);
+    scene.fog = new THREE.FogExp2(0x070814, 0.0018);
+
+    const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1500);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.35;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    document.body.appendChild(renderer.domElement);
+
+    // Cyberpunk Lighting — clean city readability
+    scene.add(new THREE.HemisphereLight(0xb9d7ff, 0x16152e, 2.1));
+    scene.add(new THREE.AmbientLight(0x9db8d8, 1.25));
+    const sun = new THREE.DirectionalLight(0xffd7a6, 2.8);
+    sun.position.set(120, 220, 100);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(2048, 2048);
+    sun.shadow.camera.left = -180;
+    sun.shadow.camera.right = 180;
+    sun.shadow.camera.top = 180;
+    sun.shadow.camera.bottom = -180;
+    sun.shadow.camera.near = 1;
+    sun.shadow.camera.far = 700;
+    scene.add(sun);
+
+    // Shared loaders
+    const draco = new DRACOLoader();
+    draco.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+    draco.setDecoderConfig({ type: 'js' });
+    const loader = new GLTFLoader();
+    loader.setDRACOLoader(draco);
+
+    // Player Car — loaded GLB model
+    const car = new THREE.Group();
+    let carPaintMaterials = [];
+    scene.add(car);
+
+    loader.load('./models/car.glb', (gltf) => {
+      const carModel = gltf.scene;
+      carModel.updateMatrixWorld(true);
+      const rawBox = new THREE.Box3().setFromObject(carModel);
+      const rawSize = rawBox.getSize(new THREE.Vector3());
+      const rawCenter = rawBox.getCenter(new THREE.Vector3());
+      const longestLength = Math.max(rawSize.x, rawSize.z);
+      const carScale = longestLength > 0 ? 4.4 / longestLength : 1;
+      carModel.scale.setScalar(carScale);
+      carModel.updateMatrixWorld(true);
+
+      const scaledBox = new THREE.Box3().setFromObject(carModel);
+      const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
+      carModel.position.sub(scaledCenter);
+
+      carModel.traverse((child) => {
+        if (!child.isMesh) return;
+        child.castShadow = true;
+        child.receiveShadow = true;
+        const materials = Array.isArray(child.material) ? child.material : [child.material];
+        materials.forEach((material) => {
+          if (!material) return;
+          const name = `${child.name} ${material.name || ''}`.toLowerCase();
+          const paintLike = /paint|body|car|shell|coat|exterior|auto/.test(name);
+          if (paintLike && material.color) {
+            carPaintMaterials.push(material);
+            material.metalness = Math.max(material.metalness ?? 0.5, 0.65);
+            material.roughness = Math.min(material.roughness ?? 0.35, 0.28);
+          }
+          material.needsUpdate = true;
+        });
+      });
+
+      carModel.rotation.y = 0;
+      car.add(carModel);
+      window.__neonCarDebug = { rawSize, scaledSize: scaledBox.getSize(new THREE.Vector3()), meshCount: carModel.children.length };
+    }, undefined, (error) => {
+      statusEl.innerText = 'Error loading ./models/car.glb';
+      console.error(error);
+    });
+
+    // Load ./models/map.glb
+    const mapMeshes = [];
+
+    loader.load(
+      './models/map.glb',
+      (gltf) => {
+        const map = gltf.scene;
+
+        const rawBox = new THREE.Box3().setFromObject(map);
+        const rawSize = rawBox.getSize(new THREE.Vector3());
+        const rawCenter = rawBox.getCenter(new THREE.Vector3());
+        const longestSide = Math.max(rawSize.x, rawSize.y, rawSize.z);
+        const scale = longestSide > 0 ? 1200 / longestSide : 1;
+        map.scale.setScalar(scale);
+        map.updateMatrixWorld(true);
+
+        const box = new THREE.Box3().setFromObject(map);
+        const center = box.getCenter(new THREE.Vector3());
+        map.position.set(-center.x, -box.min.y, -center.z);
+
+        map.traverse((child) => {
+          if (child.isMesh) {
+            child.frustumCulled = false;
+            child.castShadow = true;
+            child.receiveShadow = true;
+            mapMeshes.push(child);
+          }
+        });
+
+        scene.add(map);
+        map.updateMatrixWorld(true);
+
+        const loadedBox = new THREE.Box3().setFromObject(map);
+        const loadedSize = loadedBox.getSize(new THREE.Vector3());
+        const loadedCenter = loadedBox.getCenter(new THREE.Vector3());
+        camera.far = Math.max(5000, loadedSize.length() * 4);
+        camera.updateProjectionMatrix();
+
+        raycaster.set(new THREE.Vector3(loadedCenter.x, loadedBox.max.y + 1000, loadedCenter.z), down);
+        const groundHits = raycaster.intersectObjects(mapMeshes, true);
+        const groundY = groundHits.length ? groundHits[0].point.y : loadedBox.min.y;
+
+        car.position.set(loadedCenter.x, groundY + 1.2, loadedCenter.z);
+        camera.position.set(loadedCenter.x, groundY + 8, loadedCenter.z + Math.max(10, loadedSize.z * 0.08));
+        camera.lookAt(car.position);
+
+        window.__neonMapSpawn = { x: loadedCenter.x, y: groundY + 1.2, z: loadedCenter.z };
+        window.__neonMapDebug = { size: loadedSize, center: loadedCenter, groundY, meshCount: mapMeshes.length };
+        statusEl.innerText = `CyberCity 2099 Loaded — ${mapMeshes.length} map meshes`;
+      },
+      (xhr) => {
+        if (xhr.total) statusEl.innerText = `Loading City: ${Math.round((xhr.loaded / xhr.total) * 100)}%`;
+      },
+      (err) => {
+        statusEl.innerText = 'Error loading ./models/map.glb — open with Live Server!';
+        console.error(err);
+      }
+    );
+
+    // Raycast Ground & Wall Collision
+    const raycaster = new THREE.Raycaster();
+    const down = new THREE.Vector3(0, -1, 0);
+
+    function checkCollisions(step) {
+      if (mapMeshes.length === 0) return true;
+
+      const forward = new THREE.Vector3(-Math.sin(angle), 0, -Math.cos(angle));
+      if (step < 0) forward.negate();
+
+      raycaster.set(car.position.clone().add(new THREE.Vector3(0, 0.8, 0)), forward);
+      const wallHits = raycaster.intersectObjects(mapMeshes, false);
+      if (wallHits.length > 0 && wallHits[0].distance < 2.3) {
+        speed = 0;
+        return false;
+      }
+
+      raycaster.set(new THREE.Vector3(car.position.x, car.position.y + 15, car.position.z), down);
+      const groundHits = raycaster.intersectObjects(mapMeshes, false);
+      if (groundHits.length > 0 && groundHits[0].point) {
+        car.position.y = groundHits[0].point.y;
+      }
+      return true;
+    }
+
+    // Tuning Sliders
+    let maxSpeed = 1.2, turnRate = 0.04;
+    document.getElementById('spd-slider').oninput = (e) => {
+      maxSpeed = parseFloat(e.target.value);
+      document.getElementById('spd-val').innerText = maxSpeed;
+    };
+    document.getElementById('turn-slider').oninput = (e) => {
+      turnRate = parseFloat(e.target.value);
+      document.getElementById('turn-val').innerText = turnRate;
+    };
+    document.getElementById('color-picker').oninput = (e) => carMat.color.set(e.target.value);
+
+    // Controls
+    const keys = {};
+    addEventListener('keydown', (e) => {
+      keys[e.code] = true;
+      if (e.code === 'KeyR') {
+        const spawn = window.__neonMapSpawn;
+        car.position.set(spawn ? spawn.x : 0, spawn ? spawn.y : 2, spawn ? spawn.z : 0);
+        angle = 0;
+        speed = 0;
+      }
+      if (e.code === 'KeyT') {
+        const menu = document.getElementById('tuning-menu');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+      }
+      if (e.code === 'Escape') {
+        document.getElementById('mouse-help').style.display = 'none';
+        document.body.requestPointerLock();
+      }
+    });
+    addEventListener('keyup', (e) => keys[e.code] = false);
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+
+    let speed = 0, angle = 0;
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (keys['KeyW'] || keys['ArrowUp']) speed = Math.min(speed + 0.035, maxSpeed);
+      if (keys['KeyS'] || keys['ArrowDown']) speed = Math.max(speed - 0.035, -maxSpeed * 0.5);
+      speed *= 0.96;
+
+      if (Math.abs(speed) > 0.02) {
+        const turn = (keys['KeyA'] || keys['ArrowLeft'] ? 1 : 0) - (keys['KeyD'] || keys['ArrowRight'] ? 1 : 0);
+        angle += turn * turnRate * Math.sign(speed);
+      }
+
+      car.rotation.y = angle;
+      if (checkCollisions(speed)) {
+        car.position.x -= Math.sin(angle) * speed;
+        car.position.z -= Math.cos(angle) * speed;
+      }
+
+      coordsEl.innerText = `Pos: X: ${car.position.x.toFixed(1)}, Y: ${car.position.y.toFixed(1)}, Z: ${car.position.z.toFixed(1)}`;
+      speedGaugeEl.innerText = (Math.abs(speed) * 3.6).toFixed(1);
+
+      const camOffset = new THREE.Vector3(0, 7.5, 19).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+      camera.position.lerp(car.position.clone().add(camOffset), 0.10);
+      camera.lookAt(car.position.x, car.position.y + 1.5, car.position.z);
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
+</body>
+</html>

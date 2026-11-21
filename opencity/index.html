@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#090d13">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Open City — Pavan Patel</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23111722'/><text x='50' y='72' font-size='62' text-anchor='middle' fill='%23ffd24a' font-family='Arial' font-weight='bold' font-style='italic'>OC</text></svg>">
+<style>
+  :root {
+    --ink: #eef4fb;
+    --dim: #8ea6bb;
+    --cyan: #55e6ff;
+    --amber: #ffb648;
+    --green: #4fe08a;
+    --red: #ff5b52;
+    --panel: rgba(8, 15, 24, 0.72);
+    --panel-solid: rgba(9, 16, 26, 0.92);
+    --edge: rgba(85, 230, 255, 0.30);
+    --cut: 11px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', Inter, Arial, sans-serif; touch-action: none; overscroll-behavior: none; }
+  canvas#game { display: block; }
+
+  #hud {
+    position: fixed; inset: 0; pointer-events: none; user-select: none;
+    color: var(--ink); text-shadow: 0 2px 6px rgba(0,0,0,.85);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* shared panel treatment: dark glass, thin cyan edge, clipped corners */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    box-shadow: 0 14px 44px rgba(0,0,0,.55), inset 0 0 26px rgba(85,230,255,.04);
+    clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+    backdrop-filter: blur(3px);
+  }
+  .lbl {
+    font: 800 9.5px/1 'Consolas', ui-monospace, monospace;
+    letter-spacing: .24em; text-transform: uppercase; color: var(--dim);
+  }
+
+  #topright {
+    position: absolute; top: 20px; right: 22px; text-align: right;
+    padding: 11px 18px 12px 26px; min-width: 172px;
+  }
+  #money {
+    font-size: 27px; font-weight: 800; color: var(--green); letter-spacing: .5px;
+    font-variant-numeric: tabular-nums;
+  }
+  #clock {
+    font: 700 15px/1 'Consolas', ui-monospace, monospace; color: var(--ink);
+    letter-spacing: 3px; margin-top: 5px;
+  }
+  #stars { margin-top: 7px; font-size: 20px; letter-spacing: 5px; }
+  #stars span { color: rgba(180,205,225,.32); transition: color .2s, text-shadow .2s; }
+  #stars span.lit { color: var(--amber); text-shadow: 0 0 14px rgba(255,182,72,.95); }
+
+  #bottomleft { position: absolute; left: 22px; bottom: 22px; }
+  #minimapframe {
+    position: relative; padding: 6px; padding-top: 20px;
+  }
+  #minimapframe::before {
+    content: 'CITY'; position: absolute; top: 5px; left: 12px;
+    font: 800 9px/1 'Consolas', ui-monospace, monospace; letter-spacing: .3em; color: var(--cyan);
+  }
+  #minimap {
+    display: block;
+    box-shadow: inset 0 0 0 1px rgba(85,230,255,.22);
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  }
+  #healthpanel { padding: 7px 12px 9px; margin-bottom: 9px; }
+  #healthpanel .lbl { display: flex; justify-content: space-between; margin-bottom: 5px; }
+  #healthwrap {
+    width: 188px; height: 13px; background: #10202c;
+    box-shadow: inset 0 0 0 1px rgba(140,170,190,.35);
+    transform: skew(-13deg); overflow: hidden;
+  }
+  #health {
+    height: 100%; width: 100%;
+    background: linear-gradient(90deg, #28c46e, #7cf0ac);
+    transition: width .15s, background .3s;
+  }
+
+  #speed {
+    position: absolute; right: 26px; bottom: 26px; text-align: right;
+    padding: 6px 16px 8px 24px; display: none;
+  }
+  #speed .big {
+    font: 800 40px/0.85 'Segoe UI', Inter, sans-serif; color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  #speed small { font: 700 12px/1 'Consolas', monospace; color: var(--cyan); letter-spacing: .2em; }
+
+  #weapon {
+    position: absolute; right: 26px; bottom: 26px; text-align: right;
+    padding: 7px 16px 9px 24px;
+    font: 800 18px/1 'Segoe UI', Inter, sans-serif; color: var(--amber);
+    letter-spacing: 1.5px; text-transform: uppercase;
+  }
+
+  #hint {
+    position: absolute; left: 50%; bottom: 15%; transform: translateX(-50%);
+    background: var(--panel-solid); color: var(--ink); padding: 8px 20px;
+    border: 1px solid var(--edge);
+    clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+    font-size: 15px; font-weight: 600; display: none; letter-spacing: .3px;
+  }
+  #hint b { color: var(--cyan); font-weight: 800; }
+
+  #crosshair {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+    width: 18px; height: 18px; font-size: 0;
+  }
+  #crosshair::before, #crosshair::after {
+    content: ''; position: absolute; background: rgba(255,255,255,.9);
+    box-shadow: 0 0 4px rgba(0,0,0,.9);
+  }
+  #crosshair::before { left: 8px; top: 0; width: 2px; height: 18px; }
+  #crosshair::after { top: 8px; left: 0; height: 2px; width: 18px; }
+
+  #banner {
+    position: absolute; left: 0; right: 0; top: 37%; text-align: center;
+    font-size: 78px; font-weight: 900; letter-spacing: 10px;
+    color: var(--red); text-shadow: 0 0 40px rgba(255,91,82,.5), 0 4px 0 #000;
+    display: none; text-transform: uppercase;
+  }
+
+  #keysind {
+    position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%);
+    text-align: center; opacity: 0.85;
+  }
+  #keysind button {
+    pointer-events: auto; touch-action: none; cursor: pointer; padding: 0;
+    display: inline-block; width: 30px; height: 30px; line-height: 27px; margin: 2px;
+    background: var(--panel); border: 1px solid rgba(140,170,190,.4);
+    color: var(--ink); font-weight: 700; font-size: 13px;
+    font-family: 'Consolas', monospace;
+    clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  }
+  #keysind button.on { background: var(--cyan); border-color: var(--cyan); color: #06131a; }
+
+  #toast {
+    position: absolute; left: 50%; top: 11%; transform: translateX(-50%);
+    color: var(--amber); font-size: 19px; font-weight: 800;
+    letter-spacing: .5px; text-transform: uppercase; display: none;
+  }
+
+  #mission {
+    position: absolute; left: 22px; top: 20px; display: none;
+    padding: 11px 18px 12px; min-width: 216px;
+    border-left: 2px solid var(--cyan);
+  }
+  #mtitle { color: var(--cyan); font-size: 15px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
+  #mtext { color: var(--ink); font-size: 12.5px; margin-top: 4px; opacity: .85; }
+  #mtimer {
+    color: var(--ink); font: 800 22px/1 'Segoe UI', Inter, sans-serif; margin-top: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #missionmsg {
+    position: absolute; left: 0; right: 0; top: 29%; text-align: center;
+    opacity: 0; transform: scale(.94); transition: opacity .35s, transform .35s;
+    pointer-events: none;
+  }
+  #missionmsg.show { opacity: 1; transform: scale(1); }
+  #mm1 {
+    font-size: 50px; font-weight: 900; letter-spacing: 6px;
+    text-shadow: 0 0 30px rgba(0,0,0,.7), 0 3px 0 #000; text-transform: uppercase;
+  }
+  #mm2 { font-size: 20px; font-weight: 700; color: var(--ink); margin-top: 6px; letter-spacing: 1px; }
+
+  /* touch devices: HUD rearranged around the on-screen controls */
+  body.touch #keysind { display: none; }
+  body.touch #hint { bottom: auto; top: 70px; font-size: 14px; max-width: 78vw; }
+  body.touch #bottomleft { transform: scale(0.66); transform-origin: bottom left; bottom: 170px; left: 12px; }
+  body.touch #weapon { right: 200px; bottom: 8px; font-size: 16px; }
+  body.touch #speed { right: 230px; bottom: 8px; }
+  body.touch #speed .big { font-size: 28px; }
+  body.touch #mission { left: 12px; top: 6px; padding: 6px 10px; min-width: 0; max-width: 150px; }
+  body.touch #mtitle { font-size: 12px; }
+  body.touch #mtext { font-size: 10px; }
+  body.touch #mtimer { font-size: 15px; }
+
+  #vignette {
+    position: fixed; inset: 0; pointer-events: none; z-index: 4;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,.42) 100%);
+  }
+  #damage {
+    position: fixed; inset: 0; pointer-events: none; z-index: 5; opacity: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(190,15,15,.6) 100%);
+    box-shadow: inset 0 0 150px 30px rgba(255,20,30,.35);
+    transition: opacity .1s;
+  }
+
+  #start {
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at 50% 32%, #16344f 0%, #060b12 68%);
+    display: flex; flex-direction: column; align-items: center; justify-content: safe center;
+    color: var(--ink); z-index: 10; text-align: center;
+    overflow-y: auto; padding: 20px 10px; box-sizing: border-box;
+    font-family: 'Segoe UI', Inter, Arial, sans-serif;
+  }
+  /* phones: shrink the menu so PLAY always fits on screen */
+  @media (max-width: 700px), (max-height: 620px) {
+    #start h1 { font-size: 42px; }
+    #start .tag { font-size: 12px; margin-bottom: 12px; }
+    #playbtn { margin: 4px 0 12px; font-size: 18px; padding: 12px 44px; }
+  }
+  #start h1 {
+    font-size: 74px; font-weight: 900; letter-spacing: 6px; line-height: .95;
+    background: linear-gradient(180deg, #eef4fb, #55e6ff);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 0 26px rgba(85,230,255,.35));
+  }
+  #start .edition {
+    font: 800 11px 'Consolas', ui-monospace, monospace; color: var(--cyan);
+    letter-spacing: .4em; margin: 2px 0 4px; text-transform: uppercase;
+  }
+  #start .tag { color: var(--dim); margin: 8px 0 26px; font-size: 15px; letter-spacing: 1.5px; }
+  #playbtn {
+    margin: 6px 0 20px; pointer-events: auto; cursor: pointer;
+    font-size: 22px; font-weight: 900; letter-spacing: 5px; text-transform: uppercase;
+    color: #06131a; background: var(--cyan);
+    border: none; padding: 15px 62px;
+    clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+    box-shadow: 0 0 30px rgba(85,230,255,.35); transition: transform .12s, filter .12s;
+  }
+  #playbtn:hover { transform: translateY(-2px); filter: brightness(1.12); }
+  #storybtn {
+    margin: 12px 0 0; pointer-events: auto; cursor: pointer;
+    font-size: 15px; font-weight: 900; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--cyan); background: rgba(85,230,255,.08);
+    border: 1px solid rgba(85,230,255,.55); padding: 10px 44px;
+    clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+    transition: transform .12s, background .12s;
+  }
+  #storybtn:hover { transform: translateY(-2px); background: rgba(85,230,255,.18); }
+
+  #charpick { pointer-events: auto; margin-bottom: 4px; }
+  #charpick .chartitle { color: var(--dim); font: 800 11px 'Consolas', monospace; letter-spacing: .3em; margin-bottom: 10px; }
+  #charrow { display: flex; gap: 10px; justify-content: center; }
+  .charcard {
+    cursor: pointer; width: 128px; padding: 12px 8px;
+    background: rgba(8,15,24,.72); border: 1px solid rgba(140,170,190,.2); transition: all .15s;
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  }
+  .charcard:hover { border-color: rgba(85,230,255,.5); }
+  .charcard.sel { border-color: var(--cyan); background: rgba(85,230,255,.1); }
+  .charcard .cname { font: 800 15px 'Segoe UI', Inter, sans-serif; letter-spacing: 1.5px; color: var(--ink); text-transform: uppercase; }
+  .charcard .ctag { font: 600 10px Arial; color: var(--dim); margin: 3px 0 6px; }
+  .charcard .swatch { height: 28px; margin-bottom: 6px; }
+  .charcard .stat { font: 600 9px 'Consolas', monospace; color: #cfd8e3; line-height: 1.6; letter-spacing: .04em; }
+  @media (max-width: 700px), (max-height: 620px) {
+    .charcard { width: 96px; padding: 8px 5px; }
+    .charcard .cname { font-size: 13px; }
+  }
+
+  #start .tabs { display: flex; gap: 8px; pointer-events: auto; margin-bottom: 12px; }
+  #start .tab {
+    cursor: pointer; background: rgba(255,255,255,.05); color: var(--dim);
+    border: 1px solid rgba(140,170,190,.2);
+    padding: 8px 18px; font: 800 12px 'Consolas', monospace; letter-spacing: .16em; transition: all .15s;
+    text-transform: uppercase;
+    clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+  }
+  #start .tab:hover { color: var(--ink); }
+  #start .tab.active { background: var(--cyan); color: #06131a; border-color: transparent; }
+
+  #start .panel {
+    display: none; width: min(560px, 92vw); text-align: left;
+    background: rgba(8,15,24,.72); border: 1px solid var(--edge);
+    padding: 18px 22px;
+    clip-path: polygon(13px 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%, 0 13px);
+    backdrop-filter: none; box-shadow: none;
+  }
+  #start .panel.active { display: block; animation: fadein .25s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  #start .ctl { color: #cfd8e3; font-size: 14px; line-height: 2.1; }
+  #start .ctl b { color: var(--cyan); }
+  #start .ctl.mob { margin-top: 6px; color: var(--cyan); }
+  #start .k {
+    display: inline-block; background: rgba(85,230,255,.12); border: 1px solid rgba(85,230,255,.35);
+    padding: 1px 8px; margin-right: 4px; color: var(--ink); font-weight: 700; font-size: 12px;
+    font-family: 'Consolas', monospace;
+  }
+  #start .feat { color: #dfe7ef; font-size: 13px; line-height: 1.5; padding: 7px 0; border-bottom: 1px solid rgba(140,170,190,.1); }
+  #start .feat:last-child { border-bottom: none; }
+  #start .feat b { color: var(--cyan); }
+
+  @media (max-width: 700px), (max-height: 620px) {
+    #start .panel { padding: 12px 16px; }
+    #start .ctl { font-size: 12px; line-height: 1.9; }
+    #start .feat { font-size: 11.5px; padding: 5px 0; }
+    #start .tab { padding: 6px 12px; font-size: 12px; }
+  }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+  <div id="hud">
+    <div id="topright" class="panel">
+      <div id="money">$0</div>
+      <div id="clock">10:00</div>
+      <div id="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+    </div>
+    <div id="bottomleft">
+      <div id="healthpanel" class="panel">
+        <div class="lbl"><span>HEALTH</span><span id="hpnum"></span></div>
+        <div id="healthwrap"><div id="health"></div></div>
+      </div>
+      <div id="minimapframe" class="panel">
+        <canvas id="minimap" width="176" height="176"></canvas>
+      </div>
+    </div>
+    <div id="speed" class="panel"><span class="big">0</span> <small>MPH</small></div>
+    <div id="weapon" class="panel">PISTOL</div>
+    <div id="hint"></div>
+    <div id="keysind">
+      <button id="k-w" aria-label="Move forward">W</button><br>
+      <button id="k-a" aria-label="Move or steer left">A</button><button id="k-s" aria-label="Move backward or brake">S</button><button id="k-d" aria-label="Move or steer right">D</button>
+    </div>
+    <div id="crosshair" style="display:none" aria-hidden="true"></div>
+    <div id="banner">WASTED</div>
+    <div id="toast"></div>
+    <div id="mission" class="panel">
+      <div id="mtitle"></div>
+      <div id="mtext"></div>
+      <div id="mtimer"></div>
+    </div>
+    <div id="missionmsg">
+      <div id="mm1"></div>
+      <div id="mm2"></div>
+    </div>
+  </div>
+  <div id="vignette"></div>
+  <div id="damage"></div>
+
+  <div id="start">
+    <h1>OPEN CITY</h1>
+    <div class="edition">▚ Basic Edition</div>
+    <div class="tag">Swing · Drive · Fly — a GTA-style open world in your browser</div>
+
+    <div id="charpick">
+      <div class="chartitle">CHOOSE YOUR SLINGER</div>
+      <div id="charrow"></div>
+    </div>
+
+    <button id="storybtn">STORY</button>
+    <button id="playbtn">FREE ROAM</button>
+
+    <div class="tabs">
+      <button class="tab active" data-p="controls">🎮 Controls</button>
+      <button class="tab" data-p="features">✨ Features</button>
+      <button class="tab" data-p="tips">💡 Tips</button>
+    </div>
+
+    <div class="panel active" id="p-controls">
+      <div class="ctl"><span class="k">W A S D</span> Move · Drive · Fly</div>
+      <div class="ctl"><span class="k">Mouse</span> Look / Aim &nbsp;·&nbsp; <span class="k">L-Click</span> Shoot</div>
+      <div class="ctl"><span class="k">R-Click</span> Hold = web-swing · Tap = zip up</div>
+      <div class="ctl"><span class="k">Ctrl</span> Aim &nbsp;·&nbsp; <span class="k">Wheel</span> Weapon &nbsp;·&nbsp; <span class="k">F2</span> First / third person</div>
+      <div class="ctl"><span class="k">Space</span> Jump / Heli up &nbsp;·&nbsp; <span class="k">Shift</span> Sprint / Nitro / Heli down</div>
+      <div class="ctl"><span class="k">F</span> Punch combo / air web-dash &nbsp;·&nbsp; <span class="k">Q</span> Web-shot (again = yank)</div>
+      <div class="ctl"><span class="k">C</span> Super-jump &nbsp;·&nbsp; <span class="k">T</span> Trampoline &nbsp;·&nbsp; <span class="k">E</span> Enter/rob</div>
+      <div class="ctl"><span class="k">M</span> Map &nbsp;·&nbsp; <span class="k">P</span> Pause &nbsp;·&nbsp; <span class="k">G</span> Screenshot &nbsp;·&nbsp; <span class="k">O</span> Instant replay &nbsp;·&nbsp; <span class="k">Shift+K</span> Bank &nbsp;·&nbsp; <span class="k">Y</span> Bribe cop &nbsp;·&nbsp; <span class="k">1-3</span> Weapons</div>
+      <div class="ctl">Keys are rebindable and there are colour-blind / reduced-motion / aim-assist options in <b>Pause → ♿ Accessibility</b>.</div>
+      <div class="ctl"><span class="k">H</span> Start arena (at the stadium) &nbsp;·&nbsp; <span class="k">B</span> Buy property under a green beam</div>
+      <div class="ctl mob">📱 On phones: left joystick moves, drag the screen to look. Core buttons only — tap <b>⋯</b> for map, pause, jetpack, REX and more. Buttons change when you're driving. Gamepad works too.</div>
+    </div>
+
+    <div class="panel" id="p-features">
+      <div class="feat"><b>🕸️ Spider-traversal</b> Web-swing across the city, zip to rooftops, wall-run, web-parachute, trampolines, and a style meter that pays cash.</div>
+      <div class="feat"><b>🚗 Drive & fly</b> Steal cars, ride motorbikes, fly helicopters, buy a supercar — nitro boost and stunt ramps included.</div>
+      <div class="feat"><b>🔫 Combat</b> Pistol, machine gun, shotgun, sniper (with scope), RPG, grenades, melee combos, web-yank finishers, and a dodge roll.</div>
+      <div class="feat"><b>⭐ Heat</b> 5-star chase: cops → drones → SWAT → a stealable army tank.</div>
+      <div class="feat"><b>🎯 Mission types</b> Deliveries, street races vs AI, sky-ring swing races, taxi, heists, vigilante chases in a stolen cop car, a boss chopper, and a rival web-slinger.</div>
+      <div class="feat"><b>🃏 Crime pays</b> Blackjack, slots, roulette AND five-card poker at the Lucky 7, a lottery kiosk, a daily bank heist, a roaming armored cash truck, bounty contracts, turf raids — and REX the dog, who fetches cash, barks at cops and bites on command (Z).</div>
+      <div class="feat"><b>🚀 Jetpack</b> Buy it near spawn ($5000), press J and fly — plus a BASE-jump ring trial off the Spire and 10 golden sky hoops to thread.</div>
+      <div class="feat"><b>🥊 Night life</b> Bare-knuckle fight club on the waterfront after 21:00 (fists and webs only), ambulance rescues, harbor vehicle exports — and strange lights over the Spire past midnight.</div>
+      <div class="feat"><b>👑 Become the LEGEND</b> Press L for the 16-item completion board — finish everything and the city crowns you: a golden crown, $50,000, fireworks. 100% is the true ending.</div>
+      <div class="feat"><b>🏙️ Living city</b> Rob stores, seize gang turf, casino, dealership, wardrobe suits, garage, 20 hidden packages, day/night + weather.</div>
+      <div class="feat"><b>📈 Grow</b> XP levels unlock double-jump, web-dash & slow-mo aim · 12 achievements.</div>
+      <div class="feat"><b>🧍 Pick a slinger</b> WEAVER (balanced), BOLT (fast), or BRICK (tough) — each plays differently.</div>
+      <div class="feat"><b>🗼 Landmarks</b> Swing off the 150m Spire, the stadium, central park & the waterfront on a bigger 10×10 city.</div>
+      <div class="feat"><b>🤖 Bosses</b> A rival web-slinger AND a 500-armour war-mech — plus a monster truck at the dealership.</div>
+      <div class="feat"><b>📷 Mobile</b> Camera selfie booth, screenshot sharing, haptics — installable as an app.</div>
+      <div class="feat"><b>💾 Three save slots</b> Independent saves with per-slot export/import — back up or branch your city on the start screen.</div>
+      <div class="feat"><b>🎬 Instant replay</b> Press O for the last 20 seconds: scrub it, fly a free camera, grab a still or export the clip.</div>
+      <div class="feat"><b>♿ Accessibility</b> Rebindable keys, colour-blind minimap palettes, reduced motion, aim assist and HUD scaling — plus an FPS meter and an auto perf governor.</div>
+      <div class="feat"><b>📸 Photo bounties</b> A camera board near spawn lists shots to take — the Spire, a police chopper, the kaiju, a night-time 3-star selfie — each pays cash. Rotates daily.</div>
+      <div class="feat"><b>🔥 Persistent damage</b> Scorch marks, shattered glass and burnt-out wrecks stay on the street after a firefight until you leave the block.</div>
+      <div class="feat"><b>📰 Reactive news</b> The city ticker reports what you actually just did — "3rd store hit this hour", "National Guard called in".</div>
+      <div class="feat"><b>🧠 NPCs remember</b> Shoot near someone and they flee on sight next time; shake the cops next to a bystander and they'll tip you off later.</div>
+      <div class="feat"><b>🐈 Cat rescue</b> Take a job from the lost-pets board by spawn, web-swing up to the rooftop where a cat is stranded and bring it home before it bolts — faster pays more.</div>
+      <div class="feat"><b>📡 Billboard hacker</b> Take the job at the netrunner's stand by spawn: four rooftop billboards light up across the city on one clock — swing up to each, hold E to splice in, and flip every ad to your tag.</div>
+      <div class="feat"><b>🌮 Taco Loco food truck</b> Work the lunch rush at the taco truck by spawn: customers queue at the window — press 1–4 to hand over the right taco, burrito, soda or churro before their patience runs out. Quick service earns tips.</div>
+      <div class="feat"><b>🥤 Shell Game</b> Bet $50 with a street hustler, follow the ball through the shuffle and pick cup 1, 2 or 3. Each win pays double, and the next stake doubles with a faster shuffle.</div>
+      <div class="feat"><b>💪 Arm Wrestling</b> Climb a ladder of five bar-side bruisers at the Iron Elbow, from Skinny Pete to The Anvil: press E when the gauge needle is in the green. Mashing gets you slammed.</div>
+      <div class="feat"><b>🤠 Quick-Draw Duel</b> Face five gunslingers at HIGH NOON. Wait for DRAW!, then press E faster than they can — go early and it's a foul.</div>
+      <div class="feat"><b>🧠 Trivia Kiosk</b> $10 for five quick-fire questions on the world and the city itself, answered with 1–4. $40 a right answer, $200 for a perfect round.</div>
+      <div class="feat"><b>🔴 Four in a Row</b> Sit down at the park table with the old-timer for a $20 game of Connect Four — drop discs with 1–7 (0 for 7). Beat him and win triple your stake.</div>
+      <div class="feat"><b>🔨 Mole Mania</b> 30 seconds to bonk moles with 1–6 at the whack-a-mole cabinet. Golden moles are worth 5, bombs cost you 3.</div>
+      <div class="feat"><b>⛲ Wishing Fountain</b> Toss a coin once a day and wish for luck (+50% payouts for a while), health, calm (one less wanted star) or a shot at a $500 fortune.</div>
+      <div class="feat"><b>🗿 Living Statue</b> Strike a pose on the plinth and don't move a muscle — any key or mouse movement breaks it. The longer you hold, the bigger the tips.</div>
+      <div class="feat"><b>🌿 Hedge Maze</b> Race through a real walled hedge maze to the golden trophy against the clock. Going over the top disqualifies you.</div>
+      <div class="feat"><b>🔭 Stargazing</b> After dark (21:00–04:00), aim the observatory telescope at three named constellations and hold E to lock each one in.</div>
+      <div class="feat"><b>🧽 Window Washer</b> Ride a cleaning gondola down a skyscraper: press 1/2/3 to pick a column and hold E to scrub the grimy panels. Miss one and it's docked from your pay, and wind gusts swing you off the glass.</div>
+      <div class="feat"><b>🧗 Vertical Limit</b> A 12 m climbing wall: alternate 1 and 2 on the bright grip pulse, rest on the ledges with 3, and ring the bell inside 60 s. Pump out and the auto-belay lowers you down.</div>
+      <div class="feat"><b>🅿️ Parking Warden</b> Clock on at the booth, then walk the block and hold E to ticket five illegally parked cars before 120 s run out — racing the owners who sprint out to drive off first.</div>
+      <div class="feat"><b>👛 Pickpocket</b> Get a mark from the hooded fence, creep up behind him and hold E to lift his wallet. Watch for the "?" before he glances back, then get the wallet to the fence within 60 s.</div>
+      <div class="feat"><b>🚦 Driving School</b> A $50 five-lesson road test — cone slalom, stop box, 30 MPH zone, three-point turn, bay parking — scored from 100. 70 or more earns the LICENSED badge and $300.</div>
+      <div class="feat"><b>🏁 Drag Strip</b> A quarter-mile timing duel on the south perimeter road: launch on the green, shift four gears in the green rev zone, and beat a rival who gets quicker with every win.</div>
+      <div class="feat"><b>🏗️ Harbor Crane</b> Climb the container gantry on the seawall and press E to stop the trolley so each swinging box lands on the barge's yellow slot. Three crunches and you're sent home.</div>
+      <div class="feat"><b>🦀 Crab Pots</b> Buy pots at the Crab Shack, drop them at the yellow buoys from any boat, come back a couple of in-game hours later to haul the catch, and sell crabs for $18 each.</div>
+      <div class="feat"><b>🏇 Lucky Hooves OTB</b> Read the form, back one of six runners at 2/1–20/1 and watch a 25-second race with live commentary. A race goes off every 3 minutes.</div>
+      <div class="feat"><b>♻️ Recycling</b> Bag the cans and bottles littering the sidewalks near spawn (30 fit in the bag) and feed them into the RECYCLE machine for $4 each.</div>
+      <div class="feat"><b>🎆 Fireworks show</b> After dark, run the harbor barge from the console on the sand: hold E to charge each shell and let go so it bursts in its glowing ring — eight shells a night, tips by accuracy.</div>
+      <div class="feat"><b>⛴️ Water taxi</b> Take the helm of any boat and fares start waving from the seawall — pull in, let them aboard and run them along the coast; a quick crossing pays a bonus.</div>
+      <div class="feat"><b>🛟 Lifeguard rescues</b> Clock on at the tower by the seawall, swim or boat out to swimmers in trouble and tow them back to shore before they go under — three saves a shift.</div>
+      <div class="feat"><b>🌊 The harbor</b> Open water past the east edge — speedboats, a jet-ski, swimming, and piers to dive off.</div>
+      <div class="feat"><b>🏁 Free-roam races</b> Two street circuits, two harbor boat races and a rooftop swing trial — gold/silver/bronze medals and saved best times.</div>
+      <div class="feat"><b>🏟️ The arena</b> Wave survival at the stadium: gangs, SWAT and drones, cash and rep per wave.</div>
+      <div class="feat"><b>💼 Empire</b> Buy the casino, stadium and Spire for passive income — then defend them from raids or lose a day's take · reputation tiers · rotating daily challenges · garage tuning: respray, engine, armor, nitro.</div>
+    </div>
+
+    <div class="panel" id="p-tips">
+      <div class="ctl">🕸️ Hold <b>W</b> while swinging to build speed, release at the front of the arc to fly.</div>
+      <div class="ctl">💰 Stylish moves bank cash the moment you land.</div>
+      <div class="ctl">🟡 Walk into the yellow beam to start a mission — the type rotates each time.</div>
+      <div class="ctl">🚓 Stars bring drones (2), SWAT (4), a tank (5). The Stealth suit cools heat faster.</div>
+      <div class="ctl">📦 20 packages hide on rooftops — you'll only find them by swinging up high.</div>
+      <div class="ctl">📱 On your phone: open the menu → <b>Add to Home Screen</b> to install it.</div>
+    </div>
+
+    <a href="privacy.html" style="margin-top:14px;color:#5b6675;font-size:11px;letter-spacing:1px;pointer-events:auto;">PRIVACY POLICY</a>
+  </div>
+
+  <script type="module" src="js/boot.js"></script>
+  <script>
+    // start-screen tabs
+    document.querySelectorAll('#start .tab').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('#start .tab').forEach((t) => t.classList.remove('active'));
+        document.querySelectorAll('#start .panel').forEach((p) => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('p-' + tab.dataset.p).classList.add('active');
+      });
+    });
+
+    // installable + offline after first visit
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
