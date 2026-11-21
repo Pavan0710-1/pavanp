@@ -32,6 +32,16 @@ export function sfxWeb() {}
 export function sfxMissionPass() {}
 export function sfxMissionFail() {}
 export function sfxThunder() {}
+export function setRain() {}
+export function setRadioStation() {}
+
+export const RADIO_STATIONS = Object.freeze([
+  'LOFI 88.1',
+  'DRIVE FM',
+  'BASS 103',
+  'DESI 96.3',
+  'NITE JAZZ',
+]);
 
 export function sfxCrash(strength = 1) {
   if (!ctx) return;
