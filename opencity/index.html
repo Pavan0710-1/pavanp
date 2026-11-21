@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#090d13">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<title>Open City — Pavan Patel</title>
+<title>NIGHTLINE — Pavan Patel</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%23111722'/><text x='50' y='72' font-size='62' text-anchor='middle' fill='%23ffd24a' font-family='Arial' font-weight='bold' font-style='italic'>OC</text></svg>">
 <style>
   :root {
@@ -199,11 +199,31 @@
 
   #start {
     position: fixed; inset: 0;
-    background: radial-gradient(ellipse at 50% 32%, #16344f 0%, #060b12 68%);
+    background:
+      linear-gradient(180deg, rgba(5,9,16,.18), rgba(5,9,16,.92)),
+      radial-gradient(circle at 78% 18%, rgba(85,230,255,.16), transparent 24%),
+      radial-gradient(ellipse at 50% 115%, #12334a 0%, #07101a 48%, #04070d 78%);
     display: flex; flex-direction: column; align-items: center; justify-content: safe center;
     color: var(--ink); z-index: 10; text-align: center;
-    overflow-y: auto; padding: 20px 10px; box-sizing: border-box;
+    isolation: isolate;
+    overflow-y: auto; padding: clamp(18px,4vh,48px) 18px; box-sizing: border-box;
     font-family: 'Segoe UI', Inter, Arial, sans-serif;
+  }
+  #start::before {
+    content: ''; position: fixed; inset: 0; z-index: -2; pointer-events: none;
+    background:
+      linear-gradient(rgba(85,230,255,.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(85,230,255,.055) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,.9), transparent 82%);
+  }
+  #start::after {
+    content:''; position:fixed; left:-5vw; right:-5vw; bottom:-5vh; height:31vh; z-index:-1; pointer-events:none;
+    background:
+      linear-gradient(90deg, transparent 0 3%, rgba(13,28,41,.96) 3% 8%, transparent 8% 11%, rgba(10,24,36,.98) 11% 18%, transparent 18% 21%, rgba(15,31,45,.96) 21% 31%, transparent 31% 34%, rgba(10,25,38,.98) 34% 44%, transparent 44% 48%, rgba(12,29,43,.98) 48% 58%, transparent 58% 62%, rgba(10,24,36,.98) 62% 72%, transparent 72% 76%, rgba(14,31,45,.98) 76% 88%, transparent 88%),
+      linear-gradient(to top, #02040a 0 7%, transparent 7%);
+    clip-path: polygon(0 42%,8% 42%,8% 22%,14% 22%,14% 58%,22% 58%,22% 34%,30% 34%,30% 8%,38% 8%,38% 48%,46% 48%,46% 20%,54% 20%,54% 52%,62% 52%,62% 28%,70% 28%,70% 60%,78% 60%,78% 16%,86% 16%,86% 44%,94% 44%,94% 30%,100% 30%,100% 100%,0 100%);
+    opacity:.82;
   }
   /* phones: shrink the menu so PLAY always fits on screen */
   @media (max-width: 700px), (max-height: 620px) {
@@ -212,45 +232,47 @@
     #playbtn { margin: 4px 0 12px; font-size: 18px; padding: 12px 44px; }
   }
   #start h1 {
-    font-size: 74px; font-weight: 900; letter-spacing: 6px; line-height: .95;
-    background: linear-gradient(180deg, #eef4fb, #55e6ff);
+    font-size: clamp(58px,8vw,112px); font-weight: 950; font-style: italic; letter-spacing: -0.055em; line-height:.82;
+    background: linear-gradient(180deg, #ffffff 12%, #a9eef8 58%, #55e6ff);
     -webkit-background-clip: text; background-clip: text; color: transparent;
-    filter: drop-shadow(0 0 26px rgba(85,230,255,.35));
+    filter: drop-shadow(0 16px 34px rgba(85,230,255,.18));
+    text-transform:uppercase;
   }
   #start .edition {
-    font: 800 11px 'Consolas', ui-monospace, monospace; color: var(--cyan);
-    letter-spacing: .4em; margin: 2px 0 4px; text-transform: uppercase;
+    display:inline-flex; align-items:center; min-height:26px; padding:5px 12px;
+    border:1px solid rgba(85,230,255,.38); border-radius:99px;
+    background:rgba(85,230,255,.07); backdrop-filter:blur(10px);
+    font:800 10px 'Consolas',ui-monospace,monospace; color:var(--cyan);
+    letter-spacing:.28em; margin:16px 0 6px; text-transform:uppercase;
   }
-  #start .tag { color: var(--dim); margin: 8px 0 26px; font-size: 15px; letter-spacing: 1.5px; }
+  #start .tag { color:#b7c9d4; margin:8px 0 clamp(18px,3vh,30px); font-size:14px; letter-spacing:.16em; text-transform:uppercase; }
   #playbtn {
     margin: 6px 0 20px; pointer-events: auto; cursor: pointer;
-    font-size: 22px; font-weight: 900; letter-spacing: 5px; text-transform: uppercase;
-    color: #06131a; background: var(--cyan);
-    border: none; padding: 15px 62px;
-    clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
-    box-shadow: 0 0 30px rgba(85,230,255,.35); transition: transform .12s, filter .12s;
+    min-width:220px; font-size:18px; font-weight:900; letter-spacing:.22em; text-transform:uppercase;
+    color:#06131a; background:linear-gradient(135deg,#aef3ff,#55e6ff 55%,#36b9d5);
+    border:1px solid rgba(255,255,255,.5); border-radius:999px; padding:15px 54px;
+    box-shadow:0 16px 38px rgba(34,190,220,.24), inset 0 1px rgba(255,255,255,.72); transition:transform .18s,box-shadow .18s,filter .18s;
   }
-  #playbtn:hover { transform: translateY(-2px); filter: brightness(1.12); }
+  #playbtn:hover { transform:translateY(-3px); box-shadow:0 22px 46px rgba(34,190,220,.34), inset 0 1px rgba(255,255,255,.72); filter:brightness(1.05); }
   #storybtn {
-    margin: 12px 0 0; pointer-events: auto; cursor: pointer;
-    font-size: 15px; font-weight: 900; letter-spacing: 4px; text-transform: uppercase;
-    color: var(--cyan); background: rgba(85,230,255,.08);
-    border: 1px solid rgba(85,230,255,.55); padding: 10px 44px;
-    clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
-    transition: transform .12s, background .12s;
+    margin:12px 0 0; pointer-events:auto; cursor:pointer;
+    min-width:220px; font-size:12px; font-weight:900; letter-spacing:.18em; text-transform:uppercase;
+    color:#dffaff; background:rgba(8,20,31,.68); backdrop-filter:blur(12px);
+    border:1px solid rgba(85,230,255,.30); border-radius:999px; padding:10px 44px;
+    transition:transform .18s,background .18s,border-color .18s;
   }
-  #storybtn:hover { transform: translateY(-2px); background: rgba(85,230,255,.18); }
+  #storybtn:hover { transform:translateY(-2px); background:rgba(85,230,255,.12); border-color:rgba(85,230,255,.58); }
 
-  #charpick { pointer-events: auto; margin-bottom: 4px; }
-  #charpick .chartitle { color: var(--dim); font: 800 11px 'Consolas', monospace; letter-spacing: .3em; margin-bottom: 10px; }
-  #charrow { display: flex; gap: 10px; justify-content: center; }
+  #charpick { pointer-events:auto; margin:2px 0 4px; }
+  #charpick .chartitle { color:#91aabd; font:800 9px 'Consolas',monospace; letter-spacing:.34em; margin-bottom:10px; text-transform:uppercase; }
+  #charrow { display:flex; gap:10px; justify-content:center; }
   .charcard {
-    cursor: pointer; width: 128px; padding: 12px 8px;
-    background: rgba(8,15,24,.72); border: 1px solid rgba(140,170,190,.2); transition: all .15s;
-    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    cursor:pointer; width:128px; padding:10px;
+    background:rgba(8,15,24,.76); border:1px solid rgba(140,170,190,.16); border-radius:12px;
+    backdrop-filter:blur(14px); transition:transform .18s,border-color .18s,background .18s,box-shadow .18s;
   }
-  .charcard:hover { border-color: rgba(85,230,255,.5); }
-  .charcard.sel { border-color: var(--cyan); background: rgba(85,230,255,.1); }
+  .charcard:hover { transform:translateY(-3px); border-color:rgba(85,230,255,.48); }
+  .charcard.sel { border-color:rgba(85,230,255,.86); background:rgba(85,230,255,.11); box-shadow:0 12px 34px rgba(85,230,255,.12), inset 0 1px rgba(255,255,255,.12); }
   .charcard .cname { font: 800 15px 'Segoe UI', Inter, sans-serif; letter-spacing: 1.5px; color: var(--ink); text-transform: uppercase; }
   .charcard .ctag { font: 600 10px Arial; color: var(--dim); margin: 3px 0 6px; }
   .charcard .swatch { height: 28px; margin-bottom: 6px; }
@@ -260,23 +282,22 @@
     .charcard .cname { font-size: 13px; }
   }
 
-  #start .tabs { display: flex; gap: 8px; pointer-events: auto; margin-bottom: 12px; }
+  #start .tabs { display:flex; gap:6px; pointer-events:auto; margin:0 0 10px; padding:5px; border:1px solid rgba(140,170,190,.12); border-radius:999px; background:rgba(5,10,17,.48); backdrop-filter:blur(12px); }
   #start .tab {
-    cursor: pointer; background: rgba(255,255,255,.05); color: var(--dim);
-    border: 1px solid rgba(140,170,190,.2);
-    padding: 8px 18px; font: 800 12px 'Consolas', monospace; letter-spacing: .16em; transition: all .15s;
-    text-transform: uppercase;
-    clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+    cursor:pointer; background:transparent; color:#91aabd;
+    border:0; border-radius:999px;
+    padding:8px 16px; font:800 10px 'Consolas',monospace; letter-spacing:.12em; transition:all .16s;
+    text-transform:uppercase;
   }
-  #start .tab:hover { color: var(--ink); }
-  #start .tab.active { background: var(--cyan); color: #06131a; border-color: transparent; }
+  #start .tab:hover { color:#effcff; }
+  #start .tab.active { background:rgba(85,230,255,.14); color:#dffcff; box-shadow:inset 0 0 0 1px rgba(85,230,255,.34); }
 
   #start .panel {
-    display: none; width: min(560px, 92vw); text-align: left;
-    background: rgba(8,15,24,.72); border: 1px solid var(--edge);
-    padding: 18px 22px;
-    clip-path: polygon(13px 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%, 0 13px);
-    backdrop-filter: none; box-shadow: none;
+    display:none; width:min(620px,92vw); max-height:min(31vh,280px); overflow:auto; text-align:left;
+    background:rgba(7,14,23,.82); border:1px solid rgba(140,170,190,.16); border-radius:16px;
+    padding:14px 18px; backdrop-filter:blur(16px);
+    box-shadow:0 18px 44px rgba(0,0,0,.28), inset 0 1px rgba(255,255,255,.04);
+    scrollbar-width:thin; scrollbar-color:rgba(85,230,255,.35) transparent;
   }
   #start .panel.active { display: block; animation: fadein .25s ease; }
   @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
@@ -349,9 +370,9 @@
   <div id="damage"></div>
 
   <div id="start">
-    <h1>OPEN CITY</h1>
-    <div class="edition">▚ Basic Edition</div>
-    <div class="tag">Swing · Drive · Fly — a GTA-style open world in your browser</div>
+    <h1>NIGHTLINE</h1>
+    <div class="edition">▚ Open World Edition</div>
+    <div class="tag">Own the streets · Chase the skyline · Leave a mark</div>
 
     <div id="charpick">
       <div class="chartitle">CHOOSE YOUR SLINGER</div>
