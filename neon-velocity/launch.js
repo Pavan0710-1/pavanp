@@ -30,6 +30,19 @@
         hexGL.init();
         $('step-3').style.display = 'none';
         $('step-4').style.display = 'block';
+        var raceHud=document.createElement('div');
+        raceHud.id='nv-race-hud';
+        raceHud.style.cssText='position:absolute;z-index:10001;left:50%;top:18px;transform:translateX(-50%);display:flex;gap:10px;align-items:center;color:#dffcff;text-align:center;font:700 11px Consolas,monospace;letter-spacing:.12em;text-transform:uppercase;pointer-events:none';
+        raceHud.innerHTML='<span style="padding:8px 12px;border:1px solid rgba(85,230,255,.35);border-radius:99px;background:rgba(5,10,20,.72)">WASD Drive</span><span id="nv-race-level" style="padding:8px 12px;border:1px solid rgba(85,230,255,.35);border-radius:99px;background:rgba(5,10,20,.72)"></span><span id="nv-race-speed" style="padding:8px 12px;border:1px solid rgba(85,230,255,.35);border-radius:99px;background:rgba(5,10,20,.72)">Speed 0</span><span id="nv-race-time" style="padding:8px 12px;border:1px solid rgba(85,230,255,.35);border-radius:99px;background:rgba(5,10,20,.72)">Time 0.00</span>';
+        $('step-4').appendChild(raceHud);
+        var level=parseInt(localStorage.getItem('nv-level')||'1',10)||1;
+        $('nv-race-level').textContent='Level '+level;
+        setInterval(function(){
+          var speed=hexGL.gameplay&&hexGL.gameplay.shipControls?Math.round(hexGL.gameplay.shipControls.getRealSpeed()*3.6):0;
+          var time=hexGL.gameplay&&hexGL.gameplay.timer&&hexGL.gameplay.timer.time?hexGL.gameplay.timer.time.elapsed/1000:0;
+          if($('nv-race-speed'))$('nv-race-speed').textContent='Speed '+speed;
+          if($('nv-race-time'))$('nv-race-time').textContent='Time '+time.toFixed(2);
+        },100);
         return hexGL.start();
       },
       onError: function(s) {
@@ -50,6 +63,10 @@
   defaultControls = bkcore.Utils.isTouchDevice() ? 1 : 0;
 
   s = [['controlType', ['KEYBOARD', 'TOUCH', 'LEAP MOTION CONTROLLER', 'GAMEPAD'], defaultControls, defaultControls, 'Controls: '], ['quality', ['LOW', 'MID', 'HIGH', 'VERY HIGH'], 2, 2, 'Quality: '], ['hud', ['OFF', 'ON'], 1, 1, 'HUD: '], ['godmode', ['OFF', 'ON'], 0, 0, 'Godmode: ']];
+  var levelNames=['Rookie','Street','Pilot','Elite','Legend'];
+  var level=(parseInt(localStorage.getItem('nv-level')||'1',10)||1);level=Math.max(1,Math.min(5,level));
+  var levelEl=$('s-level');if(levelEl)(f=function(){levelEl.innerHTML='Level: '+level+' · '+levelNames[level-1]})();
+  if(levelEl)levelEl.onclick=function(){level=(level%5)+1;localStorage.setItem('nv-level',String(level));levelEl.innerHTML='Level: '+level+' · '+levelNames[level-1];var url=new URL(location.href);url.searchParams.set('level',String(level));history.replaceState(null,'',url)};
 
   _fn = function(a) {
     var e, f, _ref;
@@ -76,6 +93,21 @@
   $('step-5').onclick = function() {
     return window.location.reload();
   };
+
+  var leaderboard=$('nv-leaderboard');
+  if(leaderboard){
+    leaderboard.onclick=function(){
+      var records=JSON.parse(localStorage.getItem('nv-records')||'[]');
+      records.sort(function(a,b){return a.time-b.time}).splice(10);
+      if(!records.length)records=[{name:'No runs yet',time:0}];
+      var box=document.createElement('div');
+      box.id='nv-board';
+      box.style.cssText='position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:rgba(3,7,15,.94);color:#dffcff;text-align:center';
+      box.innerHTML='<h2 style="font-size:clamp(34px,7vw,72px);margin:0 0 18px">Leaderboard</h2>'+records.map(function(r,i){return '<div style="width:min(520px,90vw);display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(85,230,255,.18)"><b>'+String(i+1).padStart(2,'0')+' · '+String(r.name||'Player')+'</b><span>'+ (r.time?(r.time/1000).toFixed(2)+' s':'No time')+'</span></div>'}).join('')+'<button id="nv-board-close" style="margin-top:18px;padding:12px 24px;border:1px solid #55e6ff;border-radius:99px;background:#55e6ff;color:#06131a;font-weight:800">Close</button>';
+      document.body.appendChild(box);
+      $('nv-board-close').onclick=function(){box.remove()};
+    };
+  }
 
   $('s-credits').onclick = function() {
     $('step-1').style.display = 'none';
@@ -110,6 +142,8 @@
     };
   } else {
     $('start').onclick = function() {
+      if($('start').getAttribute('aria-busy')==='true')return;
+      $('start').setAttribute('aria-busy','true');
       $('step-1').style.display = 'none';
       $('step-3').style.display = 'block';
       init(s[0][3], s[1][3], s[2][3], s[3][3]);

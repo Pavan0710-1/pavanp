@@ -1299,7 +1299,7 @@ function updateCamera(dt) {
       p.pos.y + 6 + camPitch * 9,
       p.pos.z - Math.cos(camYaw) * 19
     );
-    camPos.lerp(_camDesired, Math.min(1, 4.5 * dt));
+    camPos.lerp(_camDesired, 1 - Math.exp(-5.5 * dt));
     camera.position.copy(camPos);
     _camTarget.set(p.pos.x, p.pos.y + 1.5, p.pos.z);
     camera.lookAt(_camTarget);
@@ -1316,7 +1316,7 @@ function updateCamera(dt) {
       h.pos.y + 6.5 + camPitch * 8,
       h.pos.z - Math.cos(camYaw) * 17
     );
-    camPos.lerp(_camDesired, Math.min(1, 5 * dt));
+    camPos.lerp(_camDesired, 1 - Math.exp(-6 * dt));
     camera.position.copy(camPos);
     _camTarget.set(h.pos.x, h.pos.y + 1.5, h.pos.z);
     camera.lookAt(_camTarget);
@@ -1333,7 +1333,7 @@ function updateCamera(dt) {
       5.2 + camPitch * 6,
       b.pos.z - Math.cos(camYaw) * 12
     );
-    camPos.lerp(_camDesired, Math.min(1, 6 * dt));
+    camPos.lerp(_camDesired, 1 - Math.exp(-7 * dt));
     camera.position.copy(camPos);
     _camTarget.set(b.pos.x, 1.6, b.pos.z);
     camera.lookAt(_camTarget);
@@ -1350,7 +1350,7 @@ function updateCamera(dt) {
       4.2 + camPitch * 6,
       car.pos.z - Math.cos(camYaw) * 9.5
     );
-    camPos.lerp(_camDesired, Math.min(1, 7 * dt));
+    camPos.lerp(_camDesired, 1 - Math.exp(-8.5 * dt));
     camera.position.copy(camPos);
     _camTarget.set(car.pos.x, 1.6, car.pos.z);
     camera.lookAt(_camTarget);
@@ -1521,8 +1521,8 @@ function updateOnFoot(dt) {
   if (moving) {
     _move.normalize();
     if (player.onGround) {
-      player.vel.x = _move.x * speed;
-      player.vel.z = _move.z * speed;
+      player.vel.x = THREE.MathUtils.damp(player.vel.x, _move.x * speed, keys['ShiftLeft'] || keys['ShiftRight'] ? 11 : 9, dt);
+      player.vel.z = THREE.MathUtils.damp(player.vel.z, _move.z * speed, keys['ShiftLeft'] || keys['ShiftRight'] ? 11 : 9, dt);
     } else {
       // airborne: nudge instead of override, so web-swing momentum survives
       player.vel.x += _move.x * 16 * dt;
@@ -1532,10 +1532,10 @@ function updateOnFoot(dt) {
     let diff = targetH - player.heading;
     while (diff > Math.PI) diff -= Math.PI * 2;
     while (diff < -Math.PI) diff += Math.PI * 2;
-    player.heading += diff * Math.min(1, 14 * dt);
+    player.heading += diff * (1 - Math.exp(-12 * dt));
   } else if (player.onGround) {
-    player.vel.x *= Math.max(0, 1 - 12 * dt);
-    player.vel.z *= Math.max(0, 1 - 12 * dt);
+    player.vel.x = THREE.MathUtils.damp(player.vel.x, 0, 15, dt);
+    player.vel.z = THREE.MathUtils.damp(player.vel.z, 0, 15, dt);
   }
 
   if (pressed['Space'] && player.onGround) {
@@ -3617,6 +3617,17 @@ function update(dt) {
     for (const v of list) if (!v.sleeping && !v.scenarioManaged) updateVehicleAsset(v, dt);
   }
   if (player.inCar) updateVehicleAsset(player.inCar, dt, true, !!(keys.KeyS || keys.Space));
+  if (player.inCar) {
+    const car=player.inCar;
+    const speed=car.vel.length();
+    const throttle=(keys.KeyW?1:0)+(keys.KeyS?-1:0);
+    const steer=(keys.KeyA?1:0)+(keys.KeyD?-1:0);
+    const braking=!!(keys.KeyS||keys.Space);
+    const targetRoll=-steer*Math.min(.065,speed*.003);
+    const targetPitch=(braking?.035:0)+(!braking&&throttle>0?-.022:0);
+    car.mesh.rotation.z=THREE.MathUtils.damp(car.mesh.rotation.z,targetRoll,7,dt);
+    car.mesh.rotation.x=THREE.MathUtils.damp(car.mesh.rotation.x,car.heading?targetPitch:0,7,dt);
+  }
 
   // Sedan close-up trim + brake lights. The player's own car counts as focus.
   {

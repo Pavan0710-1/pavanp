@@ -253,18 +253,19 @@ bkcore.hexgl.ShipControls = function(ctx)
 		switch(event.keyCode)
 		{
 			case 38: /*up*/	self.key.forward = true; break;
+			case 87: /*W*/	self.key.forward = true; break;
 
 			case 40: /*down*/self.key.backward = true; break;
+			case 83: /*S*/	self.key.backward = true; break;
 
 			case 37: /*left*/self.key.left = true; break;
+			case 65: /*A*/	self.key.left = true; break;
 
 			case 39: /*right*/self.key.right = true; break;
+			case 68: /*D*/	self.key.right = true; break;
 
-			case 81: /*Q*/self.key.ltrigger = true; break;
-			case 65: /*A*/self.key.ltrigger = true; break;
-
-			case 68: /*D*/self.key.rtrigger = true; break;
-			case 69: /*E*/self.key.rtrigger = true; break;
+			case 81: /*Q*/	self.key.ltrigger = true; break;
+			case 69: /*E*/	self.key.rtrigger = true; break;
 		}
 	};
 
@@ -273,18 +274,19 @@ bkcore.hexgl.ShipControls = function(ctx)
 		switch(event.keyCode)
 		{
 			case 38: /*up*/	self.key.forward = false; break;
+			case 87: /*W*/	self.key.forward = false; break;
 
 			case 40: /*down*/self.key.backward = false; break;
+			case 83: /*S*/	self.key.backward = false; break;
 
 			case 37: /*left*/self.key.left = false; break;
+			case 65: /*A*/	self.key.left = false; break;
 
 			case 39: /*right*/self.key.right = false; break;
+			case 68: /*D*/	self.key.right = false; break;
 
-			case 81: /*Q*/self.key.ltrigger = false; break;
-			case 65: /*A*/self.key.ltrigger = false; break;
-
-			case 68: /*D*/self.key.rtrigger = false; break;
-			case 69: /*E*/self.key.rtrigger = false; break;
+			case 81: /*Q*/	self.key.ltrigger = false; break;
+			case 69: /*E*/	self.key.rtrigger = false; break;
 		}
 	};
 
@@ -364,6 +366,8 @@ bkcore.hexgl.ShipControls.prototype.fall = function()
 
 bkcore.hexgl.ShipControls.prototype.update = function(dt)
 {
+	if(!isFinite(dt)||dt<=0)dt=1/60;
+	dt=Math.min(dt,1/20);
 	if(this.falling)
 	{
 		this.mesh.position.addSelf(this.fallVector);

@@ -166,6 +166,16 @@ bkcore.hexgl.Gameplay.prototype.end = function(result)
 
 	if(result == this.results.FINISH)
 	{
+		try{
+			var records=JSON.parse(localStorage.getItem('nv-records')||'[]');
+			records.push({name:'Local player',time:this.finishTime,lap:this.lap||1,recorded:Date.now()});
+			records.sort(function(a,b){return (a.time||Infinity)-(b.time||Infinity)});
+			localStorage.setItem('nv-records',JSON.stringify(records.slice(0,10)));
+		}catch(e){}
+	}
+
+	if(result == this.results.FINISH)
+	{
 		if(this.hud != null) this.hud.display("Finish");
 		this.step = 100;
 	}
