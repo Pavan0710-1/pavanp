@@ -314,6 +314,8 @@ bkcore.hexgl.ShipControls.prototype.reset = function(position, rotation)
 	this.boost = 0.0;
 	this.shield = this.maxShield;
 	this.destroyed = false;
+	this.falling = false;
+	this.active = false;
 
 	this.dummy.position.copy(position);
 	this.quaternion.set(rotation.x, rotation.y, rotation.z, 1).normalize();
@@ -366,8 +368,8 @@ bkcore.hexgl.ShipControls.prototype.fall = function()
 
 bkcore.hexgl.ShipControls.prototype.update = function(dt)
 {
-	if(!isFinite(dt)||dt<=0)dt=1/60;
-	dt=Math.min(dt,1/20);
+	if(!isFinite(dt)||dt<=0)dt=1;
+	dt=Math.min(dt,4);
 	if(this.falling)
 	{
 		this.mesh.position.addSelf(this.fallVector);

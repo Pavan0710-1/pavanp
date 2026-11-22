@@ -20,7 +20,7 @@
       hud: hud === 1,
       controlType: controlType,
       godmode: godmode,
-      track: 'Cityscape'
+      track: (function(){var m=new URLSearchParams(location.search).get('map')||localStorage.getItem('nv-map')||'Cityscape';return bkcore.hexgl.tracks[m]?m:'Cityscape'})()
     });
     window.hexGL = hexGL;
     progressbar = $('progressbar');
@@ -32,17 +32,18 @@
         $('step-4').style.display = 'block';
         var raceHud=document.createElement('div');
         raceHud.id='nv-race-hud';
-        raceHud.style.cssText='position:absolute;z-index:10001;left:50%;top:18px;transform:translateX(-50%);display:flex;gap:10px;align-items:center;color:#dffcff;text-align:center;font:700 11px Consolas,monospace;letter-spacing:.12em;text-transform:uppercase;pointer-events:none';
-        raceHud.innerHTML='<span style="padding:8px 12px;border:1px solid rgba(85,230,255,.35);border-radius:99px;background:rgba(5,10,20,.72)">WASD Drive</span><span id="nv-race-level" style="padding:8px 12px;border:1px solid rgba(85,230,255,.35);border-radius:99px;background:rgba(5,10,20,.72)"></span><span id="nv-race-speed" style="padding:8px 12px;border:1px solid rgba(85,230,255,.35);border-radius:99px;background:rgba(5,10,20,.72)">Speed 0</span><span id="nv-race-time" style="padding:8px 12px;border:1px solid rgba(85,230,255,.35);border-radius:99px;background:rgba(5,10,20,.72)">Time 0.00</span>';
+        raceHud.style.cssText='position:absolute;z-index:10001;left:50%;top:84px;transform:translateX(-50%);display:flex;gap:10px;align-items:center;color:#dffcff;text-align:center;font:700 11px Consolas,monospace;letter-spacing:.12em;text-transform:uppercase;pointer-events:none';
+        raceHud.innerHTML='<span style="padding:8px 12px;border:1px solid rgba(85,230,255,.35);border-radius:99px;background:rgba(5,10,20,.72)">WASD Fly · Shift Nitro</span><span id="nv-race-level" style="padding:8px 12px;border:1px solid rgba(85,230,255,.35);border-radius:99px;background:rgba(5,10,20,.72)"></span><span id="nv-race-speed" style="padding:8px 12px;border:1px solid rgba(85,230,255,.35);border-radius:99px;background:rgba(5,10,20,.72)">Speed 0</span><span id="nv-race-time" style="padding:8px 12px;border:1px solid rgba(85,230,255,.35);border-radius:99px;background:rgba(5,10,20,.72)">Time 0.00</span>';
         $('step-4').appendChild(raceHud);
-        var level=parseInt(localStorage.getItem('nv-level')||'1',10)||1;
-        $('nv-race-level').textContent='Level '+level;
+        var level=Math.max(1,Math.min(5,parseInt(new URLSearchParams(location.search).get('level')||localStorage.getItem('nv-level')||'1',10)||1));
+        $('nv-race-level').textContent='Level '+level+' · '+levelNames[level-1];
         setInterval(function(){
           var speed=hexGL.gameplay&&hexGL.gameplay.shipControls?Math.round(hexGL.gameplay.shipControls.getRealSpeed()*3.6):0;
           var time=hexGL.gameplay&&hexGL.gameplay.timer&&hexGL.gameplay.timer.time?hexGL.gameplay.timer.time.elapsed/1000:0;
           if($('nv-race-speed'))$('nv-race-speed').textContent='Speed '+speed;
           if($('nv-race-time'))$('nv-race-time').textContent='Time '+time.toFixed(2);
         },100);
+        if(window.NVNet&&NVNet.active)return NVNet.onLoaded(function(){hexGL.start()});
         return hexGL.start();
       },
       onError: function(s) {
@@ -64,7 +65,7 @@
 
   s = [['controlType', ['KEYBOARD', 'TOUCH', 'LEAP MOTION CONTROLLER', 'GAMEPAD'], defaultControls, defaultControls, 'Controls: '], ['quality', ['LOW', 'MID', 'HIGH', 'VERY HIGH'], 2, 2, 'Quality: '], ['hud', ['OFF', 'ON'], 1, 1, 'HUD: '], ['godmode', ['OFF', 'ON'], 0, 0, 'Godmode: ']];
   var levelNames=['Rookie','Street','Pilot','Elite','Legend'];
-  var level=(parseInt(localStorage.getItem('nv-level')||'1',10)||1);level=Math.max(1,Math.min(5,level));
+  var level=(parseInt(new URLSearchParams(location.search).get('level')||localStorage.getItem('nv-level')||'1',10)||1);level=Math.max(1,Math.min(5,level));
   var levelEl=$('s-level');if(levelEl)(f=function(){levelEl.innerHTML='Level: '+level+' · '+levelNames[level-1]})();
   if(levelEl)levelEl.onclick=function(){level=(level%5)+1;localStorage.setItem('nv-level',String(level));levelEl.innerHTML='Level: '+level+' · '+levelNames[level-1];var url=new URL(location.href);url.searchParams.set('level',String(level));history.replaceState(null,'',url)};
 

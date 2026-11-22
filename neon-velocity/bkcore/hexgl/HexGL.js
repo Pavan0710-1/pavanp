@@ -225,7 +225,7 @@ bkcore.hexgl.HexGL.prototype.displayScore = function(f, l)
 				localStorage['score-'+t+'-'+d] = f;
 
 				// Export race data
-				localStorage['race-'+t+'-replay'] = JSON.Stringify(this.gameplay.raceData.export());
+				localStorage['race-'+t+'-replay'] = JSON.stringify(this.gameplay.raceData.export());
 			}
 			else
 			{
