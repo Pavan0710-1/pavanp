@@ -3980,6 +3980,8 @@ function update(dt) {
 let introT = 0;
 const _introFrom = city.spawn.clone().add(new THREE.Vector3(16,16,24));
 const _introTo = new THREE.Vector3();
+let fixedAcc = 0;
+const FIXED_STEP = 1 / 60;
 
 function animate() {
   requestAnimationFrame(animate);
@@ -3987,37 +3989,40 @@ function animate() {
   const frameSeconds=clock.getDelta();
   pollGamepad(frameSeconds);
   resolution.sample(frameSeconds,gameState==='play'&&!world.bankUiOpen&&!world.vehicleUiOpen);
-  let dt = Math.min(frameSeconds, 0.05);
-  updatePerf(dt); // rolling frame-time governor + FPS meter (real, unscaled dt)
+  const rawDt = document.hidden ? 0 : Math.min(Math.max(frameSeconds, 0), 0.1);
+  updatePerf(rawDt); // rolling frame-time governor + FPS meter (real, unscaled dt)
 
-  // dramatic slow-mo: dying, or the level-6 airborne aim skill
-  if (world.slowmoT > 0) {
-    world.slowmoT -= dt;
-    dt *= 0.35;
-  } else if (world.level >= 6 && gameState === 'play' &&
-      !player.onGround && !player.inCar && !player.inHeli && mouse.down && player.pos.y > 3) {
-    dt *= 0.45;
+  fixedAcc = Math.min(fixedAcc + rawDt, FIXED_STEP * 6);
+  let simulated = 0;
+  let dt = FIXED_STEP;
+  while (fixedAcc >= FIXED_STEP && simulated < 6) {
+    fixedAcc -= FIXED_STEP;
+    simulated++;
+    dt = FIXED_STEP;
+    if (world.slowmoT > 0) dt *= 0.35;
+    else if (world.level >= 6 && gameState === 'play' &&
+      !player.onGround && !player.inCar && !player.inHeli && !player.inBoat &&
+      mouse.down && player.pos.y > 3) dt *= 0.45;
+    if (world.slowmoT > 0) world.slowmoT = Math.max(0, world.slowmoT - FIXED_STEP);
+    if (gameState === 'start') {
+      introT += dt * 0.05;
+      const t = Math.min(1, introT);
+      _introTo.set(city.spawn.x + 9, 7, city.spawn.z + 14);
+      camera.position.lerpVectors(_introFrom, _introTo, t * (2 - t));
+      camera.lookAt(city.spawn.x, 1, city.spawn.z);
+    } else if (gameState === 'photo') {
+      updatePhoto(dt);
+    } else if (gameState === 'replay') {
+      updateReplay(dt, { keys, pressed, mouse });
+    } else if (gameState === 'map') {
+      drawBigMap(world);
+      if (pressed['Escape']) closeBigMap();
+    } else if (gameState !== 'pause' && gameState !== 'cards') {
+      update(dt);
+      endFrame();
+    }
   }
-
-  if (gameState === 'start') {
-    // slow flyover of the skyline behind the menu
-    introT += dt * 0.05;
-    const t = Math.min(1, introT);
-    _introTo.set(city.spawn.x + 9, 7, city.spawn.z + 14);
-    camera.position.lerpVectors(_introFrom, _introTo, t * (2 - t));
-    camera.lookAt(city.spawn.x, 1, city.spawn.z);
-  } else if (gameState === 'photo') {
-    updatePhoto(dt);
-  } else if (gameState === 'replay') {
-    updateReplay(dt, { keys, pressed, mouse });
-  } else if (gameState === 'map') {
-    drawBigMap(world);
-    if (pressed['Escape']) closeBigMap();
-  } else if (gameState === 'pause' || gameState === 'cards') {
-    // frozen — the menu / card table overlay handles everything
-  } else {
-    update(dt);
-  }
+  if (!simulated) dt = FIXED_STEP;
   // the DRUNKY cheat: the camera has had a few
   if (world.drunkT > 0) {
     const t = performance.now();

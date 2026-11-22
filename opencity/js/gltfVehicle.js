@@ -122,6 +122,13 @@ export function setVehiclePanel(v, name, open) {
 
 export function updateVehicleAsset(v, dt, driving = false, braking = false) {
   if (!v.asset) return;
+  v.wheelSpin=(v.wheelSpin||0)+v.vel.length()*dt/(v.asset.wheelRadius||.36);
+  for(const wheel of v.asset.wheels||[]){
+    wheel.rotation.x=v.wheelSpin;
+  }
+  const steer=v.steer||0;
+  const front=[v.asset.wheels?.[0],v.asset.wheels?.[1]].filter(Boolean);
+  front.forEach(wheel=>{wheel.rotation.y=(wheel.userData?.restSteer||0)+steer*.35});
   for (const [name, p] of Object.entries(v.asset.panels)) {
     if (name === 'Fuel_Flap') p.open = !!v.refuelling;
     else if (name === 'Stand' && (driving || v.vel.lengthSq() > .25)) p.open = true;

@@ -9,10 +9,15 @@ const hint=document.createElement('p');hint.textContent=loadingHints[Math.floor(
 if(presentationArt){const plate=new Image();plate.alt='Coastal Open City';plate.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;opacity:.45';let plateName='first_launch';try{const key='open-city-loading-seen:'+document.title;if(sessionStorage.getItem(key))plateName='load_'+String(1+Math.floor(Math.random()*6)).padStart(2,'0');sessionStorage.setItem(key,'1');}catch{}plate.src='assets/ui/loading/'+plateName+'.webp';plate.onerror=()=>plate.remove();screen.style.isolation='isolate';screen.append(plate);}
 screen.append(title,status,progress,hint);document.body.append(screen);
 window.addEventListener('open-city-loading',e=>{const d=e.detail;status.textContent=d.label;if(Number.isFinite(d.completed))progress.value=d.completed;else progress.removeAttribute('value');});
+const enter=document.createElement('button');enter.textContent='Enter game now';
+enter.style.cssText='margin-top:4px;padding:12px 24px;border:1px solid #88d4c0;border-radius:99px;background:#88d4c0;color:#142c2f;font:800 13px system-ui;text-transform:uppercase;letter-spacing:.12em;cursor:pointer';
+enter.onclick=()=>screen.remove();
+setTimeout(()=>{if(document.body.contains(screen)&&!screen.querySelector('#enter-now')){enter.id='enter-now';screen.append(enter)}},4000);
+setTimeout(()=>{if(document.body.contains(screen)&&!screen.dataset.error)screen.remove()},18000);
 await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 try{await import('./main.js');screen.remove();}
 catch(e){
- status.textContent='The game could not finish loading.';progress.remove();
+ screen.dataset.error='1';status.textContent='The game could not finish loading.';progress.remove();
  hint.textContent='Check the connection, then retry. Existing saves were not reset. '+String(e.message||e);
  const retry=document.createElement('button');retry.textContent='Retry loading';retry.style.cssText='padding:12px 24px;font:inherit;background:#88d4c0;color:#142c2f;border:0;border-radius:6px;cursor:pointer';retry.onclick=()=>location.reload();screen.append(retry);retry.focus();
  console.error('Open City startup failed',e);

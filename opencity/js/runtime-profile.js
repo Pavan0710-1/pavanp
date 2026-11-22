@@ -30,8 +30,8 @@ export const runtimeProfile = {
       900,
       1080
     ],
-    "defaultRenderHeight": 1080,
-    "maxRenderPixels": 2073600
+    "defaultRenderHeight": 720,
+    "maxRenderPixels": 1321920
   },
   "starterVehicle": {
     "modelId": "basic-sedan",

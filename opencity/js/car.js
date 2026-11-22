@@ -189,28 +189,46 @@ export function physStep(v, ctl, dt, colliders) {
   const propulsion = stats.propulsion && v.engineEnabled !== false;
   let a = 0;
   if (ctl.throttle > 0 && propulsion) {
-    a = stats.accel * ctl.throttle * Math.max(0, 1 - speedF / Math.max(1,stats.top));
+    const launchFactor = 1 - Math.exp(-Math.max(0, speedF + 2) * 0.08);
+    a = stats.accel * ctl.throttle * Math.max(0, 1 - speedF / Math.max(1,stats.top)) * (0.72 + launchFactor * 0.28);
   } else if (ctl.throttle < 0) {
     if (speedF > 0.5) a = -Math.min(stats.braking, speedF / Math.max(dt, 0.000001)); // brakes cannot propel backwards
     else if (speedF > -11 && propulsion) a = 11 * stats.accelMul * ctl.throttle; // reversing
   }
   v.vel.addScaledVector(_fwd, a * dt);
-  v.vel.multiplyScalar(Math.max(0, 1 - 0.45 * dt));
+  const roadDrag = ctl.throttle === 0 ? 0.32 : 0.18;
+  v.vel.multiplyScalar(Math.max(0, 1 - roadDrag * dt));
 
-  // full steering authority from ~4.5 m/s so the car responds immediately
-  const steerFactor = Math.max(-1, Math.min(1, speedF / 4.5));
-  v.heading += ctl.steer * stats.steering * (ctl.handbrake ? 1.5 : 1) * steerFactor * dt;
+  // Real cars ease into steering: low-speed wheels turn more, high-speed
+  // steering adds progressively less yaw to avoid snap spins.
+  const steerScale = speedF > 0
+    ? Math.max(.38, 1 - Math.max(0, speedF - 8) / Math.max(12, stats.top * .32))
+    : 1;
+  v.heading += ctl.steer * stats.steering * (ctl.handbrake ? 1.28 : 1) * steerScale * steerScale * dt;
 
   // lateral grip (low while handbraking => drift; wet roads shave it, see
   // weather_hazards.js which sets v.gripMul each frame while driving)
   _fwd.set(Math.sin(v.heading), 0, Math.cos(v.heading));
   const sf = v.vel.dot(_fwd);
   _side.copy(v.vel).addScaledVector(_fwd, -sf);
-  const grip = (ctl.handbrake ? 2.2 : 8) * (v.gripMul ?? 1) * stats.gripMul;
+  const speedGrip = Math.max(.72, 1 - Math.abs(speedF) / Math.max(45, stats.top) * .22);
+  const slipGrip = Math.abs(_side.length()) > 1.8 ? .82 : 1;
+  const grip = (ctl.handbrake ? 2.2 : 8) * speedGrip * slipGrip * (v.gripMul ?? 1) * stats.gripMul;
   v.vel.addScaledVector(_side, -Math.min(1, grip * dt));
 
   v.pos.addScaledVector(v.vel, dt);
   v.pos.y = 0;
+
+  // Procedural/fallback vehicles keep wheel and steering motion tied to real
+  // travelled distance and steering input instead of the display frame rate.
+  v.wheelSpin=(v.wheelSpin||0)+speedF*dt/(v.rad&&v.rad<1.2?.42:.36);
+  v.steer=ctl.steer;
+  if(v.wheels){
+    v.wheels.forEach((wheel,i)=>{
+      wheel.rotation.x=v.wheelSpin;
+      if(i<2)wheel.rotation.y=-ctl.steer*.35;
+    });
+  }
 
   let impact = 0;
   const hit = resolveCircle(v.pos, v.rad ?? 1.6, colliders);
@@ -232,7 +250,9 @@ export function physStep(v, ctl, dt, colliders) {
 
   // visuals
   v.mesh.rotation.y = v.heading;
-  const lean = v.bike ? -ctl.steer * 0.35 * Math.min(1, Math.abs(sf) / 10) : 0;
+  const lean = v.bike
+    ? -ctl.steer * 0.35 * Math.min(1, Math.abs(sf) / 10)
+    : -ctl.steer * Math.min(.055, Math.abs(sf) * .0025) - ctl.throttle * Math.min(.018, Math.abs(a || sf) * .00015);
   // Authored bikes have separate lean, steering and axle pivots. Applying yaw
   // to both Steering and Wheel_F would turn the front wheel twice.
   v.mesh.rotation.z = v.asset?.lean ? 0 : lean;

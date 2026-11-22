@@ -33,7 +33,10 @@
         return hexGL.start();
       },
       onError: function(s) {
-        return console.error("Error loading " + s + ".");
+        console.error("Error loading " + s + ".");
+        var step3=$('step-3');
+        step3.innerHTML='<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;color:#fff;width:min(520px,90vw);font-family:Segoe UI,Arial,sans-serif"><h2>Neon Velocity could not load</h2><p style="color:#aeb8c8">Missing or blocked asset: '+String(s||'game resources')+'</p><button id="nv-retry" style="padding:12px 22px;border:1px solid #55e6ff;border-radius:99px;background:#55e6ff;color:#06131a;font-weight:800">Try again</button></div>';
+        var retry=$('nv-retry');if(retry)retry.onclick=function(){window.location.reload()};
       },
       onProgress: function(p, t, n) {
         console.log("LOADED " + t + " : " + n + " ( " + p.loaded + " / " + p.total + " ).");
@@ -108,8 +111,8 @@
   } else {
     $('start').onclick = function() {
       $('step-1').style.display = 'none';
-      $('step-2').style.display = 'block';
-      return $('step-2').style.backgroundImage = "url(css/help-" + s[0][3] + ".png)";
+      $('step-3').style.display = 'block';
+      init(s[0][3], s[1][3], s[2][3], s[3][3]);
     };
   }
 
