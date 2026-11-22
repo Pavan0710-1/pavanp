@@ -1,4 +1,4 @@
-/* Safe hidden commands. Game commands open Neon Velocity. Loads with defer on every page. */
+/* Safe hidden commands. Game commands open Neon Velocity, NIGHTLINE, Packet Run, and Bug Storm. Loads with defer on every page. */
 (function(){
 'use strict';
 if(window.PPCommands)return;
@@ -10,13 +10,16 @@ function modalOpen(){return [...document.querySelectorAll('[aria-modal="true"]')
 function register(words,fn,label){(Array.isArray(words)?words:[words]).forEach((w,i)=>{CMD[w]={fn,label:i===0?label:null}})}
 function openGame(){window.location.href='/neon-velocity/index.html'}
 function help(){const names=Object.keys(CMD).sort().join(', ');host().toast?host().toast('Commands: '+names+'. Or press Ctrl K.'):alert('Commands: '+names)}
-register(['car','drive','driving','race','racing','play','start'],()=>openGame('endless'),'Open Neon Velocity');
-register('game',()=>{window.location.href='opencity/index.html'},'Open city driving game');
+register(['car','drive','driving','race','racing','neon','neonvel'],()=>openGame('endless'),'Open Neon Velocity');
+register(['game','city','nightline','opencity'],()=>{window.location.href='/opencity/index.html'},'Open NIGHTLINE city game');
+register(['run','packet','packetrun'],()=>host().startPacketRun&&host().startPacketRun(),'Play Packet Run (3D)');
+register(['bug','bugs','storm','bugstorm'],()=>host().startBugStorm&&host().startBugStorm(),'Play Bug Storm (2D)');
+register(['play','games'],()=>host().navTo&&host().navTo('games'),'Open Games hub');
 register('help',help,'List commands');
 register('explore',()=>host().navTo&&host().navTo('explore'),'3D world');
 register('music',()=>host().sndToggle&&host().sndToggle(),'Toggle sound');
-register('neon',()=>host().nextTheme&&host().nextTheme(),'Next colour theme');
-['about','work','services','guides','contact','lab'].forEach(p=>register(p,()=>host().navTo&&host().navTo(p),'Go to '+p));
+register('theme',()=>host().nextTheme&&host().nextTheme(),'Next colour theme');
+['about','work','services','guides','contact','lab','seo','plan','process','features','insights'].forEach(p=>register(p,()=>host().navTo&&host().navTo(p),'Go to '+p));
 addEventListener('keydown',e=>{
  if(e.defaultPrevented||e.ctrlKey||e.metaKey||e.altKey||e.isComposing||e.repeat)return;
  if(editable(e.target)||editable(document.activeElement)||modalOpen())return;

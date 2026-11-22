@@ -320,6 +320,35 @@
     #start .feat { font-size: 11.5px; padding: 5px 0; }
     #start .tab { padding: 6px 12px; font-size: 12px; }
   }
+
+  #oc-back {
+    position: absolute;
+    z-index: 100;
+    left: 20px;
+    top: 20px;
+    color: #d9f7ff;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border: 1px solid rgba(85, 230, 255, 0.35);
+    border-radius: 99px;
+    background: rgba(5, 10, 20, 0.75);
+    backdrop-filter: blur(8px);
+    transition: all .2s ease;
+    pointer-events: auto;
+  }
+  #oc-back:hover {
+    background: rgba(85, 230, 255, 0.2);
+    border-color: #55e6ff;
+    color: #ffffff;
+    transform: translateX(-2px);
+  }
+  @media (max-width: 700px) {
+    #oc-back { left: 12px; top: 12px; padding: 6px 12px; font-size: 10px; }
+  }
 </style>
 <script type="importmap">
 {
@@ -370,6 +399,7 @@
   <div id="damage"></div>
 
   <div id="start">
+    <a id="oc-back" href="../" aria-label="Back to Pavan Patel website">← Website</a>
     <h1>NIGHTLINE</h1>
     <div class="edition">▚ Open World Edition</div>
     <div class="tag">Own the streets · Chase the skyline · Leave a mark</div>
@@ -466,7 +496,11 @@
       <div class="ctl">📱 On your phone: open the menu → <b>Add to Home Screen</b> to install it.</div>
     </div>
 
-    <a href="privacy.html" style="margin-top:14px;color:#5b6675;font-size:11px;letter-spacing:1px;pointer-events:auto;">PRIVACY POLICY</a>
+    <div style="display:flex;gap:18px;margin-top:16px;align-items:center;pointer-events:auto;">
+      <a href="../" style="color:#55e6ff;font-size:11px;letter-spacing:1px;text-decoration:none;font-weight:600;">← BACK TO WEBSITE</a>
+      <span style="color:#3e4c5e;">·</span>
+      <a href="privacy.html" style="color:#8899aa;font-size:11px;letter-spacing:1px;text-decoration:none;">PRIVACY POLICY</a>
+    </div>
   </div>
 
   <script type="module" src="js/boot.js"></script>

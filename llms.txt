@@ -1,0 +1,44 @@
+# Pavan Patel
+
+> Sydney-based web designer and creative developer crafting fast, search-friendly websites, custom 3D web experiences, and browser games with zero framework lock-in.
+
+Pavan Patel designs and builds custom websites by hand from Sydney, NSW, Australia. His work emphasizes high performance, technical and local SEO, accessible semantic markup, generative audio, and interactive Three.js 3D experiences that run smoothly across desktop and mobile devices.
+
+## Core Capabilities & Services
+
+- **Custom Web Design & Development**: Bespoke websites designed from scratch with mobile-first layouts, semantic HTML5, modern CSS, and lightweight vanilla JavaScript.
+- **Technical & Local SEO**: Google Search Console optimization, structured data (Schema.org JSON-LD), canonical tags, sitemaps, Core Web Vitals compliance, and Sydney local SEO.
+- **Web Performance & Core Web Vitals**: Sub-second initial paints, lean code budgets, optimized fonts, responsive images, and 100/100 Lighthouse performance audits.
+- **Interactive 3D & WebGL**: Immersive Three.js scenes, procedural particle shaders, and walkable 3D worlds engineered with automatic device scaling and static fallbacks.
+- **Generative Audio & Soundscapes**: Scroll-reactive Web Audio synthesis, interactive sound effects, and ambient stations with opt-in user control.
+- **Browser Games & Prototypes**: Complete in-browser 2D and 3D arcade games, simulations, and interactive tools.
+- **Full Client Ownership**: Clean source code without proprietary CMS lock-in or recurring builder fees; hosted on platforms the client controls.
+
+## Key Sections & Pages
+
+- [Home](https://pavanp.me/): Studio overview, interactive manifesto, service highlights, and live demos.
+- [Work](https://pavanp.me/#/work): Showcase of concept builds, dashboards, 3D landing pages, kinetic typography, and shader experiments.
+- [Services](https://pavanp.me/#/services): Launch sites, full custom builds, website redesigns, rescue projects, and ongoing site care.
+- [Signature Features](https://pavanp.me/#/features): Live interactive demos of sound, 3D worlds, transitions, accessibility modes, and tools.
+- [Guides](https://pavanp.me/#/guides): Plain-English advice for business owners on website pricing, choosing a designer, SEO basics, site speed, and content strategy.
+- [Process](https://pavanp.me/#/process): A transparent seven-step pipeline (Discover, Strategy, Design, Build, Optimise, Launch, Grow) with an interactive 15-point pre-launch checklist.
+- [SEO](https://pavanp.me/#/seo): Technical breakdown of search engine optimization, Core Web Vitals (LCP, INP, CLS), interactive audit checklist, and SEO glossary.
+- [Games](https://pavanp.me/#/games): Hub for four playable games:
+  - **Packet Run (3D)**: Cyberpunk network data packet runner built in Three.js with dash mechanics and obstacle dodging.
+  - **Bug Storm (2D)**: Top-down arcade arena shooter with rogue-lite upgrades and memory-leak boss encounters.
+  - **NIGHTLINE**: GTA-style open-world web game featuring a 10x10 city, vehicle physics, missions, and web-swinging.
+  - **Neon Velocity**: High-speed futuristic anti-gravity racing game with hover ships, drift tuning, and garage customization.
+- [The Lab](https://pavanp.me/#/lab): Free in-browser web development tools (Google SERP snippet previewer, WCAG contrast checker, modular type scale generator, color palette maker, pocket synthesizer).
+- [Scope Planner](https://pavanp.me/#/plan): Interactive project estimator to structure page counts, features, and technical requirements before requesting a quote.
+- [Insights](https://pavanp.me/#/insights): Practical notes on typography, color systems, web performance, motion design, and hosting.
+- [About](https://pavanp.me/#/about): Background, design philosophy, and core principles.
+- [Contact](https://pavanp.me/#/contact): Project inquiries, email contact (`hello@pavanp.me`), and scope discussions.
+
+## Contact & Location
+
+- **Name**: Pavan Patel
+- **Title**: Web Designer & Creative Developer
+- **Location**: Sydney, New South Wales, Australia (AEST/AEDT)
+- **Email**: hello@pavanp.me
+- **Website**: https://pavanp.me
+- **Availability**: Open to select web design, redesign, and development projects worldwide.
