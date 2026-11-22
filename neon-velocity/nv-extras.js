@@ -2,22 +2,25 @@
 (function(){
   var $=function(id){return document.getElementById(id)};
   var LEVELS=[
-    {name:'Rookie', maxSpeed:8.0, thrust:0.09, dmg:0.04,orbs:28,heals:6,mines:0, medals:[95,115,140]},
-    {name:'Street', maxSpeed:9.0, thrust:0.10, dmg:0.06,orbs:30,heals:5,mines:4, medals:[88,105,130]},
-    {name:'Pilot',  maxSpeed:10.0,thrust:0.11, dmg:0.08,orbs:32,heals:5,mines:8, medals:[80,96,120]},
-    {name:'Elite',  maxSpeed:11.5,thrust:0.125,dmg:0.10,orbs:34,heals:4,mines:12,medals:[72,88,110]},
-    {name:'Legend', maxSpeed:13.0,thrust:0.14, dmg:0.13,orbs:36,heals:3,mines:18,medals:[65,80,100]}
+    {name:'Cadet',  world:'CyberGrid',  maxSpeed:8.0, thrust:0.09, dmg:0.04,orbs:28,heals:6,mines:0, lasers:0, barriers:0,rocks:0, medals:[95,115,140]},
+    {name:'Runner', world:'CyberGrid',  maxSpeed:9.0, thrust:0.10, dmg:0.05,orbs:30,heals:5,mines:3, lasers:2, barriers:0,rocks:0, medals:[88,105,130]},
+    {name:'Pilot',  world:'SolarCanyon',maxSpeed:10.0,thrust:0.11, dmg:0.07,orbs:32,heals:5,mines:4, lasers:2, barriers:1,rocks:0, medals:[82,98,122]},
+    {name:'Ace',    world:'SolarCanyon',maxSpeed:11.0,thrust:0.12, dmg:0.08,orbs:32,heals:4,mines:6, lasers:3, barriers:2,rocks:0, medals:[76,92,115]},
+    {name:'Elite',  world:'OrbitalBelt',maxSpeed:11.5,thrust:0.125,dmg:0.09,orbs:34,heals:4,mines:10,lasers:2, barriers:0,rocks:10,medals:[72,88,110]},
+    {name:'Star',   world:'OrbitalBelt',maxSpeed:12.5,thrust:0.13, dmg:0.11,orbs:34,heals:4,mines:14,lasers:3, barriers:2,rocks:16,medals:[68,84,105]},
+    {name:'Legend', world:'QuantumCore',maxSpeed:13.0,thrust:0.14, dmg:0.12,orbs:36,heals:3,mines:12,lasers:7, barriers:4,rocks:0, medals:[65,80,100]},
+    {name:'Quantum',world:'QuantumCore',maxSpeed:14.0,thrust:0.15, dmg:0.14,orbs:36,heals:3,mines:16,lasers:10,barriers:6,rocks:4, medals:[60,75,95]}
   ];
   var MEDALS=['Gold','Silver','Bronze'],MEDAL_COLORS=['#ffd34d','#cfe3ff','#e0965a'];
   function store(k,d){try{var v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}}
   function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-  function getMap(){var m=new URLSearchParams(location.search).get('map')||localStorage.getItem('nv-map')||'Cityscape';return bkcore.hexgl.tracks[m]?m:'Cityscape'}
+  function getMap(){var m=new URLSearchParams(location.search).get('map')||localStorage.getItem('nv-map')||LEVELS[getLevel()-1].world;return bkcore.hexgl.tracks[m]?m:LEVELS[getLevel()-1].world}
   function mapLabel(m){var t=bkcore.hexgl.tracks[m];return t&&t.label||m}
   function keyFor(m,l){return m=='Cityscape'?String(l):m+':'+l}
   function curKey(){return keyFor(getMap(),getLevel())}
   function medalsFor(l,m){m=m||getMap();var t=bkcore.hexgl.tracks[m];if(!t||!t.generated)return LEVELS[l-1].medals;t.prepare();var base=3*t.length/(LEVELS[l-1].maxSpeed*60*0.85);return [Math.round(base*1.2),Math.round(base*1.45),Math.round(base*1.8)]}
   function seeded(seed){var x=seed>>>0||1;return function(){x=(x*1664525+1013904223)>>>0;return x/4294967296}}
-  function getLevel(){var q=parseInt(new URLSearchParams(location.search).get('level'),10);var l=q||parseInt(localStorage.getItem('nv-level')||'1',10)||1;return Math.max(1,Math.min(5,l))}
+  function getLevel(){var q=parseInt(new URLSearchParams(location.search).get('level'),10);var l=q||parseInt(localStorage.getItem('nv-level')||'1',10)||1;return Math.max(1,Math.min(8,l))}
   function cfg(){return LEVELS[getLevel()-1]}
   function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function fmt(ms){return ms?(ms/1000).toFixed(2)+' s':'--'}
@@ -142,7 +145,7 @@
         '<div style="color:#aeb8c8">Laps: '+l.map(function(x){return fmt(x)}).join(' / ')+'</div><div style="margin:10px 0;font-size:18px">Score '+total+(rank?' · Rank #'+rank:' · Not in top 10')+'</div>'+
         (rank?'<div style="margin:8px"><input id="nv-name" maxlength="16" value="'+esc(name)+'" style="padding:10px 14px;border-radius:99px;border:1px solid #55e6ff;background:#06131a;color:#dffcff;font:700 14px Consolas,monospace;text-align:center"><button id="nv-save" style="'+btn+'">Save name</button></div>':'')
         :'<div style="color:#aeb8c8">Your shield failed. Dodge red mines and grab green orbs to repair.</div><div style="margin:10px 0">Score '+S.score+'</div>')+
-      '<div style="margin-top:14px"><button id="nv-retry2" style="'+btn+'">Retry</button>'+(finished&&lv<5?'<button id="nv-next" style="'+btn+';background:#55e6ff;color:#06131a">Next level</button>':'')+'<button id="nv-lb" style="'+btn+'">Leaderboard</button><button id="nv-menu" style="'+btn+'">Menu</button></div>';
+      '<div style="margin-top:14px"><button id="nv-retry2" style="'+btn+'">Retry</button>'+(finished&&lv<8?'<button id="nv-next" style="'+btn+';background:#55e6ff;color:#06131a">Next level</button>':'')+'<button id="nv-lb" style="'+btn+'">Leaderboard</button><button id="nv-menu" style="'+btn+'">Menu</button></div>';
     if(window.NVNet&&NVNet.active){NVNet.onFinish(finished?f:null);var btns=box.querySelector('div[style*="margin-top:14px"]');btns.innerHTML=(NVNet.host?'<button id="nv-rematch" style="'+btn+';background:#55e6ff;color:#06131a">Rematch</button>':'<span style="color:#aeb8c8">Waiting for host to start a rematch...</span><br>')+'<button id="nv-leave" style="'+btn+'">Leave race</button>';var st=document.createElement('div');st.id='nv-mp-standings';st.style.cssText='margin-top:14px;width:min(520px,92vw)';box.insertBefore(st,btns)}
     document.body.appendChild(box);
     box.onclick=function(e){e.stopPropagation()};
@@ -269,7 +272,7 @@
   var levelEl=$('s-level'),mapEl=$('s-map');
   function label(){var l=getLevel(),m=bestMedal(l);levelEl.innerHTML='Level: '+l+' · '+LEVELS[l-1].name+(m>=0?' <span style="color:'+MEDAL_COLORS[m]+'">★ '+MEDALS[m]+'</span>':'')}
   function setParam(k,v){localStorage.setItem('nv-'+k,String(v));var u=new URL(location.href);u.searchParams.set(k,String(v));history.replaceState(null,'',u)}
-  if(levelEl){var oc=levelEl.onclick;levelEl.onclick=function(e){oc&&oc.call(this,e);label()};label()}
+  if(levelEl){var oc=levelEl.onclick;levelEl.onclick=function(e){oc&&oc.call(this,e);setParam('map',LEVELS[getLevel()-1].world);if(mapEl)mapEl.innerHTML='Map: '+mapLabel(getMap());label()};label()}
   if(mapEl){
     var mlabel=function(){mapEl.innerHTML='Map: '+mapLabel(getMap())};mlabel();
     mapEl.onclick=function(){var L=bkcore.hexgl.trackList,i=0;L.forEach(function(t,k){if(t.id==getMap())i=k});setParam('map',L[(i+1)%L.length].id);mlabel();label()};
